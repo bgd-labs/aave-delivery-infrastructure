@@ -13,4 +13,5 @@ library TestNetChainIds {
   uint256 constant METIS_TESTNET = 599;
   uint256 constant BNB_TESTNET = 97;
   uint256 constant BASE_GOERLI = 84531;
+  uint256 constant POLYGON_ZK_EVM_GOERLI = 1402;
 }

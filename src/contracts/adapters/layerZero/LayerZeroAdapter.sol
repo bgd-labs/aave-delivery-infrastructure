@@ -124,6 +124,8 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
       return ChainIds.BNB;
     } else if (nativeChainId == uint16(151)) {
       return ChainIds.METIS;
+    } else if (nativeChainId == uint16(158)) {
+      return ChainIds.POLYGON_ZK_EVM;
     } else {
       return 0;
     }

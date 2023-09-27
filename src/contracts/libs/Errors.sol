@@ -43,4 +43,5 @@ library Errors {
   string public constant CALLER_NOT_OVM = '34'; // the caller must be the optimism ovm contract
   string public constant CALLER_NOT_FX_TUNNEL = '35'; // the caller must be the fx tunnel contract
   string public constant INVALID_SENDER = '36'; // sender can not be address 0
+  string public constant CALLER_NOT_ZK_EVM_BRIDGE = '37'; // the caller must be the zk evm bridge
 }
