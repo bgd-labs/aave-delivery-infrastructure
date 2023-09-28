@@ -1,0 +1,25 @@
+[submodule "lib/solidity-utils"]
+	path = lib/solidity-utils
+	url = https://github.com/bgd-labs/solidity-utils
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "lib/hyperlane-monorepo"]
+	path = lib/hyperlane-monorepo
+	url = https://github.com/hyperlane-xyz/hyperlane-monorepo
+[submodule "lib/solidity-examples"]
+	path = lib/solidity-examples
+	url = https://github.com/LayerZero-Labs/solidity-examples
+[submodule "lib/openzeppelin-contracts"]
+	path = lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+	branch = release-v4.8
+[submodule "lib/aave-address-book"]
+	path = lib/aave-address-book
+	url = https://github.com/bgd-labs/aave-address-book
+[submodule "lib/nitro-contracts"]
+	path = lib/nitro-contracts
+	url = https://github.com/OffchainLabs/nitro-contracts
+[submodule "lib/fx-portal"]
+	path = lib/fx-portal
+	url = https://github.com/0xPolygon/fx-portal

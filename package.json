@@ -1,0 +1,22 @@
+{
+  "name": "aave-delivery-infrastructure",
+  "version": "1.0.0",
+  "scripts": {
+    "prettier": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bgd-labs/aave-delivery-infrastructure.git"
+  },
+  "keywords": [],
+  "author": "BGD labs",
+  "license": "BUSL-1.1",
+  "bugs": {
+    "url": "https://github.com/bgd-labs/aave-delivery-infrastructure/issues"
+  },
+  "homepage": "https://github.com/bgd-labs/aave-delivery-infrastructure#readme",
+  "devDependencies": {
+    "prettier": "^2.8.3",
+    "prettier-plugin-solidity": "^1.1.1"
+  }
+}
