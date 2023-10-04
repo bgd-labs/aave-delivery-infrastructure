@@ -219,6 +219,31 @@ contract Base is BaseSetCCRAdapters {
   }
 }
 
+contract Gnosis is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.GNOSIS;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.ETHEREUM;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](3);
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    receiverBridgeAdaptersToAllow[1] = addresses.hlAdapter;
+    receiverBridgeAdaptersToAllow[2] = addresses.gnosisAdapter;
+    //    receiverBridgeAdaptersToAllow[2] = addresses.ccipAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
+}
+
 contract Ethereum_testnet is Ethereum {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -334,5 +359,27 @@ contract Base_testnet is Base {
     chainIds[0] = TestNetChainIds.ETHEREUM_GOERLI;
 
     return chainIds;
+  }
+}
+
+contract Gnosis_testnet is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.GNOSIS_CHIADO;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = TestNetChainIds.ETHEREUM_GOERLI;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    receiverBridgeAdaptersToAllow[0] = addresses.gnosisAdapter;
+
+    return receiverBridgeAdaptersToAllow;
   }
 }

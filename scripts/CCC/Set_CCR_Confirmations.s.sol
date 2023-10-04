@@ -176,6 +176,24 @@ contract Base is BaseSetCCRConfirmations {
   }
 }
 
+contract Gnosis is BaseSetCCRConfirmations {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.GNOSIS;
+  }
+
+  function getConfirmationsByChainIds()
+    public
+    virtual
+    override
+    returns (ConfirmationsByChain[] memory)
+  {
+    ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
+    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 3});
+
+    return chainIds;
+  }
+}
+
 contract Ethereum_testnet is Ethereum {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -336,6 +354,27 @@ contract Base_testnet is Base {
     chainIds[0] = ConfirmationsByChain({
       chainId: TestNetChainIds.ETHEREUM_GOERLI,
       confirmations: 1
+    });
+
+    return chainIds;
+  }
+}
+
+contract Gnosis_testnet is BaseSetCCRConfirmations {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.GNOSIS_CHIADO;
+  }
+
+  function getConfirmationsByChainIds()
+    public
+    virtual
+    override
+    returns (ConfirmationsByChain[] memory)
+  {
+    ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
+    chainIds[0] = ConfirmationsByChain({
+      chainId: TestNetChainIds.ETHEREUM_GOERLI,
+      confirmations: 3
     });
 
     return chainIds;

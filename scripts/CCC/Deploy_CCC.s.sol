@@ -124,6 +124,12 @@ contract Base is BaseCCCNetworkDeployment {
   }
 }
 
+contract Gnosis is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.GNOSIS;
+  }
+}
+
 contract Ethereum_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -169,5 +175,11 @@ contract Binance_testnet is BaseCCCNetworkDeployment {
 contract Base_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.BASE_GOERLI;
+  }
+}
+
+contract Gnosis_testnet is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.GNOSIS_CHIADO;
   }
 }

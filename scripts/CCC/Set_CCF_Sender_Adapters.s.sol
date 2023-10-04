@@ -26,7 +26,7 @@ contract Ethereum is BaseCCFSenderAdapters {
   ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        15
+        18
       );
 
     // polygon path
@@ -125,6 +125,24 @@ contract Ethereum is BaseCCFSenderAdapters {
       destinationChainId: addresses.chainId
     });
 
+    // gnosis
+    DeployerHelpers.Addresses memory addressesGnosis = _getAddresses(ChainIds.GNOSIS);
+    bridgeAdaptersToEnable[15] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.gnosisAdapter,
+      destinationBridgeAdapter: addressesGnosis.gnosisAdapter,
+      destinationChainId: addressesGnosis.chainId
+    });
+    bridgeAdaptersToEnable[16] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.lzAdapter,
+      destinationBridgeAdapter: addressesGnosis.lzAdapter,
+      destinationChainId: addressesGnosis.chainId
+    });
+    bridgeAdaptersToEnable[17] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.hlAdapter,
+      destinationBridgeAdapter: addressesGnosis.hlAdapter,
+      destinationChainId: addressesGnosis.chainId
+    });
+
     return bridgeAdaptersToEnable;
   }
 }
@@ -215,7 +233,7 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
   ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        9
+        10
       );
 
     // polygon path
@@ -270,6 +288,15 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
       currentChainBridgeAdapter: addresses.hlAdapter,
       destinationBridgeAdapter: addressesBNB.hlAdapter,
       destinationChainId: addressesBNB.chainId
+    });
+
+    // gnosis path
+    DeployerHelpers.Addresses memory addressesGnosis = _getAddresses(TestNetChainIds.GNOSIS_CHIADO);
+
+    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.gnosisAdapter,
+      destinationBridgeAdapter: addressesGnosis.gnosisAdapter,
+      destinationChainId: addressesGnosis.chainId
     });
 
     //     rollups

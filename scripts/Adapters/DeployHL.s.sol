@@ -180,3 +180,23 @@ contract Binance_testnet is BaseHLAdapter {
     return remoteNetworks;
   }
 }
+
+contract Gnosis is BaseHLAdapter {
+  function HL_MAIL_BOX() public pure override returns (address) {
+    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
+  }
+
+  function HL_IGP() public pure override returns (address) {
+    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.GNOSIS;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = ChainIds.ETHEREUM;
+    return remoteNetworks;
+  }
+}
