@@ -238,3 +238,9 @@ contract Base_testnet is BaseInitialDeployment {
     return TestNetChainIds.BASE_GOERLI;
   }
 }
+
+contract Zkevm_testnet is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.POLYGON_ZK_EVM_GOERLI;
+  }
+}

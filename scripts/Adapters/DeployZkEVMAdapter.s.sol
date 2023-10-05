@@ -5,13 +5,14 @@ import {ArbAdapter, IArbAdapter, IBaseAdapter} from '../../src/contracts/adapter
 import './BaseAdapterScript.sol';
 import {ZkEVMAdapterEthereum} from '../../src/contracts/adapters/zkEVM/ZkEVMAdapterEthereum.sol';
 import {ZkEVMAdapterPolygonZkEVM} from '../../src/contracts/adapters/zkEVM/ZkEVMAdapterPolygonZkEVM.sol';
+import {ZkEVMAdapterGoerli, ZkEVMAdapterZkEVMGoerli} from '../contract_extensions/ZkEVMAdapterTestnets.sol';
 
 library Addresses {
   address internal constant ZK_EVM_BRIDGE_MAINNET = 0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe;
   address internal constant ZK_EVM_BRIDGE_TESTNET = 0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7;
 }
 
-contract DeployEthereum is BaseAdapterScript {
+contract Ethereum is BaseAdapterScript {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.ETHEREUM;
   }
@@ -26,12 +27,11 @@ contract DeployEthereum is BaseAdapterScript {
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    IBaseAdapter.TrustedRemotesConfig[] memory configs;
-    new ZkEVMAdapterEthereum(address(0), Addresses.ZK_EVM_BRIDGE_MAINNET, configs);
+    new ZkEVMAdapterEthereum(address(0), Addresses.ZK_EVM_BRIDGE_MAINNET, trustedRemotes);
   }
 }
 
-contract DeployZkEVM is BaseAdapterScript {
+contract Zkevm is BaseAdapterScript {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.POLYGON_ZK_EVM;
   }
@@ -46,12 +46,11 @@ contract DeployZkEVM is BaseAdapterScript {
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    IBaseAdapter.TrustedRemotesConfig[] memory configs;
-    new ZkEVMAdapterPolygonZkEVM(address(0), Addresses.ZK_EVM_BRIDGE_MAINNET, configs);
+    new ZkEVMAdapterPolygonZkEVM(address(0), Addresses.ZK_EVM_BRIDGE_MAINNET, trustedRemotes);
   }
 }
 
-contract DeployGoerli is BaseAdapterScript {
+contract Ethereum_testnet is BaseAdapterScript {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_GOERLI;
   }
@@ -67,11 +66,15 @@ contract DeployGoerli is BaseAdapterScript {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     IBaseAdapter.TrustedRemotesConfig[] memory configs;
-    new ZkEVMAdapterEthereum(address(0), Addresses.ZK_EVM_BRIDGE_TESTNET, configs);
+    new ZkEVMAdapterGoerli(
+      address(1), //addresses.crossChainController,
+      Addresses.ZK_EVM_BRIDGE_TESTNET,
+      configs
+    );
   }
 }
 
-contract DeployZkEVMGoerli is BaseAdapterScript {
+contract Zkevm_testnet is BaseAdapterScript {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.POLYGON_ZK_EVM_GOERLI;
   }
@@ -87,6 +90,11 @@ contract DeployZkEVMGoerli is BaseAdapterScript {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     IBaseAdapter.TrustedRemotesConfig[] memory configs;
-    new ZkEVMAdapterPolygonZkEVM(address(0), Addresses.ZK_EVM_BRIDGE_TESTNET, configs);
+
+    new ZkEVMAdapterZkEVMGoerli(
+      address(1), //addresses.crossChainController,
+      Addresses.ZK_EVM_BRIDGE_TESTNET,
+      configs
+    );
   }
 }

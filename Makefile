@@ -88,6 +88,9 @@ deploy-polygon-adapters:
 deploy-base-adapters:
 	$(call deploy_fn,Adapters/DeployCBaseAdapter,ethereum base)
 
+deploy-zkevm-adapters:
+	$(call deploy_fn,Adapters/DeployZkEVMAdapter,ethereum zkevm)
+
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
 	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum polygon avalanche)
@@ -133,7 +136,7 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,avalanche base)
+	$(call deploy_fn,InitialDeployments,zkevm)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:

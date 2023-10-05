@@ -36,6 +36,7 @@ library DeployerHelpers {
     address proxyAdmin;
     address proxyFactory;
     address sameChainAdapter;
+    address zkevmAdapter;
   }
 
   function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
@@ -55,6 +56,8 @@ library DeployerHelpers {
       return './deployments/cc/mainnet/bnb.json';
     } else if (chainId == ChainIds.BASE) {
       return './deployments/cc/mainnet/base.json';
+    } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
+      return './deployments/cc/mainnet/zkevm.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
@@ -74,6 +77,8 @@ library DeployerHelpers {
       return './deployments/cc/testnet/bnb_test.json';
     } else if (chainId == TestNetChainIds.BASE_GOERLI) {
       return './deployments/cc/testnet/base_go.json';
+    } else if (chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI) {
+      return './deployments/cc/testnet/zkevm_go.json';
     } else {
       revert('chain id is not supported');
     }
@@ -105,7 +110,8 @@ library DeployerHelpers {
       metisAdapter: abi.decode(persistedJson.parseRaw('.metisAdapter'), (address)),
       polAdapter: abi.decode(persistedJson.parseRaw('.polAdapter'), (address)),
       mockDestination: abi.decode(persistedJson.parseRaw('.mockDestination'), (address)),
-      baseAdapter: abi.decode(persistedJson.parseRaw('.baseAdapter'), (address))
+      baseAdapter: abi.decode(persistedJson.parseRaw('.baseAdapter'), (address)),
+      zkevmAdapter: abi.decode(persistedJson.parseRaw('.zkevmAdapter'), (address))
     });
 
     return addresses;
@@ -132,7 +138,8 @@ library DeployerHelpers {
     json.serialize('polAdapter', addresses.polAdapter);
     json.serialize('proxyAdmin', addresses.proxyAdmin);
     json.serialize('proxyFactory', addresses.proxyFactory);
-    json = json.serialize('sameChainAdapter', addresses.sameChainAdapter);
+    json.serialize('sameChainAdapter', addresses.sameChainAdapter);
+    json = json.serialize('zkevmAdapter', addresses.zkevmAdapter);
     vm.writeJson(json, path);
   }
 }

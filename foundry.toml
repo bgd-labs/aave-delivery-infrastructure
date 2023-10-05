@@ -33,6 +33,8 @@ binance="${RPC_BINANCE}"
 binance-testnet="${RPC_BINANCE_TESTNET}"
 base="${RPC_BASE}"
 base-testnet="${RPC_BASE_TESTNET}"
+zkevm="${RPC_ZKEVM}"
+zkevm-testnet="${RPC_ZKEVM_TESTNET}"
 
 [etherscan]
 ethereum={key="${ETHERSCAN_API_KEY_MAINNET}", chain=1 }
