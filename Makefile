@@ -16,7 +16,7 @@ BASE_LEDGER = --legacy --mnemonics foo --ledger --mnemonic-indexes $(MNEMONIC_IN
 BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
-custom_ethereum := --with-gas-price 35000000000 # 53 gwei
+custom_ethereum := --with-gas-price 7000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 170000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
@@ -196,7 +196,7 @@ send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,base)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,ethereum)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum avalanche polygon)
