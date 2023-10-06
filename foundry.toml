@@ -55,5 +55,7 @@ binance={key="${ETHERSCAN_API_KEY_BINANCE}",chain=56}
 binance-testnet={key="${ETHERSCAN_API_KEY_BINANCE}",chain=56}
 base={key="${ETHERSCAN_API_KEY_BASE}",chain=8453, url='https://developer-access-mainnet.base.org'}
 base-testnet={key="${ETHERSCAN_API_KEY_BASE}",chain=8453, url='https://developer-access-mainnet.base.org'}
+zkevm={key="${ETHERSCAN_API_KEY_ZKEVM}",chain=1101}
+zkevm-testnet={key="${ETHERSCAN_API_KEY_ZKEVM}",chain=1442}
 
 # See more config options https://github.com/gakonst/foundry/tree/master/config
