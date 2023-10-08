@@ -1,0 +1,86 @@
+diff -ruN .gitignore .gitignore
+--- .gitignore	1970-01-01 02:00:00.000000000 +0200
++++ .gitignore	2023-09-14 14:23:45.279003572 +0300
+@@ -0,0 +1,2 @@
++*
++!.gitignore
+\ No newline at end of file
+diff -ruN src/contracts/CrossChainForwarder.sol src/contracts/CrossChainForwarder.sol
+--- src/contracts/CrossChainForwarder.sol	2023-09-14 23:39:12.458049170 +0300
++++ src/contracts/CrossChainForwarder.sol	2023-09-14 23:23:52.854487614 +0300
+@@ -278,36 +278,36 @@
+     uint256 destinationChainId,
+     uint256 gasLimit,
+     ChainIdBridgeConfig[] memory bridgeAdapters
+-  ) internal returns (bool) {
++  ) internal virtual returns (bool) {
+     bool isForwardedAtLeastOnce = false;
+     for (uint256 i = 0; i < bridgeAdapters.length; i++) {
+-      (bool success, bytes memory returnData) = bridgeAdapters[i]
+-        .currentChainBridgeAdapter
+-        .delegatecall(
+-          abi.encodeWithSelector(
+-            IBaseAdapter.forwardMessage.selector,
+-            bridgeAdapters[i].destinationBridgeAdapter,
+-            gasLimit,
+-            destinationChainId,
+-            encodedTransaction
+-          )
+-        );
++        bool success=true; bytes memory returnData; // (bool success, bytes memory returnData) = bridgeAdapters[i]
++        //.currentChainBridgeAdapter
++        //.delegatecall(
++        //  abi.encodeWithSelector(
++        //    IBaseAdapter.forwardMessage.selector,
++        //    bridgeAdapters[i].destinationBridgeAdapter,
++        //    gasLimit,
++        //    destinationChainId,
++        //    encodedTransaction
++        //  )
++        //);
+ 
+       if (success) {
+         isForwardedAtLeastOnce = true;
+       } else {
+         // it doesn't revert as sending to other bridges might succeed
+       }
+-      emit TransactionForwardingAttempted(
+-        transactionId,
+-        envelopeId,
+-        encodedTransaction,
+-        destinationChainId,
+-        bridgeAdapters[i].currentChainBridgeAdapter,
+-        bridgeAdapters[i].destinationBridgeAdapter,
+-        success,
+-        returnData
+-      );
++      //emit TransactionForwardingAttempted(
++      //  transactionId,
++      //  envelopeId,
++      //  encodedTransaction,
++      //  destinationChainId,
++      //  bridgeAdapters[i].currentChainBridgeAdapter,
++      //  bridgeAdapters[i].destinationBridgeAdapter,
++      //  success,
++      //  returnData
++      //);
+     }
+ 
+     return (isForwardedAtLeastOnce);
+@@ -361,11 +361,11 @@
+ 
+       if (!configFound) {
+         // preparing fees stream
+-        Address.functionDelegateCall(
+-          bridgeAdapterConfigInput.currentChainBridgeAdapter,
+-          abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
+-          Errors.ADAPTER_PAYMENT_SETUP_FAILED
+-        );
++        //Address.functionDelegateCall(
++        //  bridgeAdapterConfigInput.currentChainBridgeAdapter,
++        //  abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
++        //  Errors.ADAPTER_PAYMENT_SETUP_FAILED
++        //);
+ 
+         bridgeAdapterConfigs.push(
+           ChainIdBridgeConfig({

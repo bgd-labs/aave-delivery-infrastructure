@@ -1,0 +1,61 @@
+name: certora-review-receiver
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install python
+        uses: actions/setup-python@v2
+        with: { python-version: 3.9 }
+
+      - name: Install java
+        uses: actions/setup-java@v1
+        with: { java-version: "11", java-package: jre }
+
+      - name: Install certora cli
+        run: pip3 install certora-cli
+
+      - name: Install solc
+        run: |
+          wget https://github.com/ethereum/solidity/releases/download/v0.8.19/solc-static-linux
+          chmod +x solc-static-linux
+          sudo mv solc-static-linux /usr/local/bin/solc8.19
+
+      - name: Verify rule ${{ matrix.rule }}
+        run: |
+          cd certora
+          touch applyHarness.patch
+          make munged
+          cd ..
+          certoraRun certora/confs/${{ matrix.rule }}
+        env:
+          CERTORAKEY: ${{ secrets.CERTORAKEY }}
+
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix:
+        rule:
+          - verifyCrossChainControllerWithEmergency.conf
+          - verifyCrossChainReceiver.conf --rule receive_more_than__requiredConfirmations_diff_2
+          - verifyCrossChainReceiver.conf --rule transaction_received_only_from_authorized_bridge_adapter only_owner_can_change_bridge_adapters only_owner_can_change_bridge_adapters_witness only_owner_can_change_required_confirmations only_owner_can_change_required_confirmations_witness cannot_call_IBaseReceiverPortal_receiveCrossChainMessage_twice cannot_call_IBaseReceiverPortal_receiveCrossChainMessage_twice_witness state_transition_to_deliver_iff_IBaseReceiverPortal_receiveCrossChainMessage_called
+          - verifyCrossChainReceiver.conf --rule state_transition_to_deliver_iff_IBaseReceiverPortal_receiveCrossChainMessage_called_witness call_deliverEnvelope_once call_deliverEnvelope_once_witness anyone_can_call_deliverEnvelope invalidate_previous_unconfirmed_envelopes_after_updateMessagesValidityTimestamp invalidate_previous_unconfirmed_envelopes_after_updateMessagesValidityTimestamp_witness receiveCrossChainMessage_cannot_change_state_if_requiredConfirmation_is_zero envelope_state envelope_state_witness_none_to_delivered
+          - verifyCrossChainReceiver.conf --rule envelope_state_witness_confirmed_to_delivered envelope_state_witness_none_to_confirmed envelope_state_witness_none_none_confirmed envelope_state_witness_none_confirmed_confirmed envelope_state_witness_confirmed_confirmed_confirmed confirmations_increments_if_received_from_msg_sender confirmations_increments_if_received_from_msg_sender_witness allowReceiverBridgeAdapters_cannot_disallow allowReceiverBridgeAdapters_cannot_disallow_witness
+          - verifyCrossChainReceiver.conf --rule disallowReceiverBridgeAdapters_cannot_allow disallowReceiverBridgeAdapters_cannot_allow_witness disallowReceiverBridgeAdapters_cannot_allow_witness_2 requiredConfirmation_is_positive_after_updateConfirmations receive_increments_confirmations null_is_terminal_if_requiredConformations_gt_allowedBridges null_is_terminal_if_requiredConformations_gt_allowedBridges_witness_1   
+          - verifyCrossChainReceiver.conf --rule getEnvelopeId_envelope_reachability getEnvelopeId_encodedTransaction_reachability getEnvelope_reachability getEnvelopeState_reachability reachability encodeDecodeWorks encodeDecodeWorks_witness encodeDecodeWorks_witness_2 
+          - verifyCrossChainReceiver.conf --rule decode_sanity set_size_leq_max_uint160 firstBridgedAt_happened_in_the_past zero_firstBridgedAt_iff_not_received_from_msg_sender
