@@ -58,6 +58,12 @@ contract Binance is BaseMockDestination {
   }
 }
 
+contract Gnosis is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.GNOSIS;
+  }
+}
+
 contract Arbitrum_testnet is BaseMockDestination {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ARBITRUM_GOERLI;
