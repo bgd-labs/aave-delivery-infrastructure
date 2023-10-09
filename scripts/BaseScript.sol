@@ -25,6 +25,7 @@ library DeployerHelpers {
     address crossChainController;
     address crossChainControllerImpl;
     address emergencyRegistry;
+    address gnosisAdapter;
     address guardian;
     address hlAdapter;
     address lzAdapter;
@@ -55,6 +56,8 @@ library DeployerHelpers {
       return './deployments/cc/mainnet/bnb.json';
     } else if (chainId == ChainIds.BASE) {
       return './deployments/cc/mainnet/base.json';
+    } else if (chainId == ChainIds.GNOSIS) {
+      return './deployments/cc/mainnet/gnosis.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
@@ -74,6 +77,8 @@ library DeployerHelpers {
       return './deployments/cc/testnet/bnb_test.json';
     } else if (chainId == TestNetChainIds.BASE_GOERLI) {
       return './deployments/cc/testnet/base_go.json';
+    } else if (chainId == TestNetChainIds.GNOSIS_CHIADO) {
+      return './deployments/cc/testnet/gno_chiado.json';
     } else {
       revert('chain id is not supported');
     }
@@ -105,7 +110,8 @@ library DeployerHelpers {
       metisAdapter: abi.decode(persistedJson.parseRaw('.metisAdapter'), (address)),
       polAdapter: abi.decode(persistedJson.parseRaw('.polAdapter'), (address)),
       mockDestination: abi.decode(persistedJson.parseRaw('.mockDestination'), (address)),
-      baseAdapter: abi.decode(persistedJson.parseRaw('.baseAdapter'), (address))
+      baseAdapter: abi.decode(persistedJson.parseRaw('.baseAdapter'), (address)),
+      gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address))
     });
 
     return addresses;
@@ -122,6 +128,7 @@ library DeployerHelpers {
     json.serialize('crossChainController', addresses.crossChainController);
     json.serialize('crossChainControllerImpl', addresses.crossChainControllerImpl);
     json.serialize('emergencyRegistry', addresses.emergencyRegistry);
+    json.serialize('gnosisAdapter', addresses.gnosisAdapter);
     json.serialize('guardian', addresses.guardian);
     json.serialize('hlAdapter', addresses.hlAdapter);
     json.serialize('lzAdapter', addresses.lzAdapter);
