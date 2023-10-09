@@ -188,7 +188,7 @@ contract Gnosis is BaseSetCCRConfirmations {
     returns (ConfirmationsByChain[] memory)
   {
     ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
-    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 3});
+    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 2});
 
     return chainIds;
   }

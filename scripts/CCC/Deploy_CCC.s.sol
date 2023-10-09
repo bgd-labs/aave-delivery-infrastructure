@@ -125,6 +125,10 @@ contract Base is BaseCCCNetworkDeployment {
 }
 
 contract Gnosis is BaseCCCNetworkDeployment {
+  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
+    return 0xF937ffAeA1363e4Fa260760bDFA2aA8Fc911F84D;
+  }
+
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.GNOSIS;
   }
