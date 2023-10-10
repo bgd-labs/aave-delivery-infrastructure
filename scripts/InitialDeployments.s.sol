@@ -182,9 +182,9 @@ contract Gnosis is BaseInitialDeployment {
     return 0xe892E40C92c2E4D281Be59b2E6300F271d824E75; //AaveMisc.PROXY_ADMIN_GNOSIS;
   }
 
-//  function GUARDIAN() public pure override returns (address) {
-//    return 0xF6Db48C5968A9eBCB935786435530f28e32Cc501;
-//  }
+  function GUARDIAN() public pure override returns (address) {
+    return 0xF163b8698821cefbD33Cf449764d69Ea445cE23D;
+  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.GNOSIS;
