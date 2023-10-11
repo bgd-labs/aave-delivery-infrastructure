@@ -17,3 +17,5 @@ node_modules
 broadcast/
 
 .DS_Store
+
+input.json

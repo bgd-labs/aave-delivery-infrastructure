@@ -48,6 +48,8 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
       return TestNetChainIds.BNB_TESTNET;
     } else if (nativeChainId == uint16(10151)) {
       return TestNetChainIds.METIS_TESTNET;
+    } else if (nativeChainId == uint16(10145)) {
+      return TestNetChainIds.GNOSIS_CHIADO;
     } else {
       return 0;
     }
@@ -73,6 +75,8 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
       return uint16(10151);
     } else if (infraChainId == TestNetChainIds.BNB_TESTNET) {
       return uint16(10102);
+    } else if (infraChainId == TestNetChainIds.GNOSIS_CHIADO) {
+      return uint16(10145);
     } else {
       return uint16(0);
     }

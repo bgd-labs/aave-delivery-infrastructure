@@ -173,6 +173,24 @@ contract Binance is BaseInitialDeployment {
   }
 }
 
+contract Gnosis is BaseInitialDeployment {
+//  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+//    return AaveMisc.TRANSPARENT_PROXY_FACTORY_GNOSIS;
+//  }
+
+  function PROXY_ADMIN() public pure override returns (address) {
+    return 0xe892E40C92c2E4D281Be59b2E6300F271d824E75; //AaveMisc.PROXY_ADMIN_GNOSIS;
+  }
+
+  function GUARDIAN() public pure override returns (address) {
+    return 0xF163b8698821cefbD33Cf449764d69Ea445cE23D;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.GNOSIS;
+  }
+}
+
 contract Base is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
     return AaveMisc.TRANSPARENT_PROXY_FACTORY_BASE;
@@ -236,6 +254,12 @@ contract Binance_testnet is BaseInitialDeployment {
 contract Base_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.BASE_GOERLI;
+  }
+}
+
+contract Gnosis_testnet is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.GNOSIS_CHIADO;
   }
 }
 

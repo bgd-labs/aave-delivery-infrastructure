@@ -198,3 +198,45 @@ contract Binance_testnet is BaseLZAdapter {
     return true;
   }
 }
+
+contract Gnosis is BaseLZAdapter {
+  function LZ_ENDPOINT() public pure override returns (address) {
+    return 0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.GNOSIS;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = ChainIds.ETHEREUM;
+
+    return remoteNetworks;
+  }
+
+  function isTestNet() public pure override returns (bool) {
+    return false;
+  }
+}
+
+contract Gnosis_testnet is BaseLZAdapter {
+  function LZ_ENDPOINT() public pure override returns (address) {
+    return 0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.GNOSIS_CHIADO;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = TestNetChainIds.ETHEREUM_GOERLI;
+
+    return remoteNetworks;
+  }
+
+  function isTestNet() public pure override returns (bool) {
+    return true;
+  }
+}

@@ -16,8 +16,9 @@ BASE_LEDGER = --legacy --mnemonics foo --ledger --mnemonic-indexes $(MNEMONIC_IN
 BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
-custom_ethereum := --with-gas-price 35000000000 # 53 gwei
-custom_polygon :=  --with-gas-price 170000000000 # 560 gwei
+
+custom_ethereum := --with-gas-price 10000000000 # 53 gwei
+custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
@@ -51,23 +52,23 @@ deploy-emergency-registry:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:
-	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance)
+	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance)
+	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters:
-	$(call deploy_fn,Adapters/DeployCCIP,ethereum avalanche binance polygon binance)
+	$(call deploy_fn,Adapters/DeployCCIP,ethereum avalanche binance polygon binance gnosis)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters:
-	$(call deploy_fn,Adapters/DeployLZ,ethereum avalanche binance polygon binance)
+	$(call deploy_fn,Adapters/DeployLZ,ethereum avalanche binance polygon binance gnosis)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters:
-	$(call deploy_fn,Adapters/DeployHL,ethereum avalanche binance polygon binance)
+	$(call deploy_fn,Adapters/DeployHL,ethereum avalanche binance polygon binance gnosis)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters:
@@ -88,20 +89,23 @@ deploy-polygon-adapters:
 deploy-base-adapters:
 	$(call deploy_fn,Adapters/DeployCBaseAdapter,ethereum base)
 
+deploy-gnosis-adapters:
+	$(call deploy_fn,Adapters/DeployGnosisChain,ethereum gnosis)
+
 deploy-zkevm-adapters:
 	$(call deploy_fn,Adapters/DeployZkEVMAdapter,ethereum zkevm)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
-	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum polygon avalanche)
+	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis)
 
 # Sets the required confirmations
 set-ccr-confirmations:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis)
 
 # Generate Addresses Json
 write-json-addresses :; forge script scripts/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
@@ -196,10 +200,10 @@ remove-bridge-adapters:
 	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum avalanche polygon binance)
 
 send-direct-message:
-	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
+	$(call deploy_fn,helpers/Send_Direct_CCMessage,avalanche)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,base)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,binance)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum avalanche polygon)
