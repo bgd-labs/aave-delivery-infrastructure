@@ -27,7 +27,7 @@ contract Ethereum is BaseAdapterScript {
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    new ZkEVMAdapterEthereum(address(0), Addresses.ZK_EVM_BRIDGE_MAINNET, trustedRemotes);
+    addresses.zkevmAdapter = new ZkEVMAdapterEthereum(address(0), Addresses.ZK_EVM_BRIDGE_MAINNET, trustedRemotes);
   }
 }
 

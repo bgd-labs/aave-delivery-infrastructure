@@ -38,10 +38,12 @@ abstract contract ZkEVMAdapter is BaseAdapter, IBridgeMessageReceiver {
       isDestinationChainIdSupported(destinationChainId),
       Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED
     );
+
+    uint32 nativeChainId = SafeCast.toUint32(infraToNativeChainId(destinationChainId));
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
     IPolygonZkEVMBridge(ZK_EVM_BRIDGE).bridgeMessage(
-      uint32(destinationChainId),
+      nativeChainId,
       receiver,
       true, // don't fully understand this flag forceUpdateGlobalExitRoot,
       message
@@ -56,23 +58,38 @@ abstract contract ZkEVMAdapter is BaseAdapter, IBridgeMessageReceiver {
     uint32 originNetwork,
     bytes calldata message
   ) external payable override onlyZkEVMBridge {
+    uint256 originChainId = nativeToInfraChainId(originNetwork);
     require(
-      _trustedRemotes[originNetwork] == originalSender && originalSender != address(0),
+      _trustedRemotes[originChainId] == originalSender && originalSender != address(0),
       Errors.REMOTE_NOT_TRUSTED
     );
 
-    _registerReceivedMessage(message, originNetwork);
+    _registerReceivedMessage(message, originChainId);
   }
 
   function isDestinationChainIdSupported(uint256 chainId) public view virtual returns (bool);
 
   /// @inheritdoc IBaseAdapter
-  function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
-    return nativeChainId;
+  function nativeToInfraChainId(
+    uint32 nativeChainId
+  ) public pure virtual override returns (uint256) {
+    if (nativeChainId == uint32(0)) {
+      return ChainIds.ETHEREUM;
+    } else if (nativeChainId == uint32(1)) {
+      return ChainIds.POLYGON_ZK_EVM;
+    }
+    return 0;
   }
 
   /// @inheritdoc IBaseAdapter
-  function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
-    return infraChainId;
+  function infraToNativeChainId(
+    uint256 infraChainId
+  ) public pure virtual override returns (uint256) {
+    if (infraChainId == ChainIds.ETHEREUM) {
+      return uint32(0);
+    } else if (infraChainId == ChainIds.POLYGON_ZK_EVM) {
+      return uint32(1);
+    }
+    return type(uint32).max;
   }
 }
