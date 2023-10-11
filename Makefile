@@ -207,3 +207,6 @@ set-approved-ccf-senders:
 
 send-message:
 	@$(call deploy_fn,helpers/Testnet_ForwardMessage,ethereum,Testnet_ForwardMessage)
+
+solve-emergency:
+	$(call deploy_fn,helpers/Solve_Emergency,polygon avalanche gnosis binance)
