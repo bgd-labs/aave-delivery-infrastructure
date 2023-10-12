@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
 import {IPolygonZkEVMBridge} from './interfaces/IPolygonZkEVMBridge.sol';
 import {IBridgeMessageReceiver} from './interfaces/IBridgeMessageReceiver.sol';
 import {IBaseAdapter, BaseAdapter} from '../BaseAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
+import {ChainIds} from '../../libs/ChainIds.sol';
 
 abstract contract ZkEVMAdapter is BaseAdapter, IBridgeMessageReceiver {
   address public immutable ZK_EVM_BRIDGE;
@@ -71,7 +73,7 @@ abstract contract ZkEVMAdapter is BaseAdapter, IBridgeMessageReceiver {
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(
-    uint32 nativeChainId
+    uint256 nativeChainId
   ) public pure virtual override returns (uint256) {
     if (nativeChainId == uint32(0)) {
       return ChainIds.ETHEREUM;

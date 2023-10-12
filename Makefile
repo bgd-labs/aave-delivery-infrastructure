@@ -210,3 +210,9 @@ set-approved-ccf-senders:
 
 send-message:
 	@$(call deploy_fn,helpers/Testnet_ForwardMessage,ethereum,Testnet_ForwardMessage)
+
+deploy_mock_ccc:
+	$(call deploy_fn,helpers/mocks/Deploy_Mock_CCC,zkevm)
+
+send-message-via-adapter:
+	$(call deploy_fn,helpers/Send_Message_Via_Adapter,ethereum)
