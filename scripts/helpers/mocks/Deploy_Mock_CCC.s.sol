@@ -4,15 +4,14 @@ pragma solidity ^0.8.0;
 import '../../../src/contracts/interfaces/IBaseReceiverPortal.sol';
 import '../../BaseScript.sol';
 
-contract MockCCC is IBaseReceiverPortal {
-  event MessageReceived(address indexed originSender, uint256 indexed originChainId, bytes message);
+contract MockCCC {
+  event MessageReceived(uint256 indexed originChainId, bytes message);
 
   function receiveCrossChainMessage(
-    address originSender,
-    uint256 originChainId,
-    bytes memory message
+    bytes memory encodedTransaction,
+    uint256 originChainId
   ) external {
-    emit MessageReceived(originSender, originChainId, message);
+    emit MessageReceived(originChainId, encodedTransaction);
   }
 }
 
