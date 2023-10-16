@@ -26,7 +26,7 @@ contract Ethereum is BaseCCFSenderAdapters {
   ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        18
+        19
       );
 
     // polygon path
@@ -141,6 +141,14 @@ contract Ethereum is BaseCCFSenderAdapters {
       currentChainBridgeAdapter: addresses.hlAdapter,
       destinationBridgeAdapter: addressesGnosis.hlAdapter,
       destinationChainId: addressesGnosis.chainId
+    });
+
+    // ZkEVM
+    DeployerHelpers.Addresses memory addressesZkEVM = _getAddresses(ChainIds.POLYGON_ZK_EVM);
+    bridgeAdaptersToEnable[18] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.zkevmAdapter,
+      destinationBridgeAdapter: addressesZkEVM.zkevmAdapter,
+      destinationChainId: addressesZkEVM.chainId
     });
 
     return bridgeAdaptersToEnable;

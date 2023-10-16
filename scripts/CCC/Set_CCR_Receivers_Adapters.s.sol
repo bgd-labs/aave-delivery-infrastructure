@@ -244,6 +244,28 @@ contract Gnosis is BaseSetCCRAdapters {
   }
 }
 
+contract Zkevm is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.POLYGON_ZK_EVM;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.ETHEREUM;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    receiverBridgeAdaptersToAllow[0] = addresses.zkevmAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
+}
+
 contract Ethereum_testnet is Ethereum {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;

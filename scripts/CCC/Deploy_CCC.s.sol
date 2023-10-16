@@ -134,6 +134,12 @@ contract Gnosis is BaseCCCNetworkDeployment {
   }
 }
 
+contract Zkevm is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.POLYGON_ZK_EVM;
+  }
+}
+
 contract Ethereum_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;

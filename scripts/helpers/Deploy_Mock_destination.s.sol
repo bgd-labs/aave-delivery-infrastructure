@@ -64,6 +64,12 @@ contract Gnosis is BaseMockDestination {
   }
 }
 
+contract Zkevm is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.POLYGON_ZK_EVM;
+  }
+}
+
 contract Arbitrum_testnet is BaseMockDestination {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ARBITRUM_GOERLI;

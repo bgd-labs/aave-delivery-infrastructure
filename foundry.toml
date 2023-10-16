@@ -35,6 +35,8 @@ base="${RPC_BASE}"
 base-testnet="${RPC_BASE_TESTNET}"
 gnosis="${RPC_GNOSIS}"
 gnosis-testnet="${RPC_GNOSIS_TESTNET}"
+zkevm="${RPC_ZKEVM}"
+zkevm-testnet="${RPC_ZKEVM_TESTNET}"
 
 [etherscan]
 ethereum={key="${ETHERSCAN_API_KEY_MAINNET}", chain=1 }
@@ -57,5 +59,7 @@ base={key="${ETHERSCAN_API_KEY_BASE}",chain=8453, url='https://developer-access-
 base-testnet={key="${ETHERSCAN_API_KEY_BASE}",chain=8453, url='https://developer-access-mainnet.base.org'}
 gnosis={key="${ETHERSCAN_API_KEY_GNOSIS}",chain=100}
 gnosis-testnet={key="${ETHERSCAN_API_KEY_GNOSIS}",chain=10200, url='https://gnosis-chiado.blockscout.com/'}
+zkevm={key="${ETHERSCAN_API_KEY_ZKEVM}",chain=1101}
+zkevm-testnet={key="${ETHERSCAN_API_KEY_ZKEVM}",chain=1442}
 
 # See more config options https://github.com/gakonst/foundry/tree/master/config
