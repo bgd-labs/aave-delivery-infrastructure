@@ -52,11 +52,11 @@ deploy-emergency-registry:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:
-	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis)
+	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis)
+	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters:
@@ -101,11 +101,11 @@ set-ccf-sender-adapters:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm)
 
 # Sets the required confirmations
 set-ccr-confirmations:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm)
 
 # Generate Addresses Json
 write-json-addresses :; forge script scripts/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
@@ -200,10 +200,10 @@ remove-bridge-adapters:
 	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum avalanche polygon binance)
 
 send-direct-message:
-	$(call deploy_fn,helpers/Send_Direct_CCMessage,avalanche)
+	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,binance)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,zkevm)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum avalanche polygon)

@@ -8,6 +8,13 @@ import {IBaseAdapter, BaseAdapter} from '../BaseAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {ChainIds} from '../../libs/ChainIds.sol';
 
+/**
+ * @title ZkEVMAdapter
+ * @author BGD Labs
+ * @notice ZkEVM bridge adapter. Used to send and receive messages cross chain between Ethereum and ZkEVM
+ * @dev it uses the eth balance of CrossChainController contract to pay for message bridging as the method to bridge
+        is called via delegate call
+ */
 abstract contract ZkEVMAdapter is BaseAdapter, IBridgeMessageReceiver {
   address public immutable ZK_EVM_BRIDGE;
 
@@ -44,12 +51,7 @@ abstract contract ZkEVMAdapter is BaseAdapter, IBridgeMessageReceiver {
     uint32 nativeChainId = SafeCast.toUint32(infraToNativeChainId(destinationChainId));
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    IPolygonZkEVMBridge(ZK_EVM_BRIDGE).bridgeMessage(
-      nativeChainId,
-      receiver,
-      true, // don't fully understand this flag forceUpdateGlobalExitRoot,
-      message
-    );
+    IPolygonZkEVMBridge(ZK_EVM_BRIDGE).bridgeMessage(nativeChainId, receiver, true, message);
 
     return (ZK_EVM_BRIDGE, 0);
   }
