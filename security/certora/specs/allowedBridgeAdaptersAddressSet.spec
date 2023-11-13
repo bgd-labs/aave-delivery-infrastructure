@@ -1,16 +1,12 @@
 
 //
 //
+// Specification for Openzeppelin AddressSet used by CrossChainReceiver._configurationsByChain.allowedBridgeAdapters
+// 
+
 methods{
     function getAllowedBridgeAdaptersLength(uint256) external returns (uint256) envfree;
- 
 }
-
-definition MAX_UINT256() returns uint256 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
-definition MAX_UINT256Bytes32() returns bytes32 = to_bytes32(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF); //todo: remove once CERT-1060 is resolved
-
-definition TWO_TO_160() returns uint256 = 0x10000000000000000000000000000000000000000;
-
 
 /**
 * Set map entries point to valid array entries
@@ -33,7 +29,7 @@ definition MAP_IS_INVERSE_OF_ARRAY() returns bool = forall uint256 chainId. fora
 * @return true if for every non-zero bytes32 value stored in in the set map it holds that array(map(value) - 1) == value
 */
 definition ARRAY_IS_INVERSE_OF_MAP() returns bool = forall uint256 chainId. forall bytes32 a. forall uint256 b. 
-            ((to_mathint(b) == mirrorMap[chainId][a]-1) => (mirrorMap[chainId][a] != 0)) => (mirrorArray[chainId][b] == a);
+            (to_mathint(b) == mirrorMap[chainId][a]-1) => ((mirrorMap[chainId][a] != 0) => (mirrorArray[chainId][b] == a));
 
 
 
@@ -83,15 +79,12 @@ definition UINT_SET_INVARIANT(uint256 chainId) returns bool = SET_INVARIANT(chai
  **/
 definition ARRAY_OUT_OF_BOUND_ZERO() returns bool = forall uint256 chainId. forall uint256 i. (i >= mirrorArrayLen[chainId]) => (mirrorArray[chainId][i] == to_bytes32(0));
 
-// For CVL use
 
 /**
  * ghost mirror map, mimics Set map
  **/
 ghost mapping(uint256 => mapping(bytes32 => uint256)) mirrorMap{ 
     init_state axiom forall uint256 chainId. forall bytes32 a. mirrorMap[chainId][a] == 0;
-    axiom forall uint256 chainId. forall bytes32 a. mirrorMap[chainId][a] >= 0 && mirrorMap[chainId][a] <= MAX_UINT256(); //todo: remove once https://certora.atlassian.net/browse/CERT-1060 is resolved
-    
 }
 
 /**
@@ -99,9 +92,6 @@ ghost mapping(uint256 => mapping(bytes32 => uint256)) mirrorMap{
  **/
 ghost mapping(uint256 => mapping(uint256 => bytes32)) mirrorArray{
     init_state axiom forall uint256 chainId. forall uint256 i. mirrorArray[chainId][i] == to_bytes32(0);
-    axiom forall uint256 chainId. forall uint256 a. mirrorArray[chainId][a] & MAX_UINT256Bytes32() == mirrorArray[chainId][a];
-//    axiom forall uint256 a. to_uint256(mirrorArray[a]) >= 0 && to_uint256(mirrorArray[a]) <= MAX_UINT256(); //todo: remove once CERT-1060 is resolved
-//axiom forall uint256 a. to_mathint(mirrorArray[a]) >= 0 && to_mathint(mirrorArray[a]) <= MAX_UINT256(); //todo: use this axiom when cast bytes32 to mathint is supported
 }
 
 /**
@@ -113,7 +103,7 @@ ghost mapping(uint256 => mapping(uint256 => bytes32)) mirrorArray{
  **/
 ghost mapping(uint256 => uint256) mirrorArrayLen{
     init_state axiom forall uint256 chainId. mirrorArrayLen[chainId] == 0;
-    axiom forall uint256 chainId. to_mathint(mirrorArrayLen[chainId]) < TWO_TO_160() - 1; //todo: remove once CERT-1060 is resolved
+    axiom forall uint256 chainId. mirrorArrayLen[chainId] < max_uint256; 
 }
 
 
@@ -178,11 +168,30 @@ invariant setInvariant(uint256 chainId)
 invariant addressSetInvariant(uint256 chainId)
     ADDRESS_SET_INVARIANT(chainId);
 
-/**
-* @title Length of AddressSet is less than 2^160
-* @dev the assumption is safe because there are at most 2^160 unique addresses
-* @dev the proof of the assumption is vacuous because length > loop_iter
-*/
-invariant set_size_leq_max_uint160(uint256 chainId)
-	      getAllowedBridgeAdaptersLength(chainId)  < max_uint160;
+
+//Out of bound array entries are zero
+invariant array_out_of_bound_entries_are_zero(uint256 chainId)
+    ARRAY_OUT_OF_BOUND_ZERO()
+    {
+        preserved{
+            requireInvariant addressSetInvariant(chainId);
+        }
+    }
+
+// Set size can be 2 ^ 160 - 1 
+rule set_size_eq_max_uint160_witness(method` f)
+filtered {f -> f.selector == sig:CrossChainReceiverHarness.allowReceiverBridgeAdapters(ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]).selector
+}
+{
+
+    uint256 chainId;
+    requireInvariant addressSetInvariant(chainId);
+    require ARRAY_OUT_OF_BOUND_ZERO();
+    
+    require getAllowedBridgeAdaptersLength(chainId) < max_uint160;
+    env e; calldataarg args;
+    f(e, args);
+    satisfy getAllowedBridgeAdaptersLength(chainId) == max_uint160;
+}
+
 
