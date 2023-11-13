@@ -1,4 +1,4 @@
-import "CrossChainReceiver.spec";
+import "methods.spec";
 
 methods{
   function get__emergencyCount() external returns(uint256)  envfree;
