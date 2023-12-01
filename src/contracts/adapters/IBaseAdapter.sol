@@ -41,6 +41,16 @@ interface IBaseAdapter {
   ) external returns (address, uint256);
 
   /**
+   * @notice method to get the address of the linked cross chain controller
+   */
+  function CROSS_CHAIN_CONTROLLER() external returns (address);
+
+  /**
+   * @notice method to get the base gas limit used by the bridge adapter
+   */
+  function BASE_GAS_LIMIT() external returns (uint256);
+
+  /**
    * @notice method used to setup payment, ie grant approvals over tokens used to pay for tx fees
    */
   function setupPayments() external;

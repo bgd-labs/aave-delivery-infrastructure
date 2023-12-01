@@ -12,7 +12,11 @@ import {Errors} from '../libs/Errors.sol';
  * @dev All bridge adapters must implement this contract
  */
 abstract contract BaseAdapter is IBaseAdapter {
+  /// @inheritdoc IBaseAdapter
   IBaseCrossChainController public immutable CROSS_CHAIN_CONTROLLER;
+
+  /// @inheritdoc IBaseAdapter
+  uint256 public immutable BASE_GAS_LIMIT;
 
   // @dev this is the original address of the contract. Required to identify and prevent delegate calls.
   address private immutable _selfAddress;
@@ -22,10 +26,18 @@ abstract contract BaseAdapter is IBaseAdapter {
 
   /**
    * @param crossChainController address of the CrossChainController the bridged messages will be routed to
+   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param originConfigs pair of origin address and chain id that adapter is allowed to get messages from
    */
-  constructor(address crossChainController, TrustedRemotesConfig[] memory originConfigs) {
+  constructor(
+    address crossChainController,
+    uint256 baseGasLimit,
+    TrustedRemotesConfig[] memory originConfigs
+  ) {
     require(crossChainController != address(0), Errors.INVALID_BASE_ADAPTER_CROSS_CHAIN_CONTROLLER);
     CROSS_CHAIN_CONTROLLER = IBaseCrossChainController(crossChainController);
+
+    BASE_GAS_LIMIT = baseGasLimit;
 
     _selfAddress = address(this);
 
@@ -43,6 +55,7 @@ abstract contract BaseAdapter is IBaseAdapter {
   /// @inheritdoc IBaseAdapter
   function infraToNativeChainId(uint256 infraChainId) public view virtual returns (uint256);
 
+  /// @inheritdoc IBaseAdapter
   function setupPayments() external virtual {}
 
   /// @inheritdoc IBaseAdapter
