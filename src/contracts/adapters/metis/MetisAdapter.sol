@@ -19,13 +19,15 @@ contract MetisAdapter is OpAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ovmCrossDomainMessenger optimism entry point address
+   * @param baseGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {}
+  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, baseGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(
@@ -52,11 +54,13 @@ contract MetisAdapter is OpAdapter {
     );
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
+    uint256 totalGasLimit = destinationGasLimit + BASE_GAS_LIMIT;
+
     ICrossDomainMessenger(OVM_CROSS_DOMAIN_MESSENGER).sendMessageViaChainId(
       destinationChainId,
       receiver,
       abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
-      SafeCast.toUint32(destinationGasLimit) // for now gas fees are paid on optimism ( < 1.9) and metis (<5M) but its subject to change
+      SafeCast.toUint32(totalGasLimit) // for now gas fees are paid on optimism ( < 1.9) and metis (<5M) but its subject to change
     );
 
     return (OVM_CROSS_DOMAIN_MESSENGER, 0);

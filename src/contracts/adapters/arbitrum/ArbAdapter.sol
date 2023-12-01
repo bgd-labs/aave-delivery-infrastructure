@@ -32,14 +32,16 @@ contract ArbAdapter is IArbAdapter, BaseAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param inbox arbitrum entry point address
+   * @param baseGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address inbox,
     address destinationCCC,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, trustedRemotes) {
+  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {
     INBOX = inbox;
     DESTINATION_CCC = destinationCCC;
   }
@@ -70,14 +72,13 @@ contract ArbAdapter is IArbAdapter, BaseAdapter {
 
     bytes memory data = abi.encodeWithSelector(IArbAdapter.arbReceive.selector, message);
 
-    (uint256 maxSubmission, uint256 maxRedemption) = getRequiredGas(
-      data.length,
-      destinationGasLimit
-    );
+    uint256 totalGasLimit = destinationGasLimit + BASE_GAS_LIMIT;
+
+    (uint256 maxSubmission, uint256 maxRedemption) = getRequiredGas(data.length, totalGasLimit);
     uint256 ticketID = _forwardMessage(
       MessageInformation({
         receiver: receiver,
-        destinationGasLimit: destinationGasLimit,
+        destinationGasLimit: totalGasLimit,
         encodedMessage: data,
         maxSubmission: maxSubmission,
         maxRedemption: maxRedemption
