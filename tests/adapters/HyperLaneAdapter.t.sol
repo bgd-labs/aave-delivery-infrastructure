@@ -18,6 +18,7 @@ contract HyperLaneAdapterTest is Test {
   address public constant ADDRESS_WITH_ETH = address(12301234);
 
   uint256 public constant ORIGIN_HL_CHAIN_ID = ChainIds.ETHEREUM;
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   HyperLaneAdapter public hlAdapter;
 
@@ -34,7 +35,13 @@ contract HyperLaneAdapterTest is Test {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    hlAdapter = new HyperLaneAdapter(CROSS_CHAIN_CONTROLLER, MAIL_BOX, IGP, originConfigs);
+    hlAdapter = new HyperLaneAdapter(
+      CROSS_CHAIN_CONTROLLER,
+      MAIL_BOX,
+      IGP,
+      BASE_GAS_LIMIT,
+      originConfigs
+    );
   }
 
   function testInitialize() public {
@@ -67,7 +74,7 @@ contract HyperLaneAdapterTest is Test {
       abi.encodeWithSelector(
         IInterchainGasPaymaster.quoteGasPayment.selector,
         nativeChainId,
-        dstGasLimit
+        dstGasLimit + BASE_GAS_LIMIT
       ),
       abi.encode(10)
     );
@@ -78,7 +85,7 @@ contract HyperLaneAdapterTest is Test {
         IInterchainGasPaymaster.payForGas.selector,
         messageId,
         nativeChainId,
-        dstGasLimit,
+        dstGasLimit + BASE_GAS_LIMIT,
         ADDRESS_WITH_ETH
       ),
       abi.encode()

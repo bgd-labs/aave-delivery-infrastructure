@@ -14,8 +14,9 @@ contract PolygonAdapterMumbai is PolygonAdapterBase {
   constructor(
     address crossChainController,
     address fxTunnel,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) PolygonAdapterBase(crossChainController, fxTunnel, trustedRemotes) {}
+  ) PolygonAdapterBase(crossChainController, fxTunnel, baseGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IPolygonAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
@@ -37,8 +38,9 @@ contract PolygonAdapterGoerli is PolygonAdapterBase {
   constructor(
     address crossChainController,
     address fxTunnel,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) PolygonAdapterBase(crossChainController, fxTunnel, trustedRemotes) {}
+  ) PolygonAdapterBase(crossChainController, fxTunnel, baseGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IPolygonAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {

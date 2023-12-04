@@ -8,8 +8,9 @@ contract ZkEVMAdapterGoerli is ZkEVMAdapter {
   constructor(
     address crossChainController,
     address zkEVMBridge,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) ZkEVMAdapter(crossChainController, zkEVMBridge, trustedRemotes) {}
+  ) ZkEVMAdapter(crossChainController, zkEVMBridge, baseGasLimit, trustedRemotes) {}
 
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
     return chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI;
@@ -38,8 +39,9 @@ contract ZkEVMAdapterZkEVMGoerli is ZkEVMAdapter {
   constructor(
     address crossChainController,
     address zkEVMBridge,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) ZkEVMAdapter(crossChainController, zkEVMBridge, trustedRemotes) {}
+  ) ZkEVMAdapter(crossChainController, zkEVMBridge, baseGasLimit, trustedRemotes) {}
 
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
     return chainId == TestNetChainIds.ETHEREUM_GOERLI;

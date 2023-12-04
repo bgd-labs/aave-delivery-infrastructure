@@ -18,8 +18,11 @@ contract GnosisChainAdapterTestnet is GnosisChainAdapter {
   constructor(
     address crossChainController,
     address arbitraryMessageBridge,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) GnosisChainAdapter(crossChainController, arbitraryMessageBridge, trustedRemotes) {}
+  )
+    GnosisChainAdapter(crossChainController, arbitraryMessageBridge, baseGasLimit, trustedRemotes)
+  {}
 
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
     return chainId == TestNetChainIds.GNOSIS_CHIADO;

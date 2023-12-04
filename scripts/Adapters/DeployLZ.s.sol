@@ -18,11 +18,21 @@ abstract contract BaseLZAdapter is BaseAdapterScript {
     address lzAdapter;
     if (isTestNet()) {
       lzAdapter = address(
-        new LayerZeroAdapterTestnet(LZ_ENDPOINT(), addresses.crossChainController, trustedRemotes)
+        new LayerZeroAdapterTestnet(
+          LZ_ENDPOINT(),
+          addresses.crossChainController,
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     } else {
       lzAdapter = address(
-        new LayerZeroAdapter(LZ_ENDPOINT(), addresses.crossChainController, trustedRemotes)
+        new LayerZeroAdapter(
+          LZ_ENDPOINT(),
+          addresses.crossChainController,
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     }
     addresses.lzAdapter = lzAdapter;

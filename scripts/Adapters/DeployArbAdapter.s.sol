@@ -14,6 +14,10 @@ abstract contract BaseArbAdapter is BaseAdapterScript {
     return false;
   }
 
+  function GET_BASE_GAS_LIMIT() public view virtual override returns (uint256) {
+    return 150_000;
+  }
+
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
@@ -24,12 +28,19 @@ abstract contract BaseArbAdapter is BaseAdapterScript {
           addresses.crossChainController,
           INBOX(),
           DESTINATION_CCC(),
+          GET_BASE_GAS_LIMIT(),
           trustedRemotes
         )
       );
     } else {
       addresses.arbAdapter = address(
-        new ArbAdapter(addresses.crossChainController, INBOX(), DESTINATION_CCC(), trustedRemotes)
+        new ArbAdapter(
+          addresses.crossChainController,
+          INBOX(),
+          DESTINATION_CCC(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     }
   }

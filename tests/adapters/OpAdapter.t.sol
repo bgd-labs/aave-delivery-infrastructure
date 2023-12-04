@@ -16,6 +16,7 @@ contract OpAdapterTest is Test {
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   OpAdapter public opAdapter;
 
@@ -30,7 +31,12 @@ contract OpAdapterTest is Test {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    opAdapter = new OpAdapter(CROSS_CHAIN_CONTROLLER, OVM_CROSS_DOMAIN_MESSENGER, originConfigs);
+    opAdapter = new OpAdapter(
+      CROSS_CHAIN_CONTROLLER,
+      OVM_CROSS_DOMAIN_MESSENGER,
+      BASE_GAS_LIMIT,
+      originConfigs
+    );
   }
 
   function testInitialize() public {
@@ -57,7 +63,7 @@ contract OpAdapterTest is Test {
         ICrossDomainMessenger.sendMessage.selector,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
-        SafeCast.toUint32(dstGasLimit)
+        SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
       ),
       abi.encode()
     );

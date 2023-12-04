@@ -18,11 +18,21 @@ abstract contract BaseCBAdapter is BaseAdapterScript {
   ) internal override {
     if (isTestnet()) {
       addresses.baseAdapter = address(
-        new CBaseAdapterTestnet(addresses.crossChainController, OVM(), trustedRemotes)
+        new CBaseAdapterTestnet(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     } else {
       addresses.baseAdapter = address(
-        new CBaseAdapter(addresses.crossChainController, OVM(), trustedRemotes)
+        new CBaseAdapter(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     }
   }

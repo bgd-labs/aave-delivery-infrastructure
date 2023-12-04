@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {IBaseAdapter} from './IBaseAdapter.sol';
-import {IBaseCrossChainController} from '../interfaces/IBaseCrossChainController.sol';
+import {IBaseAdapter, IBaseCrossChainController} from './IBaseAdapter.sol';
 import {Errors} from '../libs/Errors.sol';
 
 /**

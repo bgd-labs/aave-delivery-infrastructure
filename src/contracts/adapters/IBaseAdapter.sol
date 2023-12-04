@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IBaseCrossChainController} from '../interfaces/IBaseCrossChainController.sol';
+
 /**
  * @title IBaseAdapter
  * @author BGD Labs
@@ -43,7 +45,7 @@ interface IBaseAdapter {
   /**
    * @notice method to get the address of the linked cross chain controller
    */
-  function CROSS_CHAIN_CONTROLLER() external returns (address);
+  function CROSS_CHAIN_CONTROLLER() external returns (IBaseCrossChainController);
 
   /**
    * @notice method to get the base gas limit used by the bridge adapter

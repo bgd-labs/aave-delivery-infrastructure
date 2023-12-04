@@ -29,6 +29,7 @@ contract Ethereum is BaseAdapterScript {
       new ZkEVMAdapterEthereum(
         addresses.crossChainController,
         ZK_EVM_BRIDGE_MAINNET,
+        GET_BASE_GAS_LIMIT(),
         trustedRemotes
       )
     );
@@ -54,6 +55,7 @@ contract Zkevm is BaseAdapterScript {
       new ZkEVMAdapterPolygonZkEVM(
         addresses.crossChainController,
         ZK_EVM_BRIDGE_MAINNET,
+        GET_BASE_GAS_LIMIT(),
         trustedRemotes
       )
     );
@@ -76,7 +78,12 @@ contract Ethereum_testnet is BaseAdapterScript {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.zkevmAdapter = address(
-      new ZkEVMAdapterGoerli(addresses.crossChainController, ZK_EVM_BRIDGE_TESTNET, trustedRemotes)
+      new ZkEVMAdapterGoerli(
+        addresses.crossChainController,
+        ZK_EVM_BRIDGE_TESTNET,
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }
@@ -100,6 +107,7 @@ contract Zkevm_testnet is BaseAdapterScript {
       new ZkEVMAdapterZkEVMGoerli(
         addresses.crossChainController,
         ZK_EVM_BRIDGE_TESTNET,
+        GET_BASE_GAS_LIMIT(),
         trustedRemotes
       )
     );
