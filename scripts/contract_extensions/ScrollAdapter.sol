@@ -27,6 +27,6 @@ contract ScrollAdapterTestnet is ScrollAdapter {
 
   /// @inheritdoc IOpAdapter
   function getOriginChainId() public pure override returns (uint256) {
-    return TestNetChainIds.ETHEREUM_GOERLI;
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
   }
 }
