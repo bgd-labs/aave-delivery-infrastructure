@@ -92,6 +92,9 @@ deploy-base-adapters:
 deploy-gnosis-adapters:
 	$(call deploy_fn,Adapters/DeployGnosisChain,ethereum gnosis)
 
+deploy-scroll-adapters:
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
+
 deploy-zkevm-adapters:
 	$(call deploy_fn,Adapters/DeployZkEVMAdapter,ethereum zkevm)
 
@@ -161,6 +164,9 @@ deploy-hl-bridge-adapters-test:
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
 	$(call deploy_fn,Adapters/DeploySameChainAdapter,ethereum)
+
+deploy-scroll-adapters-test:
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum-testnet scroll-testnet)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
