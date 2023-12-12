@@ -193,3 +193,9 @@ contract Gnosis_testnet is BaseCCCNetworkDeployment {
     return TestNetChainIds.GNOSIS_CHIADO;
   }
 }
+
+contract Scroll_testnet is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+}
