@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 import {ChainIds} from '../../libs/ChainIds.sol';
-import {OpAdapter, IOpAdapter, IBaseAdapter} from '../optimism/OpAdapter.sol';
+import {OpAdapter, IOpAdapter, IBaseAdapter, Errors} from '../optimism/OpAdapter.sol';
+import {IScrollMessenger, IL1MessageQueue} from './interfaces/IScrollMessenger.sol';
 
 /**
  * @title ScrollAdapter
@@ -14,6 +15,10 @@ import {OpAdapter, IOpAdapter, IBaseAdapter} from '../optimism/OpAdapter.sol';
  * @dev note that this adapter inherits from Optimism adapter and overrides supported chain and forwardMessage
  */
 contract ScrollAdapter is OpAdapter {
+  // based on the recommendation of the Scroll team made immutable, because it can't change.
+  // Even if it's a variable on the Messenger side, will become immutable as well in the next update
+  IL1MessageQueue public immutable SCROLL_MESSAGE_QUEUE;
+
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ovmCrossDomainMessenger optimism entry point address
@@ -23,7 +28,35 @@ contract ScrollAdapter is OpAdapter {
     address crossChainController,
     address ovmCrossDomainMessenger,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {}
+  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {
+    SCROLL_MESSAGE_QUEUE = IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).messageQueue();
+  }
+
+  /// @inheritdoc IBaseAdapter
+  function forwardMessage(
+    address receiver,
+    uint256 destinationGasLimit,
+    uint256 destinationChainId,
+    bytes calldata message
+  ) external virtual override returns (address, uint256) {
+    require(
+      isDestinationChainIdSupported(destinationChainId),
+      Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED
+    );
+    require(receiver != address(0), Errors.RECEIVER_NOT_SET);
+
+    // L2 message delivery fee
+    uint256 fee = SCROLL_MESSAGE_QUEUE.estimateCrossDomainMessageFee(destinationGasLimit);
+
+    IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).sendMessage{value: fee}(
+      receiver,
+      fee,
+      abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
+      destinationGasLimit
+    );
+
+    return (OVM_CROSS_DOMAIN_MESSENGER, 0);
+  }
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(
