@@ -33,7 +33,7 @@ custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/
 define deploy_single_fn
 forge script \
  scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
- --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify --slow -vvvv \
+ --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --legacy --verify --slow -vvvv \
  $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
  $(custom_$(if $(PROD),$(2),$(2)-testnet))
 
@@ -143,11 +143,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,zkevm)
+	$(call deploy_fn,InitialDeployments,scroll)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,avalanche base)
+	$(call deploy_fn,CCC/Deploy_CCC,scroll)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -166,7 +166,7 @@ deploy-same-chain-adapters-test:
 	$(call deploy_fn,Adapters/DeploySameChainAdapter,ethereum)
 
 deploy-scroll-adapters-test:
-	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum-testnet scroll-testnet)
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:

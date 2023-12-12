@@ -38,6 +38,7 @@ library DeployerHelpers {
     address proxyFactory;
     address sameChainAdapter;
     address zkevmAdapter;
+    address scrollAdapter;
   }
 
   function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
@@ -61,6 +62,8 @@ library DeployerHelpers {
       return './deployments/cc/mainnet/zkevm.json';
     } else if (chainId == ChainIds.GNOSIS) {
       return './deployments/cc/mainnet/gnosis.json';
+    } else if (chainId == ChainIds.SCROLL) {
+      return './deployments/cc/mainnet/scroll.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
@@ -84,6 +87,8 @@ library DeployerHelpers {
       return './deployments/cc/testnet/zkevm_go.json';
     } else if (chainId == TestNetChainIds.GNOSIS_CHIADO) {
       return './deployments/cc/testnet/gno_chiado.json';
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return './deployments/cc/testnet/scroll_sepolia.json';
     } else {
       revert('chain id is not supported');
     }
@@ -117,7 +122,8 @@ library DeployerHelpers {
       mockDestination: abi.decode(persistedJson.parseRaw('.mockDestination'), (address)),
       baseAdapter: abi.decode(persistedJson.parseRaw('.baseAdapter'), (address)),
       zkevmAdapter: abi.decode(persistedJson.parseRaw('.zkevmAdapter'), (address)),
-      gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address))
+      gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address)),
+      scrollAdapter: abi.decode(persistedJson.parseRaw('.scrollAdapter'), (address))
     });
 
     return addresses;
@@ -146,7 +152,8 @@ library DeployerHelpers {
     json.serialize('proxyAdmin', addresses.proxyAdmin);
     json.serialize('proxyFactory', addresses.proxyFactory);
     json.serialize('sameChainAdapter', addresses.sameChainAdapter);
-    json = json.serialize('zkevmAdapter', addresses.zkevmAdapter);
+    json.serialize('zkevmAdapter', addresses.zkevmAdapter);
+    json = json.serialize('scrollAdapter', addresses.zkevmAdapter);
     vm.writeJson(json, path);
   }
 }
