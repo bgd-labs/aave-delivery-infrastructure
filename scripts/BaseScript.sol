@@ -37,8 +37,8 @@ library DeployerHelpers {
     address proxyAdmin;
     address proxyFactory;
     address sameChainAdapter;
-    address zkevmAdapter;
     address scrollAdapter;
+    address zkevmAdapter;
   }
 
   function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
@@ -152,8 +152,8 @@ library DeployerHelpers {
     json.serialize('proxyAdmin', addresses.proxyAdmin);
     json.serialize('proxyFactory', addresses.proxyFactory);
     json.serialize('sameChainAdapter', addresses.sameChainAdapter);
-    json.serialize('zkevmAdapter', addresses.zkevmAdapter);
-    json = json.serialize('scrollAdapter', addresses.zkevmAdapter);
+    json.serialize('scrollAdapter', addresses.scrollAdapter);
+    json = json.serialize('zkevmAdapter', addresses.zkevmAdapter);
     vm.writeJson(json, path);
   }
 }
