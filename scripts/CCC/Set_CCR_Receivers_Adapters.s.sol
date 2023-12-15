@@ -405,3 +405,25 @@ contract Gnosis_testnet is BaseSetCCRAdapters {
     return receiverBridgeAdaptersToAllow;
   }
 }
+
+contract Scroll_testnet is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    receiverBridgeAdaptersToAllow[0] = addresses.scrollAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
+}

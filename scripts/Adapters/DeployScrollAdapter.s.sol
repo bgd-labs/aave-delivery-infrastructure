@@ -17,11 +17,11 @@ abstract contract BaseScrollAdapter is BaseAdapterScript {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     if (isTestnet()) {
-      addresses.metisAdapter = address(
+      addresses.scrollAdapter = address(
         new ScrollAdapterTestnet(addresses.crossChainController, OVM(), trustedRemotes)
       );
     } else {
-      addresses.metisAdapter = address(
+      addresses.scrollAdapter = address(
         new ScrollAdapter(addresses.crossChainController, OVM(), trustedRemotes)
       );
     }

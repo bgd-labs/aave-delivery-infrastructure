@@ -4,7 +4,7 @@ pragma solidity ^0.8.16;
 import {IL1MessageQueue} from './IL1MessageQueue.sol';
 
 interface IScrollMessenger {
-  function messageQueue() external view returns (IL1MessageQueue);
+  function messageQueue() external view returns (address);
 
   /*****************************
    * Public Mutating Functions *

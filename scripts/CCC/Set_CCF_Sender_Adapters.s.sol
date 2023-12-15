@@ -241,70 +241,70 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
   ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        10
+        1
       );
 
-    // polygon path
-    DeployerHelpers.Addresses memory addressesPolygon = _getAddresses(
-      TestNetChainIds.POLYGON_MUMBAI
+    // scroll sepolia path
+    DeployerHelpers.Addresses memory addressesScrollSepolia = _getAddresses(
+      TestNetChainIds.SCROLL_SEPOLIA
     );
 
     bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: addressesPolygon.ccipAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: addressesPolygon.lzAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesPolygon.hlAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
-
-    //     avalanche path
-    DeployerHelpers.Addresses memory addressesAvax = _getAddresses(TestNetChainIds.AVALANCHE_FUJI);
-
-    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: addressesAvax.ccipAdapter,
-      destinationChainId: addressesAvax.chainId
-    });
-    bridgeAdaptersToEnable[4] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: addressesAvax.lzAdapter,
-      destinationChainId: addressesAvax.chainId
-    });
-    bridgeAdaptersToEnable[5] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesAvax.hlAdapter,
-      destinationChainId: addressesAvax.chainId
-    });
-
-    // binance path
-    DeployerHelpers.Addresses memory addressesBNB = _getAddresses(TestNetChainIds.BNB_TESTNET);
-
-    bridgeAdaptersToEnable[6] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: addressesBNB.lzAdapter,
-      destinationChainId: addressesBNB.chainId
-    });
-    bridgeAdaptersToEnable[7] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesBNB.hlAdapter,
-      destinationChainId: addressesBNB.chainId
-    });
-
-    // gnosis path
-    DeployerHelpers.Addresses memory addressesGnosis = _getAddresses(TestNetChainIds.GNOSIS_CHIADO);
-
-    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.gnosisAdapter,
-      destinationBridgeAdapter: addressesGnosis.gnosisAdapter,
-      destinationChainId: addressesGnosis.chainId
+      currentChainBridgeAdapter: addresses.scrollAdapter,
+      destinationBridgeAdapter: addressesScrollSepolia.scrollAdapter,
+      destinationChainId: addressesScrollSepolia.chainId
+      //    });
+      //    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.lzAdapter,
+      //      destinationBridgeAdapter: addressesPolygon.lzAdapter,
+      //      destinationChainId: addressesPolygon.chainId
+      //    });
+      //    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.hlAdapter,
+      //      destinationBridgeAdapter: addressesPolygon.hlAdapter,
+      //      destinationChainId: addressesPolygon.chainId
+      //    });
+      //
+      //    //     avalanche path
+      //    DeployerHelpers.Addresses memory addressesAvax = _getAddresses(TestNetChainIds.AVALANCHE_FUJI);
+      //
+      //    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.ccipAdapter,
+      //      destinationBridgeAdapter: addressesAvax.ccipAdapter,
+      //      destinationChainId: addressesAvax.chainId
+      //    });
+      //    bridgeAdaptersToEnable[4] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.lzAdapter,
+      //      destinationBridgeAdapter: addressesAvax.lzAdapter,
+      //      destinationChainId: addressesAvax.chainId
+      //    });
+      //    bridgeAdaptersToEnable[5] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.hlAdapter,
+      //      destinationBridgeAdapter: addressesAvax.hlAdapter,
+      //      destinationChainId: addressesAvax.chainId
+      //    });
+      //
+      //    // binance path
+      //    DeployerHelpers.Addresses memory addressesBNB = _getAddresses(TestNetChainIds.BNB_TESTNET);
+      //
+      //    bridgeAdaptersToEnable[6] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.lzAdapter,
+      //      destinationBridgeAdapter: addressesBNB.lzAdapter,
+      //      destinationChainId: addressesBNB.chainId
+      //    });
+      //    bridgeAdaptersToEnable[7] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.hlAdapter,
+      //      destinationBridgeAdapter: addressesBNB.hlAdapter,
+      //      destinationChainId: addressesBNB.chainId
+      //    });
+      //
+      //    // gnosis path
+      //    DeployerHelpers.Addresses memory addressesGnosis = _getAddresses(TestNetChainIds.GNOSIS_CHIADO);
+      //
+      //    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      //      currentChainBridgeAdapter: addresses.gnosisAdapter,
+      //      destinationBridgeAdapter: addressesGnosis.gnosisAdapter,
+      //      destinationChainId: addressesGnosis.chainId
     });
 
     //     rollups
@@ -335,12 +335,12 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
     //      destinationChainId: addressesBase.chainId
     //    });
 
-    // same chain path
-    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.sameChainAdapter,
-      destinationBridgeAdapter: addresses.sameChainAdapter,
-      destinationChainId: addresses.chainId
-    });
+    //     same chain path
+    //    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //      currentChainBridgeAdapter: addresses.sameChainAdapter,
+    //      destinationBridgeAdapter: addresses.sameChainAdapter,
+    //      destinationChainId: addresses.chainId
+    //    });
     return bridgeAdaptersToEnable;
   }
 }

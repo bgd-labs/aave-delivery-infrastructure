@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
+import 'forge-std/Script.sol';
 
 import {ChainIds} from '../../libs/ChainIds.sol';
 import {OpAdapter, IOpAdapter, IBaseAdapter, Errors} from '../optimism/OpAdapter.sol';
@@ -29,7 +30,10 @@ contract ScrollAdapter is OpAdapter {
     address ovmCrossDomainMessenger,
     TrustedRemotesConfig[] memory trustedRemotes
   ) OpAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {
-    SCROLL_MESSAGE_QUEUE = IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).messageQueue();
+    console2.log(IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).messageQueue());
+    SCROLL_MESSAGE_QUEUE = IL1MessageQueue(
+      IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).messageQueue()
+    );
   }
 
   /// @inheritdoc IBaseAdapter
@@ -50,7 +54,7 @@ contract ScrollAdapter is OpAdapter {
 
     IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).sendMessage{value: fee}(
       receiver,
-      fee,
+      0,
       abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
       destinationGasLimit
     );
