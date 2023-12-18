@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {EmergencyRegistry} from '../src/contracts/emergency/EmergencyRegistry.sol';
 import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
-import './BaseScript.sol';
+import './BaseScriptV2.sol';
 
 abstract contract BaseDeployEmergencyMode is BaseScript {
   function getOwner() public view virtual returns (address) {
@@ -17,7 +17,7 @@ abstract contract BaseDeployEmergencyMode is BaseScript {
 }
 
 contract Ethereum_testnet is BaseDeployEmergencyMode {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ETHEREUM_SEPOLIA;
-  }
+//  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+//    return TestNetChainIds.ETHEREUM_SEPOLIA;
+//  }
 }

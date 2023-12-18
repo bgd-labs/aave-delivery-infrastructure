@@ -38,7 +38,7 @@ contract Ethereum_testnet is BaseSendMessage {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
   }
 
-  function DESTINATION_NETWORK() public pure virtual returns (uint256) {
+  function DESTINATION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.SCROLL_SEPOLIA;
   }
 }

@@ -32,7 +32,7 @@ custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 #  to use ledger, set LEDGER=true to env
 #  default to testnet deployment, to run production, set PROD=true to env
 define deploy_single_fn
-forge script \
+IS_TESTNET=$(if $(PROD),false,true) NETWORK=$(2) forge script \
  scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
  --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify --slow -vvvv \
  $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
@@ -223,3 +223,11 @@ deploy_mock_ccc:
 
 send-message-via-adapter:
 	$(call deploy_fn,helpers/Send_Message_Via_Adapter,ethereum)
+
+
+send-message-ccc:
+	@$(call deploy_fn,CCC/SendMessage,ethereum)
+
+
+remove-adapters-custom:
+	@$(call deploy_fn,CCC/Remove_CCF_Sender_Adapters,ethereum scroll)
