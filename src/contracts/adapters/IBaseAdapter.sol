@@ -29,15 +29,15 @@ interface IBaseAdapter {
   /**
    * @notice method that will bridge the payload to the chain specified
    * @param receiver address of the receiver contract on destination chain
-   * @param gasLimit amount of the gas limit in wei to use for bridging on receiver side. Each adapter will manage this
-            as needed
+   * @param messageDeliveryGasLimit amount of the gas limit in wei to use for delivering the message on destination network.
+            Each adapter will manage this as needed.
    * @param destinationChainId id of the destination chain in the bridge notation
    * @param message to send to the specified chain
    * @return the third-party bridge entrypoint, the third-party bridge message id
    */
   function forwardMessage(
     address receiver,
-    uint256 gasLimit,
+    uint256 messageDeliveryGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256);

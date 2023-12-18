@@ -60,7 +60,7 @@ contract ArbAdapter is IArbAdapter, BaseAdapter {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 destinationGasLimit,
+    uint256 messageDeliveryGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
@@ -72,13 +72,13 @@ contract ArbAdapter is IArbAdapter, BaseAdapter {
 
     bytes memory data = abi.encodeWithSelector(IArbAdapter.arbReceive.selector, message);
 
-    uint256 totalGasLimit = destinationGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
 
     (uint256 maxSubmission, uint256 maxRedemption) = getRequiredGas(data.length, totalGasLimit);
     uint256 ticketID = _forwardMessage(
       MessageInformation({
         receiver: receiver,
-        destinationGasLimit: totalGasLimit,
+        messageDeliveryGasLimit: totalGasLimit,
         encodedMessage: data,
         maxSubmission: maxSubmission,
         maxRedemption: maxRedemption
@@ -136,7 +136,7 @@ contract ArbAdapter is IArbAdapter, BaseAdapter {
         message.maxSubmission,
         DESTINATION_CCC,
         DESTINATION_CCC,
-        message.destinationGasLimit,
+        message.messageDeliveryGasLimit,
         L2_MAX_FEE_PER_GAS,
         message.encodedMessage
       );

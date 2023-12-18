@@ -50,7 +50,7 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 destinationGasLimit,
+    uint256 messageDeliveryGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
@@ -64,7 +64,7 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
       message
     );
 
-    uint256 totalGasLimit = destinationGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
 
     // Get the required payment from the IGP.
     uint256 quotedPayment = IGP.quoteGasPayment(nativeChainId, totalGasLimit);

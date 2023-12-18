@@ -67,7 +67,7 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 destinationGasLimit,
+    uint256 messageDeliveryGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
@@ -75,7 +75,7 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
     require(nativeChainId != uint16(0), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    uint256 totalGasLimit = destinationGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
 
     bytes memory adapterParams = abi.encodePacked(VERSION, totalGasLimit);
 
