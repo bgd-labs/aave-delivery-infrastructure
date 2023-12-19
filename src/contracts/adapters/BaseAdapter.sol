@@ -25,18 +25,18 @@ abstract contract BaseAdapter is IBaseAdapter {
 
   /**
    * @param crossChainController address of the CrossChainController the bridged messages will be routed to
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param originConfigs pair of origin address and chain id that adapter is allowed to get messages from
    */
   constructor(
     address crossChainController,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory originConfigs
   ) {
     require(crossChainController != address(0), Errors.INVALID_BASE_ADAPTER_CROSS_CHAIN_CONTROLLER);
     CROSS_CHAIN_CONTROLLER = IBaseCrossChainController(crossChainController);
 
-    BASE_GAS_LIMIT = baseGasLimit;
+    BASE_GAS_LIMIT = providerGasLimit;
 
     _selfAddress = address(this);
 

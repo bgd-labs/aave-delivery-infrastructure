@@ -31,22 +31,22 @@ contract OpAdapter is IOpAdapter, BaseAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ovmCrossDomainMessenger optimism entry point address
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
     OVM_CROSS_DOMAIN_MESSENGER = ovmCrossDomainMessenger;
   }
 
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 messageDeliveryGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external virtual returns (address, uint256) {
@@ -56,7 +56,7 @@ contract OpAdapter is IOpAdapter, BaseAdapter {
     );
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
     ICrossDomainMessenger(OVM_CROSS_DOMAIN_MESSENGER).sendMessage(
       receiver,
