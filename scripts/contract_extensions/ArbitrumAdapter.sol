@@ -18,8 +18,9 @@ contract ArbitrumAdapterTestnet is ArbAdapter {
     address crossChainController,
     address inbox,
     address destinationCCC,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) ArbAdapter(crossChainController, inbox, destinationCCC, trustedRemotes) {}
+  ) ArbAdapter(crossChainController, inbox, destinationCCC, baseGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IArbAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {

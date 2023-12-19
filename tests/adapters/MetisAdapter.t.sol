@@ -17,6 +17,7 @@ contract MetisAdapterTest is Test {
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   MetisAdapter public metisAdapter;
 
@@ -34,6 +35,7 @@ contract MetisAdapterTest is Test {
     metisAdapter = new MetisAdapter(
       CROSS_CHAIN_CONTROLLER,
       OVM_CROSS_DOMAIN_MESSENGER,
+      BASE_GAS_LIMIT,
       originConfigs
     );
   }
@@ -62,7 +64,7 @@ contract MetisAdapterTest is Test {
         ICrossDomainMessenger.sendMessage.selector,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
-        SafeCast.toUint32(dstGasLimit)
+        SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
       ),
       abi.encode()
     );

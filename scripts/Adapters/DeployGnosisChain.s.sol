@@ -32,7 +32,12 @@ contract Ethereum is BaseGnosisChainAdapter {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.gnosisAdapter = address(
-      new GnosisChainAdapter(addresses.crossChainController, GNOSIS_AMB_BRIDGE(), trustedRemotes)
+      new GnosisChainAdapter(
+        addresses.crossChainController,
+        GNOSIS_AMB_BRIDGE(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }
@@ -57,7 +62,12 @@ contract Ethereum_testnet is BaseGnosisChainAdapter {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.gnosisAdapter = address(
-      new GnosisChainAdapter(addresses.crossChainController, GNOSIS_AMB_BRIDGE(), trustedRemotes)
+      new GnosisChainAdapter(
+        addresses.crossChainController,
+        GNOSIS_AMB_BRIDGE(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }
@@ -82,7 +92,12 @@ contract Gnosis is BaseGnosisChainAdapter {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.gnosisAdapter = address(
-      new GnosisChainAdapter(addresses.crossChainController, GNOSIS_AMB_BRIDGE(), trustedRemotes)
+      new GnosisChainAdapter(
+        addresses.crossChainController,
+        GNOSIS_AMB_BRIDGE(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }
@@ -108,7 +123,12 @@ contract Gnosis_testnet is BaseGnosisChainAdapter {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.gnosisAdapter = address(
-      new GnosisChainAdapter(addresses.crossChainController, GNOSIS_AMB_BRIDGE(), trustedRemotes)
+      new GnosisChainAdapter(
+        addresses.crossChainController,
+        GNOSIS_AMB_BRIDGE(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }

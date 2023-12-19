@@ -39,15 +39,17 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ccipRouter ccip entry point address
+   * @param baseGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    * @param linkToken address of the erc20 LINK token
    */
   constructor(
     address crossChainController,
     address ccipRouter,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes,
     address linkToken
-  ) BaseAdapter(crossChainController, trustedRemotes) {
+  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {
     require(ccipRouter != address(0), Errors.CCIP_ROUTER_CANT_BE_ADDRESS_0);
     require(linkToken != address(0), Errors.LINK_TOKEN_CANT_BE_ADDRESS_0);
     CCIP_ROUTER = IRouterClient(ccipRouter);
@@ -64,7 +66,7 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 destinationGasLimit,
+    uint256 messageDeliveryGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
@@ -72,8 +74,10 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
     require(CCIP_ROUTER.isChainSupported(nativeChainId), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
+    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
+
     Client.EVMExtraArgsV1 memory evmExtraArgs = Client.EVMExtraArgsV1({
-      gasLimit: destinationGasLimit,
+      gasLimit: totalGasLimit,
       strict: false
     });
 

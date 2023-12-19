@@ -23,13 +23,20 @@ abstract contract BaseCCIPAdapter is BaseAdapterScript {
         new CCIPAdapterTestnet(
           addresses.crossChainController,
           CCIP_ROUTER(),
+          GET_BASE_GAS_LIMIT(),
           trustedRemotes,
           LINK_TOKEN()
         )
       );
     } else {
       addresses.ccipAdapter = address(
-        new CCIPAdapter(addresses.crossChainController, CCIP_ROUTER(), trustedRemotes, LINK_TOKEN())
+        new CCIPAdapter(
+          addresses.crossChainController,
+          CCIP_ROUTER(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes,
+          LINK_TOKEN()
+        )
       );
     }
   }

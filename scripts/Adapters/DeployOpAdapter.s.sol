@@ -18,11 +18,16 @@ abstract contract BaseOpAdapter is BaseAdapterScript {
   ) internal override {
     if (isTestnet()) {
       addresses.opAdapter = address(
-        new OptimismAdapterTestnet(addresses.crossChainController, OVM(), trustedRemotes)
+        new OptimismAdapterTestnet(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     } else {
       addresses.opAdapter = address(
-        new OpAdapter(addresses.crossChainController, OVM(), trustedRemotes)
+        new OpAdapter(addresses.crossChainController, OVM(), GET_BASE_GAS_LIMIT(), trustedRemotes)
       );
     }
   }

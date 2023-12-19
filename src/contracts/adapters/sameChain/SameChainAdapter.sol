@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {IBaseAdapter} from '../IBaseAdapter.sol';
+import {IBaseAdapter, IBaseCrossChainController} from '../IBaseAdapter.sol';
 import {IBaseReceiverPortal} from '../../interfaces/IBaseReceiverPortal.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {Transaction, Envelope, TransactionUtils} from '../../libs/EncodingUtils.sol';
@@ -14,6 +14,16 @@ import {Transaction, Envelope, TransactionUtils} from '../../libs/EncodingUtils.
            that the message is forwarded to same chain
  */
 contract SameChainAdapter is IBaseAdapter {
+  /// @inheritdoc IBaseAdapter
+  function CROSS_CHAIN_CONTROLLER() external returns (IBaseCrossChainController) {
+    return IBaseCrossChainController(address(0));
+  }
+
+  /// @inheritdoc IBaseAdapter
+  function BASE_GAS_LIMIT() external returns (uint256) {
+    return 0;
+  }
+
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address,

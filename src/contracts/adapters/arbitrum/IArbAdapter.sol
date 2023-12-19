@@ -10,14 +10,14 @@ interface IArbAdapter {
   /**
    * @notice object used to store the message information
    * @param receiver address that will receive the message
-   * @param destinationGasLimit max gas limit to be used on destination chain
+   * @param messageDeliveryGasLimit max gas limit to be used on destination chain
    * @param maxSubmission gas required for ticket submission
    * @param maxRedemption gas required for ticket redemption
    * @param encodedMessage calldata used on destination chain
    */
   struct MessageInformation {
     address receiver;
-    uint256 destinationGasLimit;
+    uint256 messageDeliveryGasLimit;
     uint256 maxSubmission;
     uint256 maxRedemption;
     bytes encodedMessage;
