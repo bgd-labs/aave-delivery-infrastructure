@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IBaseCrossChainController} from '../interfaces/IBaseCrossChainController.sol';
+
 /**
  * @title IBaseAdapter
  * @author BGD Labs
@@ -27,18 +29,28 @@ interface IBaseAdapter {
   /**
    * @notice method that will bridge the payload to the chain specified
    * @param receiver address of the receiver contract on destination chain
-   * @param gasLimit amount of the gas limit in wei to use for bridging on receiver side. Each adapter will manage this
-            as needed
+   * @param messageDeliveryGasLimit amount of the gas limit in wei to use for delivering the message on destination network.
+            Each adapter will manage this as needed.
    * @param destinationChainId id of the destination chain in the bridge notation
    * @param message to send to the specified chain
    * @return the third-party bridge entrypoint, the third-party bridge message id
    */
   function forwardMessage(
     address receiver,
-    uint256 gasLimit,
+    uint256 messageDeliveryGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256);
+
+  /**
+   * @notice method to get the address of the linked cross chain controller
+   */
+  function CROSS_CHAIN_CONTROLLER() external returns (IBaseCrossChainController);
+
+  /**
+   * @notice method to get the base gas limit used by the bridge adapter
+   */
+  function BASE_GAS_LIMIT() external returns (uint256);
 
   /**
    * @notice method used to setup payment, ie grant approvals over tokens used to pay for tx fees

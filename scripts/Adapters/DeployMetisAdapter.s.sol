@@ -12,17 +12,31 @@ abstract contract BaseMetisAdapter is BaseAdapterScript {
     return false;
   }
 
+  function GET_BASE_GAS_LIMIT() public view virtual override returns (uint256) {
+    return 150_000;
+  }
+
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     if (isTestnet()) {
       addresses.metisAdapter = address(
-        new MetisAdapterTestnet(addresses.crossChainController, OVM(), trustedRemotes)
+        new MetisAdapterTestnet(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     } else {
       addresses.metisAdapter = address(
-        new MetisAdapter(addresses.crossChainController, OVM(), trustedRemotes)
+        new MetisAdapter(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     }
   }

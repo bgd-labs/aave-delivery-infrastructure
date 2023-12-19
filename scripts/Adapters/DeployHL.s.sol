@@ -14,7 +14,13 @@ abstract contract BaseHLAdapter is BaseAdapterScript {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.hlAdapter = address(
-      new HyperLaneAdapter(addresses.crossChainController, HL_MAIL_BOX(), HL_IGP(), trustedRemotes)
+      new HyperLaneAdapter(
+        addresses.crossChainController,
+        HL_MAIL_BOX(),
+        HL_IGP(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }

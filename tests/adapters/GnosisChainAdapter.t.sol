@@ -19,6 +19,8 @@ contract GnosisChainAdapterTest is Test {
 
   GnosisChainAdapter public gnosisChainAdapter;
 
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
+
   IBaseAdapter.TrustedRemotesConfig internal originConfig =
     IBaseAdapter.TrustedRemotesConfig({
       originForwarder: ORIGIN_FORWARDER,
@@ -33,6 +35,7 @@ contract GnosisChainAdapterTest is Test {
     gnosisChainAdapter = new GnosisChainAdapter(
       CROSS_CHAIN_CONTROLLER,
       GNOSIS_AMB_BRIDGE,
+      BASE_GAS_LIMIT,
       originConfigs
     );
   }
@@ -54,6 +57,7 @@ contract GnosisChainAdapterTest is Test {
     gnosisChainAdapter = new GnosisChainAdapter(
       CROSS_CHAIN_CONTROLLER,
       address(0),
+      BASE_GAS_LIMIT,
       new IBaseAdapter.TrustedRemotesConfig[](0)
     );
   }
@@ -70,7 +74,7 @@ contract GnosisChainAdapterTest is Test {
         IArbitraryMessageBridge.requireToPassMessage.selector,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         abi.encodeWithSelector(IGnosisChainAdapter.receiveMessage.selector, message),
-        dstGasLimit
+        dstGasLimit + BASE_GAS_LIMIT
       ),
       abi.encode(bytes32(uint256(uint160(RECEIVER_CROSS_CHAIN_CONTROLLER))))
     );

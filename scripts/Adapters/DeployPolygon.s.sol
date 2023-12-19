@@ -31,7 +31,12 @@ contract Ethereum is BasePolygonAdapter {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.polAdapter = address(
-      new PolygonAdapterEthereum(addresses.crossChainController, FX_TUNNEL(), trustedRemotes)
+      new PolygonAdapterEthereum(
+        addresses.crossChainController,
+        FX_TUNNEL(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }
@@ -58,7 +63,12 @@ contract Polygon is BasePolygonAdapter {
     console2.log(addresses.crossChainController);
 
     addresses.polAdapter = address(
-      new PolygonAdapterPolygon(addresses.crossChainController, FX_TUNNEL(), trustedRemotes)
+      new PolygonAdapterPolygon(
+        addresses.crossChainController,
+        FX_TUNNEL(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }
@@ -82,7 +92,12 @@ contract Ethereum_testnet is BasePolygonAdapter {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.polAdapter = address(
-      new PolygonAdapterGoerli(addresses.crossChainController, FX_TUNNEL(), trustedRemotes)
+      new PolygonAdapterGoerli(
+        addresses.crossChainController,
+        FX_TUNNEL(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }
@@ -106,7 +121,12 @@ contract Polygon_testnet is BasePolygonAdapter {
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     addresses.polAdapter = address(
-      new PolygonAdapterMumbai(addresses.crossChainController, FX_TUNNEL(), trustedRemotes)
+      new PolygonAdapterMumbai(
+        addresses.crossChainController,
+        FX_TUNNEL(),
+        GET_BASE_GAS_LIMIT(),
+        trustedRemotes
+      )
     );
   }
 }

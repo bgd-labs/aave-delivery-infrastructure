@@ -65,7 +65,7 @@ contract CrossChainForwarderTest is BaseTest {
       memory originConfigs = new LayerZeroAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    lzAdapter = new LayerZeroAdapter(LZ_ENDPOINT, address(crossChainForwarder), originConfigs);
+    lzAdapter = new LayerZeroAdapter(LZ_ENDPOINT, address(crossChainForwarder), 0, originConfigs);
 
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToAllow = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](

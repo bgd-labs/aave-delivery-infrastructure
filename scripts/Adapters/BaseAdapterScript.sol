@@ -7,6 +7,10 @@ import '../../src/contracts/adapters/IBaseAdapter.sol';
 abstract contract BaseAdapterScript is BaseScript {
   function REMOTE_NETWORKS() public view virtual returns (uint256[] memory);
 
+  function GET_BASE_GAS_LIMIT() public view virtual returns (uint256) {
+    return 0;
+  }
+
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
