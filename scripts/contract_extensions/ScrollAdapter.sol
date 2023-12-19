@@ -17,8 +17,9 @@ contract ScrollAdapterTestnet is ScrollAdapter {
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
+    uint256 baseGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) ScrollAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {}
+  ) ScrollAdapter(crossChainController, ovmCrossDomainMessenger, baseGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {

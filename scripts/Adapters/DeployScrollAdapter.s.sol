@@ -12,17 +12,31 @@ abstract contract BaseScrollAdapter is BaseAdapterScript {
     return false;
   }
 
+  function GET_BASE_GAS_LIMIT() public view virtual override returns (uint256) {
+    return 150_000;
+  }
+
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     if (isTestnet()) {
       addresses.scrollAdapter = address(
-        new ScrollAdapterTestnet(addresses.crossChainController, OVM(), trustedRemotes)
+        new ScrollAdapterTestnet(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     } else {
       addresses.scrollAdapter = address(
-        new ScrollAdapter(addresses.crossChainController, OVM(), trustedRemotes)
+        new ScrollAdapter(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
       );
     }
   }

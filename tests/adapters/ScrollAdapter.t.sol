@@ -18,6 +18,7 @@ contract ScrollAdapterTest is Test {
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
   address public constant SCROLL_MESSAGE_QUEUE = address(12487159);
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   ScrollAdapter public scrollAdapter;
 
@@ -40,6 +41,7 @@ contract ScrollAdapterTest is Test {
     scrollAdapter = new ScrollAdapter(
       CROSS_CHAIN_CONTROLLER,
       OVM_CROSS_DOMAIN_MESSENGER,
+      BASE_GAS_LIMIT,
       originConfigs
     );
     vm.clearMockedCalls();
@@ -66,7 +68,10 @@ contract ScrollAdapterTest is Test {
     hoax(ADDRESS_WITH_ETH, 10 ether);
     vm.mockCall(
       SCROLL_MESSAGE_QUEUE,
-      abi.encodeWithSelector(IL1MessageQueue.estimateCrossDomainMessageFee.selector, dstGasLimit),
+      abi.encodeWithSelector(
+        IL1MessageQueue.estimateCrossDomainMessageFee.selector,
+        dstGasLimit + BASE_GAS_LIMIT
+      ),
       abi.encode(fee)
     );
     vm.mockCall(
@@ -76,7 +81,7 @@ contract ScrollAdapterTest is Test {
         ICrossDomainMessenger.sendMessage.selector,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
-        SafeCast.toUint32(dstGasLimit)
+        SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
       ),
       abi.encode()
     );
