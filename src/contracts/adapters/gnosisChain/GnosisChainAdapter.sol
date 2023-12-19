@@ -38,7 +38,7 @@ contract GnosisChainAdapter is BaseAdapter, IGnosisChainAdapter {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 messageDeliveryGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external override returns (address, uint256) {
@@ -50,7 +50,7 @@ contract GnosisChainAdapter is BaseAdapter, IGnosisChainAdapter {
 
     bytes memory data = abi.encodeWithSelector(this.receiveMessage.selector, message);
 
-    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
     IArbitraryMessageBridge(BRIDGE).requireToPassMessage(receiver, data, totalGasLimit);
     return (address(BRIDGE), 0);

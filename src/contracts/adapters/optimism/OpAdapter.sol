@@ -46,7 +46,7 @@ contract OpAdapter is IOpAdapter, BaseAdapter {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 messageDeliveryGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external virtual returns (address, uint256) {
@@ -56,7 +56,7 @@ contract OpAdapter is IOpAdapter, BaseAdapter {
     );
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
     ICrossDomainMessenger(OVM_CROSS_DOMAIN_MESSENGER).sendMessage(
       receiver,
