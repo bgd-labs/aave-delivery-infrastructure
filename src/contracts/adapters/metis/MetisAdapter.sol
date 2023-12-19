@@ -19,15 +19,15 @@ contract MetisAdapter is OpAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ovmCrossDomainMessenger optimism entry point address
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, baseGasLimit, trustedRemotes) {}
+  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, providerGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(
@@ -44,7 +44,7 @@ contract MetisAdapter is OpAdapter {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 messageDeliveryGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external override returns (address, uint256) {
@@ -54,7 +54,7 @@ contract MetisAdapter is OpAdapter {
     );
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
     ICrossDomainMessenger(OVM_CROSS_DOMAIN_MESSENGER).sendMessageViaChainId(
       destinationChainId,

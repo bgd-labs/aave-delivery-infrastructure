@@ -22,15 +22,15 @@ contract GnosisChainAdapter is BaseAdapter, IGnosisChainAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param arbitraryMessageBridge The Gnosis AMB contract
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address arbitraryMessageBridge,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
     require(arbitraryMessageBridge != address(0), Errors.ZERO_GNOSIS_ARBITRARY_MESSAGE_BRIDGE);
     BRIDGE = arbitraryMessageBridge;
   }
@@ -38,7 +38,7 @@ contract GnosisChainAdapter is BaseAdapter, IGnosisChainAdapter {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 messageDeliveryGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external override returns (address, uint256) {
@@ -50,7 +50,7 @@ contract GnosisChainAdapter is BaseAdapter, IGnosisChainAdapter {
 
     bytes memory data = abi.encodeWithSelector(this.receiveMessage.selector, message);
 
-    uint256 totalGasLimit = messageDeliveryGasLimit + BASE_GAS_LIMIT;
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
     IArbitraryMessageBridge(BRIDGE).requireToPassMessage(receiver, data, totalGasLimit);
     return (address(BRIDGE), 0);

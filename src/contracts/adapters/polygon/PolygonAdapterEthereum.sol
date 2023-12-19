@@ -8,9 +8,9 @@ contract PolygonAdapterEthereum is PolygonAdapterBase {
   constructor(
     address crossChainController,
     address fxTunnel,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) PolygonAdapterBase(crossChainController, fxTunnel, baseGasLimit, trustedRemotes) {}
+  ) PolygonAdapterBase(crossChainController, fxTunnel, providerGasLimit, trustedRemotes) {}
 
   // Overrides to use the Polygon chain id, which is Ethereum's origin
   function getOriginChainId() public pure override returns (uint256) {

@@ -8,9 +8,9 @@ import {Errors} from '../../src/contracts/libs/Errors.sol';
 contract MockAdapter is BaseAdapter {
   constructor(
     address crossChainController,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {}
+  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {}
 
   function forwardMessage(
     address,

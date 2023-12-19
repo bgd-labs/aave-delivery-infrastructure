@@ -17,9 +17,9 @@ contract CBaseAdapterTestnet is CBaseAdapter {
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) CBaseAdapter(crossChainController, ovmCrossDomainMessenger, baseGasLimit, trustedRemotes) {}
+  ) CBaseAdapter(crossChainController, ovmCrossDomainMessenger, providerGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
