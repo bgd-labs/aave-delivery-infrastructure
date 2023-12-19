@@ -32,16 +32,16 @@ contract ArbAdapter is IArbAdapter, BaseAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param inbox arbitrum entry point address
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address inbox,
     address destinationCCC,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
     INBOX = inbox;
     DESTINATION_CCC = destinationCCC;
   }

@@ -19,15 +19,15 @@ contract MetisAdapter is OpAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ovmCrossDomainMessenger optimism entry point address
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, baseGasLimit, trustedRemotes) {}
+  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, providerGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(

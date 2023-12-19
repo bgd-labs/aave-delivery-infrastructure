@@ -19,10 +19,10 @@ contract CCIPAdapterTestnet is CCIPAdapter {
   constructor(
     address crossChainController,
     address ccipRouter,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes,
     address linkToken
-  ) CCIPAdapter(crossChainController, ccipRouter, baseGasLimit, trustedRemotes, linkToken) {}
+  ) CCIPAdapter(crossChainController, ccipRouter, providerGasLimit, trustedRemotes, linkToken) {}
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {

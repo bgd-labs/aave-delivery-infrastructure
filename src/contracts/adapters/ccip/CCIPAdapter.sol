@@ -39,17 +39,17 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ccipRouter ccip entry point address
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    * @param linkToken address of the erc20 LINK token
    */
   constructor(
     address crossChainController,
     address ccipRouter,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes,
     address linkToken
-  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
     require(ccipRouter != address(0), Errors.CCIP_ROUTER_CANT_BE_ADDRESS_0);
     require(linkToken != address(0), Errors.LINK_TOKEN_CANT_BE_ADDRESS_0);
     CCIP_ROUTER = IRouterClient(ccipRouter);

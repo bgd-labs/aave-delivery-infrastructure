@@ -26,15 +26,15 @@ abstract contract PolygonAdapterBase is IPolygonAdapter, IFxMessageProcessor, Ba
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param fxTunnel address of the fx tunnel that will be used to send/receive messages to the root/child chain
-   * @param baseGasLimit base gas limit used by the bridge adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address fxTunnel,
-    uint256 baseGasLimit,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, baseGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
     FX_TUNNEL = fxTunnel;
   }
 
