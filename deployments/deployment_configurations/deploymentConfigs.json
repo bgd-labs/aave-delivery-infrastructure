@@ -1,0 +1,61 @@
+{
+  "configs": [
+    {
+      "chainId": 1,
+      "adapters": {
+        "scrollAdapter": {
+          "inbox": "0x0000000000000000000000000000000000000000",
+          "remoteNetworks": []
+        }
+      },
+      "forwarderConnections": [
+        {
+          "destinationChainId": 534352,
+          "scrollAdapter": true
+        }
+      ]
+    },
+    {
+      "adapters": {
+        "arbAdapter": {
+          "inbox": "0x0000000000000000000000000000000000000000",
+          "remoteNetworks": [
+            {
+              "name": "ethereum",
+              "chainId": 1
+            }
+          ]
+        }
+      },
+      "ccc": {
+        "approvedSenders": [],
+        "clEmergencyOracle": "0x0000000000000000000000000000000000000000",
+        "confirmations": 1,
+        "ethFunds": 0.2,
+        "guardian": "0x0000000000000000000000000000000000000000",
+        "owner": "0x0000000000000000000000000000000000000000",
+        "salt": "CrossChainController salt"
+      },
+      "chainId": 534352,
+      "proxies": {
+        "create3": {
+          "salt": "Create3 Factory"
+        },
+        "proxyAdmin": {
+          "deployedAddress": "",
+          "salt": "Proxy Admin salt"
+        },
+        "transparentProxyFactory": {
+          "deployedAddress": "",
+          "salt": "Some salt here"
+        }
+      },
+      "receiverConnections": [
+        {
+          "origin": 1,
+          "adapter": "scrollAdapter"
+        }
+      ]
+    }
+  ]
+}
