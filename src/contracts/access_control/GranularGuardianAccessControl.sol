@@ -1,19 +1,34 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {ICrossChainReceiver} from '../interfaces/ICrossChainReceiver.sol';
 import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
 import {ICrossChainControllerWithEmergencyMode} from '../interfaces/ICrossChainControllerWithEmergencyMode.sol';
-import {Envelope} from '../libs/EncodingUtils.sol';
-//import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
 import {AccessControlEnumerable} from './AccessControlEnumerable.sol';
+import {IGranularGuardianAccessControl, Envelope} from './IGranularGuardianAccessControl.sol';
 
-contract GranularGuardianAccessControl is AccessControlEnumerable {
+//import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
+
+/**
+ * @title GranularGuardianAccessControl
+ * @author BGD Labs
+ * @notice Contract to manage a granular access to the methods safeguarded by guardian on CrossChainController
+ */
+contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuardianAccessControl {
+  /// @inheritdoc IGranularGuardianAccessControl
   address public immutable CROSS_CHAIN_CONTROLLER;
 
+  /// @inheritdoc IGranularGuardianAccessControl
   bytes32 public constant SOLVE_EMERGENCY_ROLE = keccak256('SOLVE_EMERGENCY_ROLE');
+
+  /// @inheritdoc IGranularGuardianAccessControl
   bytes32 public constant RETRY_ROLE = keccak256('RETRY_ROLE');
 
+  /**
+   * @param defaultAdmin address that will have control of the default admin
+   * @param retryGuardian address to be added to the retry role
+   * @param solveEmergencyGuardian address to be added to the solve emergency role
+   * @param crossChainController address of the CrossChainController
+   */
   constructor(
     address defaultAdmin,
     address retryGuardian,
@@ -32,6 +47,7 @@ contract GranularGuardianAccessControl is AccessControlEnumerable {
     _grantRole(RETRY_ROLE, retryGuardian);
   }
 
+  /// @inheritdoc IGranularGuardianAccessControl
   function retryEnvelope(
     Envelope memory envelope,
     uint256 gasLimit
@@ -39,6 +55,7 @@ contract GranularGuardianAccessControl is AccessControlEnumerable {
     return ICrossChainForwarder(CROSS_CHAIN_CONTROLLER).retryEnvelope(envelope, gasLimit);
   }
 
+  /// @inheritdoc IGranularGuardianAccessControl
   function retryTransaction(
     bytes memory encodedTransaction,
     uint256 gasLimit,
@@ -51,6 +68,7 @@ contract GranularGuardianAccessControl is AccessControlEnumerable {
     );
   }
 
+  /// @inheritdoc IGranularGuardianAccessControl
   function solveEmergency(
     ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
     ICrossChainReceiver.ValidityTimestampInput[] memory newValidityTimestamp,

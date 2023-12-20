@@ -2,6 +2,8 @@
 pragma solidity ^0.8.8;
 
 import {Envelope} from '../libs/EncodingUtils.sol';
+import {ICrossChainReceiver} from '../interfaces/ICrossChainReceiver.sol';
+import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
 
 /**
  * @title IGranularGuardianAccessControl
@@ -11,6 +13,7 @@ import {Envelope} from '../libs/EncodingUtils.sol';
 interface IGranularGuardianAccessControl {
   /**
    * @notice method called to re forward a previously sent envelope.
+             This method is only callable by the accounts holding the RETRY_ROLE role
    * @param envelope the Envelope type data
    * @param gasLimit gas cost on receiving side of the message
    * @return the transaction id that has the retried envelope
@@ -22,7 +25,8 @@ interface IGranularGuardianAccessControl {
   function retryEnvelope(Envelope memory envelope, uint256 gasLimit) external returns (bytes32);
 
   /**
-   * @notice method to retry forwarding an already forwarded transaction
+   * @notice method to retry forwarding an already forwarded transaction.
+             This method is only callable by the accounts holding the RETRY_ROLE role
    * @param encodedTransaction the encoded Transaction data
    * @param gasLimit limit of gas to spend on forwarding per bridge
    * @param bridgeAdaptersToRetry list of bridge adapters to be used for the transaction forwarding retry
@@ -35,4 +39,45 @@ interface IGranularGuardianAccessControl {
     uint256 gasLimit,
     address[] memory bridgeAdaptersToRetry
   ) external;
+
+  /**
+   * @notice method to solve an emergency. This method is only callable by the accounts holding the SOLVE_EMERGENCY_ROLE role
+   * @param newConfirmations number of confirmations necessary for a message to be routed to destination
+   * @param newValidityTimestamp timestamp in seconds indicating the point to where not confirmed messages will be
+   *        invalidated.
+   * @param receiverBridgeAdaptersToAllow list of bridge adapter addresses to be allowed to receive messages
+   * @param receiverBridgeAdaptersToDisallow list of bridge adapter addresses to be disallowed
+   * @param sendersToApprove list of addresses to be approved as senders
+   * @param sendersToRemove list of sender addresses to be removed
+   * @param forwarderBridgeAdaptersToEnable list of bridge adapters to be enabled to send messages
+   * @param forwarderBridgeAdaptersToDisable list of bridge adapters to be disabled
+   */
+  function solveEmergency(
+    ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
+    ICrossChainReceiver.ValidityTimestampInput[] memory newValidityTimestamp,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToDisallow,
+    address[] memory sendersToApprove,
+    address[] memory sendersToRemove,
+    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
+    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+  ) external;
+
+  /**
+   * @notice method to get the address of the CrossChainController where the contract points to
+   * @return the address of the CrossChainController
+   */
+  function CROSS_CHAIN_CONTROLLER() external view returns (address);
+
+  /**
+   * @notice method to get the solve emergency role
+   * @return the solve emergency role id
+   */
+  function SOLVE_EMERGENCY_ROLE() external view returns (bytes32);
+
+  /**
+   * @notice method to get the retry role
+   * @return the retry role id
+   */
+  function RETRY_ROLE() external view returns (bytes32);
 }
