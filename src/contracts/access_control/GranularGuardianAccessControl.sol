@@ -5,49 +5,37 @@ import {ICrossChainReceiver} from '../interfaces/ICrossChainReceiver.sol';
 import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
 import {ICrossChainControllerWithEmergencyMode} from '../interfaces/ICrossChainControllerWithEmergencyMode.sol';
 import {Envelope} from '../libs/EncodingUtils.sol';
+//import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
+import {AccessControlEnumerable} from './AccessControlEnumerable.sol';
 
-contract GranularGuardianAccessControl {
+contract GranularGuardianAccessControl is AccessControlEnumerable {
   address public immutable CROSS_CHAIN_CONTROLLER;
 
-  address internal _retryGuardian;
-  address internal _solveEmergencyGuardian;
+  bytes32 public constant SOLVE_EMERGENCY_ROLE = keccak256('SOLVE_EMERGENCY_ROLE');
+  bytes32 public constant RETRY_ROLE = keccak256('RETRY_ROLE');
 
-  event RetryGuardianUpdated(address retryGuardian);
-  event SolveEmergencyGuardianUpdated(address solveEmergencyGuardian);
-
-  modifier onlyRetryGuardian() {
-    require(msg.sender == _retryGuardian, 'NOT_RETRY_GUARDIAN');
-    _;
-  }
-
-  modifier onlySolveEmergencyGuardian() {
-    require(msg.sender == _solveEmergencyGuardian, 'NOT_SOLVE_EMERGENCY_GUARDIAN');
-    _;
-  }
-
-  constructor(address retryGuardian, address solveEmergencyGuardian, address crossChainController) {
+  constructor(
+    address defaultAdmin,
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    address crossChainController
+  ) {
     require(crossChainController != address(0), 'INVALID_CROSS_CHAIN_CONTROLLER');
 
     CROSS_CHAIN_CONTROLLER = crossChainController;
 
-    _updateRetryGuardian(retryGuardian);
-    _updateSolveEmergencyGuardian(solveEmergencyGuardian);
-  }
+    _setupRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+    _setRoleAdmin(SOLVE_EMERGENCY_ROLE, DEFAULT_ADMIN_ROLE);
+    _setRoleAdmin(RETRY_ROLE, DEFAULT_ADMIN_ROLE);
 
-  function updateSolveEmergencyGuardian(
-    address solveEmergencyGuardian
-  ) external onlySolveEmergencyGuardian {
-    _updateSolveEmergencyGuardian(solveEmergencyGuardian);
-  }
-
-  function updateRetryGuardian(address retryGuardian) external onlyRetryGuardian {
-    _updateRetryGuardian(retryGuardian);
+    _grantRole(SOLVE_EMERGENCY_ROLE, solveEmergencyGuardian);
+    _grantRole(RETRY_ROLE, retryGuardian);
   }
 
   function retryEnvelope(
     Envelope memory envelope,
     uint256 gasLimit
-  ) external onlyRetryGuardian returns (bytes32) {
+  ) external onlyRole(RETRY_ROLE) returns (bytes32) {
     return ICrossChainForwarder(CROSS_CHAIN_CONTROLLER).retryEnvelope(envelope, gasLimit);
   }
 
@@ -55,7 +43,7 @@ contract GranularGuardianAccessControl {
     bytes memory encodedTransaction,
     uint256 gasLimit,
     address[] memory bridgeAdaptersToRetry
-  ) external onlyRetryGuardian {
+  ) external onlyRole(RETRY_ROLE) {
     ICrossChainForwarder(CROSS_CHAIN_CONTROLLER).retryTransaction(
       encodedTransaction,
       gasLimit,
@@ -72,7 +60,7 @@ contract GranularGuardianAccessControl {
     address[] memory sendersToRemove,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
-  ) external onlySolveEmergencyGuardian {
+  ) external onlyRole(SOLVE_EMERGENCY_ROLE) {
     ICrossChainControllerWithEmergencyMode(CROSS_CHAIN_CONTROLLER).solveEmergency(
       newConfirmations,
       newValidityTimestamp,
@@ -83,19 +71,5 @@ contract GranularGuardianAccessControl {
       forwarderBridgeAdaptersToEnable,
       forwarderBridgeAdaptersToDisable
     );
-  }
-
-  function _updateRetryGuardian(address retryGuardian) internal {
-    require(retryGuardian != address(0), 'INVALID_RETRY_GUARDIAN');
-
-    _retryGuardian = retryGuardian;
-    emit RetryGuardianUpdated(retryGuardian);
-  }
-
-  function _updateSolveEmergencyGuardian(address solveEmergencyGuardian) internal {
-    require(solveEmergencyGuardian != address(0), 'INVALID_SOLVE_EMERGENCY_GUARDIAN');
-
-    _solveEmergencyGuardian = solveEmergencyGuardian;
-    emit SolveEmergencyGuardianUpdated(solveEmergencyGuardian);
   }
 }
