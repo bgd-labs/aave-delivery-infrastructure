@@ -4,13 +4,14 @@ pragma solidity ^0.8.0;
 import 'forge-std/Test.sol';
 import '../../src/contracts/access_control/GranularGuardianAccessControl.sol';
 import {GovernanceV3Ethereum} from 'aave-address-book/GovernanceV3Ethereum.sol';
-import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {OwnableWithGuardian, IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 
 contract GranularGuardianAccessControlTest is Test {
   address public constant RETRY_USER = address(123);
   address public constant SOLVE_EMERGENCY_USER = address(1234);
 
   address public constant BGD_GUARDIAN = 0xb812d0944f8F581DfAA3a93Dda0d22EcEf51A9CF;
+  address public constant AAVE_GUARDIAN = 0xCA76Ebd8617a03126B6FB84F9b1c1A0fB71C2633;
   bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
   GranularGuardianAccessControl public control;
@@ -19,7 +20,7 @@ contract GranularGuardianAccessControlTest is Test {
     vm.createSelectFork('ethereum', 18826980);
 
     control = new GranularGuardianAccessControl(
-      GovernanceV3Ethereum.EXECUTOR_LVL_1,
+      AAVE_GUARDIAN,
       RETRY_USER,
       SOLVE_EMERGENCY_USER,
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER
@@ -33,7 +34,7 @@ contract GranularGuardianAccessControlTest is Test {
 
   function test_initialization() public {
     assertEq(control.CROSS_CHAIN_CONTROLLER(), GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER);
-    assertEq(control.hasRole(DEFAULT_ADMIN_ROLE, GovernanceV3Ethereum.EXECUTOR_LVL_1), true);
+    assertEq(control.hasRole(DEFAULT_ADMIN_ROLE, AAVE_GUARDIAN), true);
     assertEq(control.getRoleAdmin(control.RETRY_ROLE()), DEFAULT_ADMIN_ROLE);
     assertEq(control.getRoleAdmin(control.SOLVE_EMERGENCY_ROLE()), DEFAULT_ADMIN_ROLE);
     assertEq(control.getRoleMemberCount(control.RETRY_ROLE()), 1);
@@ -87,6 +88,22 @@ contract GranularGuardianAccessControlTest is Test {
       )
     );
     _solveEmergency();
+  }
+
+  function test_updateGuardian(address newGuardian) public {
+    vm.startPrank(AAVE_GUARDIAN);
+    control.updateGuardian(newGuardian);
+    assertEq(IWithGuardian(GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER).guardian(), newGuardian);
+    vm.stopPrank();
+  }
+
+  function test_solveEmergencyWhenWrongCaller(address newGuardian) public {
+    vm.expectRevert(
+      bytes(
+        'AccessControl: account 0x7fa9385be102ac3eac297483dd6233d62b3e1496 is missing role 0x0000000000000000000000000000000000000000000000000000000000000000'
+      )
+    );
+    control.updateGuardian(newGuardian);
   }
 
   function _solveEmergency() public {

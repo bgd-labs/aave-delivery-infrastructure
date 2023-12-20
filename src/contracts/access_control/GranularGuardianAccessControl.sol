@@ -5,6 +5,7 @@ import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
 import {ICrossChainControllerWithEmergencyMode} from '../interfaces/ICrossChainControllerWithEmergencyMode.sol';
 import {IGranularGuardianAccessControl, Envelope, ICrossChainReceiver} from './IGranularGuardianAccessControl.sol';
 import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
+import {IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 
 /**
  * @title GranularGuardianAccessControl
@@ -88,5 +89,13 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
       forwarderBridgeAdaptersToEnable,
       forwarderBridgeAdaptersToDisable
     );
+  }
+
+  /// @inheritdoc IGranularGuardianAccessControl
+  function updateGuardian(
+    address newCrossChainControllerGuardian
+  ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    require(newCrossChainControllerGuardian != address(0), 'INVALID_GUARDIAN');
+    IWithGuardian(CROSS_CHAIN_CONTROLLER).updateGuardian(newCrossChainControllerGuardian);
   }
 }

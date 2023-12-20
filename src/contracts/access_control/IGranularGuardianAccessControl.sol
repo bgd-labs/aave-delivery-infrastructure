@@ -64,6 +64,11 @@ interface IGranularGuardianAccessControl {
   ) external;
 
   /**
+   * @notice method to update the CrossChainController guardian when this contract has been set as guardian
+   */
+  function updateGuardian(address newCrossChainControllerGuardian) external;
+
+  /**
    * @notice method to get the address of the CrossChainController where the contract points to
    * @return the address of the CrossChainController
    */
