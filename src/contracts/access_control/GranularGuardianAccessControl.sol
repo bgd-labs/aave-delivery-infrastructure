@@ -3,10 +3,8 @@ pragma solidity ^0.8.8;
 
 import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
 import {ICrossChainControllerWithEmergencyMode} from '../interfaces/ICrossChainControllerWithEmergencyMode.sol';
-import {AccessControlEnumerable} from './AccessControlEnumerable.sol';
-import {IGranularGuardianAccessControl, Envelope} from './IGranularGuardianAccessControl.sol';
-
-//import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
+import {IGranularGuardianAccessControl, Envelope, ICrossChainReceiver} from './IGranularGuardianAccessControl.sol';
+import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
 
 /**
  * @title GranularGuardianAccessControl
@@ -36,6 +34,7 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
     address crossChainController
   ) {
     require(crossChainController != address(0), 'INVALID_CROSS_CHAIN_CONTROLLER');
+    require(defaultAdmin != address(0), 'INVALID_DEFAULT_ADMIN');
 
     CROSS_CHAIN_CONTROLLER = crossChainController;
 
