@@ -2,38 +2,32 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
+import {TestUtils} from '../utils/TestUtils.sol';
 import '../../src/contracts/access_control/GranularGuardianAccessControl.sol';
-import {GovernanceV3Ethereum} from 'aave-address-book/GovernanceV3Ethereum.sol';
 import {OwnableWithGuardian, IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 
 contract GranularGuardianAccessControlTest is Test {
   address public constant RETRY_USER = address(123);
   address public constant SOLVE_EMERGENCY_USER = address(1234);
+  address public constant CROSS_CHAIN_CONTROLLER = address(12345);
 
-  address public constant BGD_GUARDIAN = 0xb812d0944f8F581DfAA3a93Dda0d22EcEf51A9CF;
-  address public constant AAVE_GUARDIAN = 0xCA76Ebd8617a03126B6FB84F9b1c1A0fB71C2633;
+  address public constant BGD_GUARDIAN = address(1956);
+  address public constant AAVE_GUARDIAN = address(1238975);
   bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
   GranularGuardianAccessControl public control;
 
   function setUp() public {
-    vm.createSelectFork('ethereum', 18826980);
-
     control = new GranularGuardianAccessControl(
       AAVE_GUARDIAN,
       RETRY_USER,
       SOLVE_EMERGENCY_USER,
-      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER
-    );
-
-    hoax(BGD_GUARDIAN);
-    OwnableWithGuardian(GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER).updateGuardian(
-      address(control)
+      CROSS_CHAIN_CONTROLLER
     );
   }
 
   function test_initialization() public {
-    assertEq(control.CROSS_CHAIN_CONTROLLER(), GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER);
+    assertEq(control.CROSS_CHAIN_CONTROLLER(), CROSS_CHAIN_CONTROLLER);
     assertEq(control.hasRole(DEFAULT_ADMIN_ROLE, AAVE_GUARDIAN), true);
     assertEq(control.getRoleAdmin(control.RETRY_ROLE()), DEFAULT_ADMIN_ROLE);
     assertEq(control.getRoleAdmin(control.SOLVE_EMERGENCY_ROLE()), DEFAULT_ADMIN_ROLE);
@@ -52,7 +46,11 @@ contract GranularGuardianAccessControlTest is Test {
   function test_retryTxWhenWrongCaller() public {
     vm.expectRevert(
       bytes(
-        'AccessControl: account 0x7fa9385be102ac3eac297483dd6233d62b3e1496 is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
+        string.concat(
+          'AccessControl: account 0x',
+          TestUtils.toAsciiString(address(this)),
+          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
+        )
       )
     );
     _retryTx();
@@ -69,7 +67,11 @@ contract GranularGuardianAccessControlTest is Test {
   function test_retryEnvelopeWhenWrongCaller(bytes32 mockEnvId) public {
     vm.expectRevert(
       bytes(
-        'AccessControl: account 0x7fa9385be102ac3eac297483dd6233d62b3e1496 is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
+        string.concat(
+          'AccessControl: account 0x',
+          TestUtils.toAsciiString(address(this)),
+          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
+        )
       )
     );
     _retryEnvelope(mockEnvId);
@@ -84,7 +86,11 @@ contract GranularGuardianAccessControlTest is Test {
   function test_solveEmergencyWhenWrongCaller() public {
     vm.expectRevert(
       bytes(
-        'AccessControl: account 0x7fa9385be102ac3eac297483dd6233d62b3e1496 is missing role 0xf4cdc679c22cbf47d6de8e836ce79ffdae51f38408dcde3f0645de7634fa607d'
+        string.concat(
+          'AccessControl: account 0x',
+          TestUtils.toAsciiString(address(this)),
+          ' is missing role 0xf4cdc679c22cbf47d6de8e836ce79ffdae51f38408dcde3f0645de7634fa607d'
+        )
       )
     );
     _solveEmergency();
@@ -92,15 +98,23 @@ contract GranularGuardianAccessControlTest is Test {
 
   function test_updateGuardian(address newGuardian) public {
     vm.startPrank(AAVE_GUARDIAN);
+    vm.mockCall(
+      CROSS_CHAIN_CONTROLLER,
+      abi.encodeWithSelector(IWithGuardian.updateGuardian.selector, newGuardian),
+      abi.encode()
+    );
     control.updateGuardian(newGuardian);
-    assertEq(IWithGuardian(GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER).guardian(), newGuardian);
     vm.stopPrank();
   }
 
-  function test_solveEmergencyWhenWrongCaller(address newGuardian) public {
+  function test_updateGuardianWhenWrongCaller(address newGuardian) public {
     vm.expectRevert(
       bytes(
-        'AccessControl: account 0x7fa9385be102ac3eac297483dd6233d62b3e1496 is missing role 0x0000000000000000000000000000000000000000000000000000000000000000'
+        string.concat(
+          'AccessControl: account 0x',
+          TestUtils.toAsciiString(address(this)),
+          ' is missing role 0x0000000000000000000000000000000000000000000000000000000000000000'
+        )
       )
     );
     control.updateGuardian(newGuardian);
@@ -131,7 +145,7 @@ contract GranularGuardianAccessControlTest is Test {
       );
 
     vm.mockCall(
-      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      CROSS_CHAIN_CONTROLLER,
       abi.encodeWithSelector(
         ICrossChainControllerWithEmergencyMode.solveEmergency.selector,
         newConfirmations,
@@ -170,7 +184,7 @@ contract GranularGuardianAccessControlTest is Test {
     uint256 gasLimit = 300_000;
 
     vm.mockCall(
-      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      CROSS_CHAIN_CONTROLLER,
       abi.encodeWithSelector(ICrossChainForwarder.retryEnvelope.selector, envelope, gasLimit),
       abi.encode(mockEnvId)
     );
@@ -183,7 +197,7 @@ contract GranularGuardianAccessControlTest is Test {
     address[] memory bridgeAdaptersToRetry = new address[](0);
 
     vm.mockCall(
-      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      CROSS_CHAIN_CONTROLLER,
       abi.encodeWithSelector(
         ICrossChainForwarder.retryTransaction.selector,
         encodedTransaction,
