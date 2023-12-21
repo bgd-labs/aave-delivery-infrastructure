@@ -21,13 +21,17 @@ abstract contract BaseDeployGranularGuardian is BaseScript {
 
   function CROSS_CHAIN_CONTROLLER() public view virtual returns (address);
 
-  function _execute(DeployerHelpers.Addresses memory) internal override {
-    new GranularGuardianAccessControl(
-      AAVE_GUARDIAN(),
-      RETRY_GUARDIAN(),
-      AAVE_GUARDIAN(),
-      CROSS_CHAIN_CONTROLLER()
+  function _execute(DeployerHelpers.Addresses memory addresses) internal override {
+    address granularCCCGuardian = (
+      new GranularGuardianAccessControl(
+        AAVE_GUARDIAN(),
+        RETRY_GUARDIAN(),
+        AAVE_GUARDIAN(),
+        CROSS_CHAIN_CONTROLLER()
+      )
     );
+
+    addresses.granularCCCGuardian = granularCCCGuardian;
   }
 }
 

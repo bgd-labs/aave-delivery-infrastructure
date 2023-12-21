@@ -26,6 +26,7 @@ library DeployerHelpers {
     address crossChainControllerImpl;
     address emergencyRegistry;
     address gnosisAdapter;
+    address granularCCCGuardian;
     address guardian;
     address hlAdapter;
     address lzAdapter;
@@ -97,6 +98,7 @@ library DeployerHelpers {
       proxyFactory: abi.decode(persistedJson.parseRaw('.proxyFactory'), (address)),
       owner: abi.decode(persistedJson.parseRaw('.owner'), (address)),
       guardian: abi.decode(persistedJson.parseRaw('.guardian'), (address)),
+      granularCCCGuardian: abi.decode(persistedJson.parseRaw('.granularCCCGuardian'), (address)),
       clEmergencyOracle: abi.decode(persistedJson.parseRaw('.clEmergencyOracle'), (address)),
       create3Factory: abi.decode(persistedJson.parseRaw('.create3Factory'), (address)),
       crossChainController: abi.decode(persistedJson.parseRaw('.crossChainController'), (address)),
@@ -135,6 +137,7 @@ library DeployerHelpers {
     json.serialize('crossChainControllerImpl', addresses.crossChainControllerImpl);
     json.serialize('emergencyRegistry', addresses.emergencyRegistry);
     json.serialize('gnosisAdapter', addresses.gnosisAdapter);
+    json.serialize('granularCCCGuardian', addresses.granularCCCGuardian);
     json.serialize('guardian', addresses.guardian);
     json.serialize('hlAdapter', addresses.hlAdapter);
     json.serialize('lzAdapter', addresses.lzAdapter);
