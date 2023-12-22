@@ -8,6 +8,8 @@ import {ICrossChainForwarder} from '../src/contracts/interfaces/ICrossChainForwa
 import {ICrossChainReceiver} from '../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {CrossChainController, ICrossChainController} from '../src/contracts/CrossChainController.sol';
 import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../src/contracts/CrossChainControllerWithEmergencyMode.sol';
+import {IEmergencyConsumer} from '../src/contracts/emergency/interfaces/IEmergencyConsumer.sol';
+import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmergencyOracle.sol';
 
 contract BaseTest is Test {
   bytes internal constant MESSAGE = bytes('this is the message to send');
@@ -47,8 +49,25 @@ contract BaseTest is Test {
     uint256 envelopeNonce;
   }
 
-  modifier generateEmergencyState() {
+  modifier generateEmergencyState(address ccc) {
+    address clEmergencyOracle = IEmergencyConsumer(ccc).getChainlinkEmergencyOracle();
+    (, int256 answer, , , ) = ICLEmergencyOracle(clEmergencyOracle).latestRoundData();
+    vm.mockCall(
+      clEmergencyOracle,
+      abi.encodeWithSelector(ICLEmergencyOracle.latestRoundData.selector),
+      abi.encode(uint80(2), int256(answer + 1), block.timestamp - 5, block.timestamp - 5, uint80(2))
+    );
     _;
+  }
+
+  modifier validateEmergencySolved(address ccc) {
+    _;
+    address clEmergencyOracle = IEmergencyConsumer(ccc).getChainlinkEmergencyOracle();
+    (, int256 answer, , , ) = ICLEmergencyOracle(clEmergencyOracle).latestRoundData();
+
+    uint256 emergencyCount = IEmergencyConsumer(ccc).getEmergencyCount();
+
+    assertEq(emergencyCount, uint256(answer));
   }
 
   modifier generateRetryTxState(

@@ -40,8 +40,6 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
     CROSS_CHAIN_CONTROLLER = crossChainController;
 
     _setupRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
-    _setRoleAdmin(SOLVE_EMERGENCY_ROLE, DEFAULT_ADMIN_ROLE);
-    _setRoleAdmin(RETRY_ROLE, DEFAULT_ADMIN_ROLE);
 
     _grantRole(SOLVE_EMERGENCY_ROLE, solveEmergencyGuardian);
     _grantRole(RETRY_ROLE, retryGuardian);
