@@ -119,16 +119,19 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     vm.assume(gasLimit < 300_000);
     vm.startPrank(RETRY_USER);
 
+    uint256 txNonce = ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+      .getCurrentTransactionNonce() - 1;
+    uint256 envNonce = ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+      .getCurrentEnvelopeNonce() - 1;
+
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
         destination: destination,
         origin: address(this),
         originChainId: block.chainid,
         destinationChainId: destinationChainId,
-        envelopeNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
-          .getCurrentTransactionNonce() - 1,
-        transactionNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
-          .getCurrentTransactionNonce() - 1
+        envelopeNonce: envNonce,
+        transactionNonce: txNonce
       })
     );
 
@@ -140,10 +143,9 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
         origin: address(this),
         originChainId: block.chainid,
         destinationChainId: destinationChainId,
-        envelopeNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
-          .getCurrentTransactionNonce(),
+        envelopeNonce: envNonce,
         transactionNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
-          .getCurrentTransactionNonce()
+          .getCurrentTransactionNonce() - 1
       })
     );
 
