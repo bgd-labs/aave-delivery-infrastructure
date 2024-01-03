@@ -29,9 +29,9 @@ abstract contract BaseInitialDeployment is BaseScript {
   }
 
   function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    addresses.create3Factory = CREATE3_FACTORY() == address(0)
-      ? address(new Create3Factory{salt: Constants.CREATE3_FACTORY_SALT}())
-      : CREATE3_FACTORY();
+    //    addresses.create3Factory = CREATE3_FACTORY() == address(0)
+    //      ? address(new Create3Factory{salt: Constants.CREATE3_FACTORY_SALT}())
+    //      : CREATE3_FACTORY();
     addresses.proxyFactory = TRANSPARENT_PROXY_FACTORY() == address(0)
       ? address(new TransparentProxyFactory())
       : TRANSPARENT_PROXY_FACTORY();
@@ -227,6 +227,24 @@ contract Zkevm is BaseInitialDeployment {
   }
 }
 
+contract Scroll is BaseInitialDeployment {
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return 0xFa2eeb2d0054C3Db2A606E2cd9EE111b62707D1e; //MiscScroll.TRANSPARENT_PROXY_FACTORY_SCROLL;
+  }
+
+  function PROXY_ADMIN() public pure override returns (address) {
+    return 0x782559e349b084bB7C07c08404aE6E3436cDAE2E;
+  }
+
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return ;
+  //  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.SCROLL;
+  }
+}
+
 contract Ethereum_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -284,5 +302,11 @@ contract Gnosis_testnet is BaseInitialDeployment {
 contract Zkevm_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.POLYGON_ZK_EVM_GOERLI;
+  }
+}
+
+contract Scroll_testnet is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.SCROLL_SEPOLIA;
   }
 }
