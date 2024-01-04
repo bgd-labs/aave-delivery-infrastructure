@@ -17,7 +17,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 43000000000 # 53 gwei
+custom_ethereum := --with-gas-price 18000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 #custom_scroll := --with-gas-price 1000000000
@@ -97,7 +97,7 @@ deploy-zkevm-adapters:
 	$(call deploy_fn,Adapters/DeployZkEVMAdapter,ethereum zkevm)
 
 deploy-scroll-adapters:
-	$(call deploy_fn,Adapters/DeployScrollAdapter,scroll)
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
@@ -201,7 +201,7 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum avalanche polygon binance)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,scroll)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)

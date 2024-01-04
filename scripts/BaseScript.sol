@@ -43,7 +43,7 @@ library DeployerHelpers {
 
   function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
     if (chainId == ChainIds.ETHEREUM) {
-      return './deployments/cc/mainnet/pre_prod_eth.json';
+      return './deployments/cc/mainnet/eth.json';
     } else if (chainId == ChainIds.POLYGON) {
       return './deployments/cc/mainnet/pol.json';
     } else if (chainId == ChainIds.AVALANCHE) {
@@ -63,7 +63,7 @@ library DeployerHelpers {
     } else if (chainId == ChainIds.GNOSIS) {
       return './deployments/cc/mainnet/gnosis.json';
     } else if (chainId == ChainIds.SCROLL) {
-      return './deployments/cc/mainnet/pre_prod_scroll.json';
+      return './deployments/cc/mainnet/scroll.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
