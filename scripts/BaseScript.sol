@@ -63,7 +63,7 @@ library DeployerHelpers {
     } else if (chainId == ChainIds.GNOSIS) {
       return './deployments/cc/mainnet/gnosis.json';
     } else if (chainId == ChainIds.SCROLL) {
-      return './deployments/cc/mainnet/scroll.json';
+      return './deployments/cc/mainnet/pre_prod_scroll.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
