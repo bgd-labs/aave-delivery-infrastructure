@@ -22,6 +22,7 @@ custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
+custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 
 # params:
 #  1 - path/file_name
@@ -92,6 +93,9 @@ deploy-base-adapters:
 deploy-gnosis-adapters:
 	$(call deploy_fn,Adapters/DeployGnosisChain,ethereum gnosis)
 
+deploy-scroll-adapters:
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
+
 deploy-zkevm-adapters:
 	$(call deploy_fn,Adapters/DeployZkEVMAdapter,ethereum zkevm)
 
@@ -140,11 +144,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,zkevm)
+	$(call deploy_fn,InitialDeployments,scroll)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,avalanche base)
+	$(call deploy_fn,CCC/Deploy_CCC,scroll)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -161,6 +165,9 @@ deploy-hl-bridge-adapters-test:
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
 	$(call deploy_fn,Adapters/DeploySameChainAdapter,ethereum)
+
+deploy-scroll-adapters-test:
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:

@@ -105,3 +105,9 @@ contract Base_testnet is BaseMockDestination {
     return TestNetChainIds.BASE_GOERLI;
   }
 }
+
+contract Scroll_testnet is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+}
