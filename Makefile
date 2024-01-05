@@ -12,14 +12,15 @@ test   :; forge test -vvv
 
 # ---------------------------------------------- BASE SCRIPT CONFIGURATION ---------------------------------------------
 
-BASE_LEDGER = --legacy --mnemonics foo --ledger --mnemonic-indexes $(MNEMONIC_INDEX) --sender $(LEDGER_SENDER)
+BASE_LEDGER = --mnemonics foo --ledger --mnemonic-indexes $(MNEMONIC_INDEX) --sender $(LEDGER_SENDER)
 BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 27000000000 # 53 gwei
+custom_ethereum := --with-gas-price 18000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
+#custom_scroll := --with-gas-price 1000000000
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
 
@@ -95,17 +96,20 @@ deploy-gnosis-adapters:
 deploy-zkevm-adapters:
 	$(call deploy_fn,Adapters/DeployZkEVMAdapter,ethereum zkevm)
 
+deploy-scroll-adapters:
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
+
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
 	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm scroll)
 
 # Sets the required confirmations
 set-ccr-confirmations:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm scroll)
 
 # Generate Addresses Json
 write-json-addresses :; forge script scripts/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
@@ -140,11 +144,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,ethereum)
+	$(call deploy_fn,InitialDeployments,scroll)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum)
+	$(call deploy_fn,CCC/Deploy_CCC,scroll)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -168,11 +172,11 @@ set-ccf-sender-adapters-test:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,base)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,scroll)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,base)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,scroll)
 
 # Funds CCC
 fund-crosschain-test:
@@ -197,7 +201,7 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum avalanche polygon binance)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,scroll)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
