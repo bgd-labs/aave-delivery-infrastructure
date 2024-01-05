@@ -336,7 +336,7 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
       destinationBridgeAdapter: addressesMetis.metisAdapter,
       destinationChainId: addressesMetis.chainId
     });
-    DeployerHelpers.Addresses memory addressesBase = _getAddresses(ChainIds.BASE_GOERLI);
+    DeployerHelpers.Addresses memory addressesBase = _getAddresses(TestNetChainIds.BASE_GOERLI);
     bridgeAdaptersToEnable[11] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.baseAdapter,
       destinationBridgeAdapter: addressesBase.baseAdapter,
