@@ -41,6 +41,14 @@ contract CrossChainReceiverTest is BaseTest {
     uint8 confirmations
   );
 
+  event TransactionReceivedWhenConfirmed(
+    bytes32 transactionId,
+    bytes32 indexed envelopeId,
+    uint256 indexed originChainId,
+    Transaction transaction,
+    address indexed bridgeAdapter
+  );
+
   event EnvelopeDeliveryAttempted(bytes32 envelopeId, Envelope envelope, bool isDelivered);
 
   event NewInvalidation(uint256 invalidTimestamp, uint256 indexed chainId);
@@ -426,6 +434,97 @@ contract CrossChainReceiverTest is BaseTest {
     ICrossChainReceiver.EnvelopeState internalEnvelopeState = crossChainReceiver.getEnvelopeState(
       txExtended.envelopeId
     );
+
+    assertEq(internalTransactionState.confirmations, 1);
+    assertEq(internalTransactionState.firstBridgedAt, block.timestamp);
+    assertTrue(internalEnvelopeState == ICrossChainReceiver.EnvelopeState.Delivered);
+  }
+
+  function testReceiveCrossChainMessageAfterConfirmation(
+    uint256 txNonce,
+    uint256 envelopeNonce
+  ) public {
+    ExtendedTransaction memory txExtended = _generateExtendedTransaction(
+      TestParams({
+        origin: GOVERNANCE_CORE,
+        destination: VOTING_MACHINE,
+        originChainId: DEFAULT_ORIGIN_CHAIN_ID,
+        destinationChainId: block.chainid,
+        envelopeNonce: envelopeNonce,
+        transactionNonce: txNonce
+      })
+    );
+
+    hoax(BRIDGE_ADAPTER);
+    vm.mockCall(
+      txExtended.envelope.destination,
+      abi.encodeWithSelector(IBaseReceiverPortal.receiveCrossChainMessage.selector),
+      abi.encode()
+    );
+    vm.expectCall(
+      txExtended.envelope.destination,
+      abi.encodeWithSelector(
+        IBaseReceiverPortal.receiveCrossChainMessage.selector,
+        txExtended.envelope.origin,
+        txExtended.envelope.originChainId,
+        txExtended.envelope.message
+      )
+    );
+    vm.expectEmit(true, true, true, true);
+    emit TransactionReceived(
+      txExtended.transactionId,
+      txExtended.envelopeId,
+      txExtended.envelope.originChainId,
+      txExtended.transaction,
+      BRIDGE_ADAPTER,
+      1
+    );
+    vm.expectEmit(true, true, true, true);
+    emit EnvelopeDeliveryAttempted(txExtended.envelopeId, txExtended.envelope, true);
+    crossChainReceiver.receiveCrossChainMessage(
+      txExtended.transactionEncoded,
+      txExtended.envelope.originChainId
+    );
+
+    // check internal transaction
+    assertEq(
+      crossChainReceiver.isTransactionReceivedByAdapter(txExtended.transactionId, BRIDGE_ADAPTER),
+      true
+    );
+    ICrossChainReceiver.TransactionStateWithoutAdapters
+      memory internalTransactionState = crossChainReceiver.getTransactionState(
+        txExtended.transactionId
+      );
+    ICrossChainReceiver.EnvelopeState internalEnvelopeState = crossChainReceiver.getEnvelopeState(
+      txExtended.envelopeId
+    );
+
+    assertEq(internalTransactionState.confirmations, 1);
+    assertEq(internalTransactionState.firstBridgedAt, block.timestamp);
+    assertTrue(internalEnvelopeState == ICrossChainReceiver.EnvelopeState.Delivered);
+
+    // receive 2nd cross chain message after its already confirmed
+    hoax(BRIDGE_ADAPTER_2);
+    vm.expectEmit(true, true, true, true);
+    emit TransactionReceivedWhenConfirmed(
+      txExtended.transactionId,
+      txExtended.envelopeId,
+      txExtended.envelope.originChainId,
+      txExtended.transaction,
+      BRIDGE_ADAPTER_2
+    );
+    crossChainReceiver.receiveCrossChainMessage(
+      txExtended.transactionEncoded,
+      txExtended.envelope.originChainId
+    );
+
+    // check internal transaction
+    assertEq(
+      crossChainReceiver.isTransactionReceivedByAdapter(txExtended.transactionId, BRIDGE_ADAPTER_2),
+      false
+    );
+    internalTransactionState = crossChainReceiver.getTransactionState(txExtended.transactionId);
+    internalEnvelopeState = crossChainReceiver.getEnvelopeState(txExtended.envelopeId);
 
     assertEq(internalTransactionState.confirmations, 1);
     assertEq(internalTransactionState.firstBridgedAt, block.timestamp);

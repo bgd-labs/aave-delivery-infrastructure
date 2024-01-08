@@ -159,10 +159,21 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
       Errors.CHAIN_ID_MISMATCH
     );
     bytes32 envelopeId = transaction.getEnvelopeId();
-    // if envelope was confirmed before, just return
-    if (_envelopesState[envelopeId] != EnvelopeState.None) return;
 
     bytes32 transactionId = TransactionUtils.getId(encodedTransaction);
+
+    // if envelope was confirmed before, just return
+    if (_envelopesState[envelopeId] != EnvelopeState.None) {
+      emit TransactionReceivedWhenConfirmed(
+        transactionId,
+        envelopeId,
+        originChainId,
+        transaction,
+        msg.sender
+      );
+      return;
+    }
+
     TransactionState storage internalTransaction = _transactionsState[transactionId];
     ReceiverConfiguration memory configuration = _configurationsByChain[originChainId]
       .configuration;

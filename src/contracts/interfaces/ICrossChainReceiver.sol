@@ -93,6 +93,22 @@ interface ICrossChainReceiver {
   }
 
   /**
+   * @notice emitted when a transaction has been received after a message has already been confirmed
+   * @param transactionId id of the transaction
+   * @param envelopeId id of the envelope
+   * @param originChainId id of the chain where the envelope originated
+   * @param transaction the Transaction type data
+   * @param bridgeAdapter address of the bridge adapter who received the message (deployed on current network)
+   */
+  event TransactionReceivedWhenConfirmed(
+    bytes32 transactionId,
+    bytes32 indexed envelopeId,
+    uint256 indexed originChainId,
+    Transaction transaction,
+    address indexed bridgeAdapter
+  );
+
+  /**
    * @notice emitted when a transaction has been received successfully
    * @param transactionId id of the transaction
    * @param envelopeId id of the envelope
