@@ -162,18 +162,6 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
 
     bytes32 transactionId = TransactionUtils.getId(encodedTransaction);
 
-    // if envelope was confirmed before, just return
-    if (_envelopesState[envelopeId] != EnvelopeState.None) {
-      emit TransactionReceivedWhenConfirmed(
-        transactionId,
-        envelopeId,
-        originChainId,
-        transaction,
-        msg.sender
-      );
-      return;
-    }
-
     TransactionState storage internalTransaction = _transactionsState[transactionId];
     ReceiverConfiguration memory configuration = _configurationsByChain[originChainId]
       .configuration;
@@ -209,9 +197,11 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
       // from additional bridges after reaching required number of confirmations
       // >= is used for the case when confirmations gets lowered before message reached the old _requiredConfirmations
       // but on receiving new messages it surpasses the current _requiredConfirmations. So it doesn't get stuck (if using ==)
+      // Envelope can only be set as confirmed or delivered once
       if (
         configuration.requiredConfirmation > 0 &&
-        newConfirmations >= configuration.requiredConfirmation
+        newConfirmations >= configuration.requiredConfirmation &&
+        _envelopesState[envelopeId] == EnvelopeState.None
       ) {
         _envelopesState[envelopeId] = EnvelopeState.Delivered;
         try

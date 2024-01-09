@@ -506,12 +506,13 @@ contract CrossChainReceiverTest is BaseTest {
     // receive 2nd cross chain message after its already confirmed
     hoax(BRIDGE_ADAPTER_2);
     vm.expectEmit(true, true, true, true);
-    emit TransactionReceivedWhenConfirmed(
+    emit TransactionReceived(
       txExtended.transactionId,
       txExtended.envelopeId,
       txExtended.envelope.originChainId,
       txExtended.transaction,
-      BRIDGE_ADAPTER_2
+      BRIDGE_ADAPTER_2,
+      2
     );
     crossChainReceiver.receiveCrossChainMessage(
       txExtended.transactionEncoded,
@@ -521,12 +522,12 @@ contract CrossChainReceiverTest is BaseTest {
     // check internal transaction
     assertEq(
       crossChainReceiver.isTransactionReceivedByAdapter(txExtended.transactionId, BRIDGE_ADAPTER_2),
-      false
+      true
     );
     internalTransactionState = crossChainReceiver.getTransactionState(txExtended.transactionId);
     internalEnvelopeState = crossChainReceiver.getEnvelopeState(txExtended.envelopeId);
 
-    assertEq(internalTransactionState.confirmations, 1);
+    assertEq(internalTransactionState.confirmations, 2);
     assertEq(internalTransactionState.firstBridgedAt, block.timestamp);
     assertTrue(internalEnvelopeState == ICrossChainReceiver.EnvelopeState.Delivered);
   }
