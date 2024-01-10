@@ -192,16 +192,17 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
         msg.sender,
         newConfirmations
       );
-
-      // checks that the message was not delivered before, so it will not try to deliver again when message arrives
+      // Checks that the message was not confirmed and/or delivered before, so it will not try to deliver again when message arrives
       // from additional bridges after reaching required number of confirmations
+      if (_envelopesState[envelopeId] != EnvelopeState.None) {
+        return;
+      }
+
       // >= is used for the case when confirmations gets lowered before message reached the old _requiredConfirmations
       // but on receiving new messages it surpasses the current _requiredConfirmations. So it doesn't get stuck (if using ==)
-      // Envelope can only be set as confirmed or delivered once
       if (
         configuration.requiredConfirmation > 0 &&
-        newConfirmations >= configuration.requiredConfirmation &&
-        _envelopesState[envelopeId] == EnvelopeState.None
+        newConfirmations >= configuration.requiredConfirmation
       ) {
         _envelopesState[envelopeId] = EnvelopeState.Delivered;
         try
