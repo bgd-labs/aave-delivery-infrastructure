@@ -41,14 +41,6 @@ contract CrossChainReceiverTest is BaseTest {
     uint8 confirmations
   );
 
-  event TransactionReceivedWhenConfirmed(
-    bytes32 transactionId,
-    bytes32 indexed envelopeId,
-    uint256 indexed originChainId,
-    Transaction transaction,
-    address indexed bridgeAdapter
-  );
-
   event EnvelopeDeliveryAttempted(bytes32 envelopeId, Envelope envelope, bool isDelivered);
 
   event NewInvalidation(uint256 invalidTimestamp, uint256 indexed chainId);
