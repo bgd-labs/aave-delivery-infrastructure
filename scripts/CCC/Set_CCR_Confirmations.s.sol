@@ -212,6 +212,24 @@ contract Zkevm is BaseSetCCRConfirmations {
   }
 }
 
+contract Scroll is BaseSetCCRConfirmations {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.SCROLL;
+  }
+
+  function getConfirmationsByChainIds()
+    public
+    virtual
+    override
+    returns (ConfirmationsByChain[] memory)
+  {
+    ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
+    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 1});
+
+    return chainIds;
+  }
+}
+
 contract Ethereum_testnet is Ethereum {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -393,6 +411,27 @@ contract Gnosis_testnet is BaseSetCCRConfirmations {
     chainIds[0] = ConfirmationsByChain({
       chainId: TestNetChainIds.ETHEREUM_GOERLI,
       confirmations: 3
+    });
+
+    return chainIds;
+  }
+}
+
+contract Scroll_testnet is BaseSetCCRConfirmations {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+
+  function getConfirmationsByChainIds()
+    public
+    virtual
+    override
+    returns (ConfirmationsByChain[] memory)
+  {
+    ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
+    chainIds[0] = ConfirmationsByChain({
+      chainId: TestNetChainIds.ETHEREUM_SEPOLIA,
+      confirmations: 1
     });
 
     return chainIds;

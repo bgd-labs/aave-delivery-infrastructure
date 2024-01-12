@@ -140,6 +140,12 @@ contract Zkevm is BaseCCCNetworkDeployment {
   }
 }
 
+contract Scroll is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.SCROLL;
+  }
+}
+
 contract Ethereum_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -191,5 +197,11 @@ contract Base_testnet is BaseCCCNetworkDeployment {
 contract Gnosis_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.GNOSIS_CHIADO;
+  }
+}
+
+contract Scroll_testnet is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.SCROLL_SEPOLIA;
   }
 }

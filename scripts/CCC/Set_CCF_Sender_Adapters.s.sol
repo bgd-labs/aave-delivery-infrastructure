@@ -151,6 +151,14 @@ contract Ethereum is BaseCCFSenderAdapters {
       destinationChainId: addressesZkEVM.chainId
     });
 
+    // Scroll
+    DeployerHelpers.Addresses memory addressesScroll = _getAddresses(ChainIds.SCROLL);
+    bridgeAdaptersToEnable[19] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.scrollAdapter,
+      destinationBridgeAdapter: addressesScroll.scrollAdapter,
+      destinationChainId: addressesScroll.chainId
+    });
+
     return bridgeAdaptersToEnable;
   }
 }
@@ -307,40 +315,51 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
       destinationChainId: addressesGnosis.chainId
     });
 
-    //     rollups
-    //    DeployerHelpers.Addresses memory addressesOp = _getAddresses(TestNetChainIds.OPTIMISM_GOERLI);
-    //    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.opAdapter,
-    //      destinationBridgeAdapter: addressesOp.opAdapter,
-    //      destinationChainId: addressesOp.chainId
-    //    });
-    //
-    //    DeployerHelpers.Addresses memory addressesArb = _getAddresses(TestNetChainIds.ARBITRUM_GOERLI);
-    //    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.arbAdapter,
-    //      destinationBridgeAdapter: addressesArb.arbAdapter,
-    //      destinationChainId: addressesArb.chainId
-    //    });
-    //
-    //    DeployerHelpers.Addresses memory addressesMetis = _getAddresses(TestNetChainIds.METIS_TESTNET);
-    //    bridgeAdaptersToEnable[10] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.metisAdapter,
-    //      destinationBridgeAdapter: addressesMetis.metisAdapter,
-    //      destinationChainId: addressesMetis.chainId
-    //    });
-    //    DeployerHelpers.Addresses memory addressesBase = _getAddresses(ChainIds.BASE_GOERLI);
-    //    bridgeAdaptersToEnable[11] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.baseAdapter,
-    //      destinationBridgeAdapter: addressesBase.baseAdapter,
-    //      destinationChainId: addressesBase.chainId
-    //    });
+    //         rollups
+    DeployerHelpers.Addresses memory addressesOp = _getAddresses(TestNetChainIds.OPTIMISM_GOERLI);
+    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.opAdapter,
+      destinationBridgeAdapter: addressesOp.opAdapter,
+      destinationChainId: addressesOp.chainId
+    });
 
-    // same chain path
+    DeployerHelpers.Addresses memory addressesArb = _getAddresses(TestNetChainIds.ARBITRUM_GOERLI);
+    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.arbAdapter,
+      destinationBridgeAdapter: addressesArb.arbAdapter,
+      destinationChainId: addressesArb.chainId
+    });
+
+    DeployerHelpers.Addresses memory addressesMetis = _getAddresses(TestNetChainIds.METIS_TESTNET);
+    bridgeAdaptersToEnable[10] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.metisAdapter,
+      destinationBridgeAdapter: addressesMetis.metisAdapter,
+      destinationChainId: addressesMetis.chainId
+    });
+    DeployerHelpers.Addresses memory addressesBase = _getAddresses(TestNetChainIds.BASE_GOERLI);
+    bridgeAdaptersToEnable[11] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.baseAdapter,
+      destinationBridgeAdapter: addressesBase.baseAdapter,
+      destinationChainId: addressesBase.chainId
+    });
+
+    //         same chain path
     bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.sameChainAdapter,
       destinationBridgeAdapter: addresses.sameChainAdapter,
       destinationChainId: addresses.chainId
     });
+
+    DeployerHelpers.Addresses memory addressesScrollSepolia = _getAddresses(
+      TestNetChainIds.SCROLL_SEPOLIA
+    );
+
+    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.scrollAdapter,
+      destinationBridgeAdapter: addressesScrollSepolia.scrollAdapter,
+      destinationChainId: addressesScrollSepolia.chainId
+    });
+
     return bridgeAdaptersToEnable;
   }
 }
