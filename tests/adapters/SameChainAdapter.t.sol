@@ -13,6 +13,11 @@ contract SameChainAdapterTest is Test {
 
   function setUp() public {
     sameChainAdapter = new SameChainAdapter();
+
+    assertEq(
+      keccak256(abi.encode(sameChainAdapter.getAdapterName())),
+      keccak256(abi.encode('SameChain adapter'))
+    );
   }
 
   function testForwardPayload() public {

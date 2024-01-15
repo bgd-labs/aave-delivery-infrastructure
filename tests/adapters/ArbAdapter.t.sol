@@ -41,6 +41,10 @@ contract ArbAdapterTest is Test {
   }
 
   function testInitialize() public {
+    assertEq(
+      keccak256(abi.encode(arbAdapter.getAdapterName())),
+      keccak256(abi.encode('Arbitrum native adapter'))
+    );
     assertEq(arbAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), CROSS_CHAIN_CONTROLLER);
   }
 
