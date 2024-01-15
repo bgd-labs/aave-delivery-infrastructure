@@ -32,7 +32,7 @@ contract CBaseAdapter is OpAdapter {
       crossChainController,
       ovmCrossDomainMessenger,
       providerGasLimit,
-      'Base network native bridge adapter',
+      'Base native adapter',
       trustedRemotes
     )
   {}

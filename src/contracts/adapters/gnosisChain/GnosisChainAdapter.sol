@@ -30,14 +30,7 @@ contract GnosisChainAdapter is BaseAdapter, IGnosisChainAdapter {
     address arbitraryMessageBridge,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  )
-    BaseAdapter(
-      crossChainController,
-      providerGasLimit,
-      'Gnosis network native bridge adapter',
-      trustedRemotes
-    )
-  {
+  ) BaseAdapter(crossChainController, providerGasLimit, 'Gnosis native adapter', trustedRemotes) {
     require(arbitraryMessageBridge != address(0), Errors.ZERO_GNOSIS_ARBITRARY_MESSAGE_BRIDGE);
     BRIDGE = arbitraryMessageBridge;
   }

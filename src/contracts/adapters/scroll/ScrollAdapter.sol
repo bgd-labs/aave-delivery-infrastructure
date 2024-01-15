@@ -30,7 +30,15 @@ contract ScrollAdapter is OpAdapter {
     address ovmCrossDomainMessenger,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, providerGasLimit, trustedRemotes) {
+  )
+    OpAdapter(
+      crossChainController,
+      ovmCrossDomainMessenger,
+      providerGasLimit,
+      'Scroll native adapter',
+      trustedRemotes
+    )
+  {
     SCROLL_MESSAGE_QUEUE = IL1MessageQueue(
       IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).messageQueue()
     );
