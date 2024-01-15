@@ -41,7 +41,14 @@ contract ArbAdapter is IArbAdapter, BaseAdapter {
     address destinationCCC,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, 'Arbitrum Native Adapter', trustedRemotes) {
+  )
+    BaseAdapter(
+      crossChainController,
+      providerGasLimit,
+      'Arbitrum network native bridge adapter',
+      trustedRemotes
+    )
+  {
     INBOX = inbox;
     DESTINATION_CCC = destinationCCC;
   }

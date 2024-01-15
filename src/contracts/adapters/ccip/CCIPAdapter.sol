@@ -49,7 +49,14 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes,
     address linkToken
-  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
+  )
+    BaseAdapter(
+      crossChainController,
+      providerGasLimit,
+      'Chainlink CCIP bridge adapter',
+      trustedRemotes
+    )
+  {
     require(ccipRouter != address(0), Errors.CCIP_ROUTER_CANT_BE_ADDRESS_0);
     require(linkToken != address(0), Errors.LINK_TOKEN_CANT_BE_ADDRESS_0);
     CCIP_ROUTER = IRouterClient(ccipRouter);
