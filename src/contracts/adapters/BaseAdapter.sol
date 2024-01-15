@@ -17,14 +17,14 @@ abstract contract BaseAdapter is IBaseAdapter {
   /// @inheritdoc IBaseAdapter
   uint256 public immutable BASE_GAS_LIMIT;
 
-  /// @inheritdoc IBaseAdapter
-  string public immutable NAME;
-
   // @dev this is the original address of the contract. Required to identify and prevent delegate calls.
   address private immutable _selfAddress;
 
   // (standard chain id -> origin forwarder address) saves for every chain the address that can forward messages to this adapter
   mapping(uint256 => address) internal _trustedRemotes;
+
+  /// name of the adapter contract
+  string internal _adapterName;
 
   /**
    * @param crossChainController address of the CrossChainController the bridged messages will be routed to
@@ -41,7 +41,7 @@ abstract contract BaseAdapter is IBaseAdapter {
     CROSS_CHAIN_CONTROLLER = IBaseCrossChainController(crossChainController);
 
     BASE_GAS_LIMIT = providerGasLimit;
-    NAME = adapterName;
+    _adapterName = adapterName;
 
     _selfAddress = address(this);
 
@@ -51,6 +51,11 @@ abstract contract BaseAdapter is IBaseAdapter {
       _trustedRemotes[originConfig.originChainId] = originConfig.originForwarder;
       emit SetTrustedRemote(originConfig.originChainId, originConfig.originForwarder);
     }
+  }
+
+  /// @inheritdoc IBaseAdapter
+  function getAdapterName() external view returns (string memory) {
+    return _adapterName;
   }
 
   /// @inheritdoc IBaseAdapter
