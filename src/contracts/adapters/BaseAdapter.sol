@@ -17,6 +17,9 @@ abstract contract BaseAdapter is IBaseAdapter {
   /// @inheritdoc IBaseAdapter
   uint256 public immutable BASE_GAS_LIMIT;
 
+  /// @inheritdoc IBaseAdapter
+  string public immutable NAME;
+
   // @dev this is the original address of the contract. Required to identify and prevent delegate calls.
   address private immutable _selfAddress;
 
@@ -31,12 +34,14 @@ abstract contract BaseAdapter is IBaseAdapter {
   constructor(
     address crossChainController,
     uint256 providerGasLimit,
+    string memory name,
     TrustedRemotesConfig[] memory originConfigs
   ) {
     require(crossChainController != address(0), Errors.INVALID_BASE_ADAPTER_CROSS_CHAIN_CONTROLLER);
     CROSS_CHAIN_CONTROLLER = IBaseCrossChainController(crossChainController);
 
     BASE_GAS_LIMIT = providerGasLimit;
+    NAME = adapterName;
 
     _selfAddress = address(this);
 

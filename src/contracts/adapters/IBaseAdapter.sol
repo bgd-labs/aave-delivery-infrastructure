@@ -44,8 +44,15 @@ interface IBaseAdapter {
 
   /**
    * @notice method to get the address of the linked cross chain controller
+   * @return address of CrossChainController
    */
   function CROSS_CHAIN_CONTROLLER() external returns (IBaseCrossChainController);
+
+  /**
+   * @notice method to get the name of the adapter contract
+   * @return name of the adapter contract
+   */
+  function NAME() external view returns (string memory);
 
   /**
    * @notice method to get the base gas limit used by the bridge adapter
