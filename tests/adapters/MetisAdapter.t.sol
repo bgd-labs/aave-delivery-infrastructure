@@ -41,6 +41,10 @@ contract MetisAdapterTest is Test {
   }
 
   function testInitialize() public {
+    assertEq(
+      keccak256(abi.encode(metisAdapter.adapterName())),
+      keccak256(abi.encode('Metis native adapter'))
+    );
     assertEq(metisAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), ORIGIN_FORWARDER);
   }
 

@@ -27,7 +27,15 @@ contract CBaseAdapter is OpAdapter {
     address ovmCrossDomainMessenger,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, providerGasLimit, trustedRemotes) {}
+  )
+    OpAdapter(
+      crossChainController,
+      ovmCrossDomainMessenger,
+      providerGasLimit,
+      'Base native adapter',
+      trustedRemotes
+    )
+  {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(

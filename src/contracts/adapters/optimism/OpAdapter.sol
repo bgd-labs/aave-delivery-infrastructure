@@ -32,14 +32,16 @@ contract OpAdapter is IOpAdapter, BaseAdapter {
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ovmCrossDomainMessenger optimism entry point address
    * @param providerGasLimit base gas limit used by the bridge adapter
+   * @param adapterName string indicating the adapter name
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
     uint256 providerGasLimit,
+    string memory adapterName,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, adapterName, trustedRemotes) {
     OVM_CROSS_DOMAIN_MESSENGER = ovmCrossDomainMessenger;
   }
 

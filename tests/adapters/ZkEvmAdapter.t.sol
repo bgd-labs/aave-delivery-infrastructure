@@ -54,6 +54,14 @@ contract ZkEvmAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
+      keccak256(abi.encode(zkEvmAdapterPolygonZkEvm.adapterName())),
+      keccak256(abi.encode('Polygon ZkEvm native adapter'))
+    );
+    assertEq(
+      keccak256(abi.encode(zkEvmAdapterEthereum.adapterName())),
+      keccak256(abi.encode('Polygon ZkEvm native adapter'))
+    );
+    assertEq(
       zkEvmAdapterPolygonZkEvm.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID),
       CROSS_CHAIN_CONTROLLER
     );

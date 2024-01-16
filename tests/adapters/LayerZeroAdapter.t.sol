@@ -52,7 +52,10 @@ contract LayerZeroAdapterTest is Test {
 
   function testInit() public {
     address originForwarder = layerZeroAdapter.getTrustedRemoteByChainId(1);
-
+    assertEq(
+      keccak256(abi.encode(layerZeroAdapter.adapterName())),
+      keccak256(abi.encode('LayerZero adapter'))
+    );
     assertEq(originForwarder, ORIGIN_FORWARDER);
     assertEq(address(layerZeroAdapter.LZ_ENDPOINT()), LZ_ENDPOINT);
   }

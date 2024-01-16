@@ -42,7 +42,7 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
     address igp,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, 'Hyperlane adapter', trustedRemotes) {
     HL_MAIL_BOX = IMailbox(mailBox);
     IGP = IInterchainGasPaymaster(igp);
   }
