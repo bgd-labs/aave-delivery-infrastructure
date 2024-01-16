@@ -23,26 +23,26 @@ abstract contract BaseAdapter is IBaseAdapter {
   // (standard chain id -> origin forwarder address) saves for every chain the address that can forward messages to this adapter
   mapping(uint256 => address) internal _trustedRemotes;
 
-  /// name of the adapter contract
-  string internal _adapterName;
+  /// @inheritdoc IBaseAdapter
+  string public adapterName;
 
   /**
    * @param crossChainController address of the CrossChainController the bridged messages will be routed to
    * @param providerGasLimit base gas limit used by the bridge adapter
-   * @param adapterName name of the bridge adapter contract
+   * @param name name of the bridge adapter contract
    * @param originConfigs pair of origin address and chain id that adapter is allowed to get messages from
    */
   constructor(
     address crossChainController,
     uint256 providerGasLimit,
-    string memory adapterName,
+    string memory name,
     TrustedRemotesConfig[] memory originConfigs
   ) {
     require(crossChainController != address(0), Errors.INVALID_BASE_ADAPTER_CROSS_CHAIN_CONTROLLER);
     CROSS_CHAIN_CONTROLLER = IBaseCrossChainController(crossChainController);
 
     BASE_GAS_LIMIT = providerGasLimit;
-    _adapterName = adapterName;
+    adapterName = name;
 
     _selfAddress = address(this);
 
@@ -52,11 +52,6 @@ abstract contract BaseAdapter is IBaseAdapter {
       _trustedRemotes[originConfig.originChainId] = originConfig.originForwarder;
       emit SetTrustedRemote(originConfig.originChainId, originConfig.originForwarder);
     }
-  }
-
-  /// @inheritdoc IBaseAdapter
-  function getAdapterName() external view returns (string memory) {
-    return _adapterName;
   }
 
   /// @inheritdoc IBaseAdapter

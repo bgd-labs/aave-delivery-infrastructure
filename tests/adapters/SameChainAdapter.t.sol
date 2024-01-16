@@ -15,7 +15,7 @@ contract SameChainAdapterTest is Test {
     sameChainAdapter = new SameChainAdapter();
 
     assertEq(
-      keccak256(abi.encode(sameChainAdapter.getAdapterName())),
+      keccak256(abi.encode(sameChainAdapter.adapterName())),
       keccak256(abi.encode('SameChain adapter'))
     );
   }

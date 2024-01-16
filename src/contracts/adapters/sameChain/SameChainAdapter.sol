@@ -48,7 +48,7 @@ contract SameChainAdapter is IBaseAdapter {
   }
 
   /// @inheritdoc IBaseAdapter
-  function getAdapterName() external view virtual returns (string memory) {
+  function adapterName() external view virtual returns (string memory) {
     return 'SameChain adapter';
   }
 

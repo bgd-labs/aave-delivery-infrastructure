@@ -62,11 +62,11 @@ contract PolygonAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(polygonAdapterEthereum.getAdapterName())),
+      keccak256(abi.encode(polygonAdapterEthereum.adapterName())),
       keccak256(abi.encode('Polygon native adapter'))
     );
     assertEq(
-      keccak256(abi.encode(polygonAdapterPolygon.getAdapterName())),
+      keccak256(abi.encode(polygonAdapterPolygon.adapterName())),
       keccak256(abi.encode('Polygon native adapter'))
     );
     assertEq(

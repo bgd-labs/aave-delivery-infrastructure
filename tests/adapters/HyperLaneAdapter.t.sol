@@ -46,7 +46,7 @@ contract HyperLaneAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(hlAdapter.getAdapterName())),
+      keccak256(abi.encode(hlAdapter.adapterName())),
       keccak256(abi.encode('Hyperlane adapter'))
     );
     assertEq(hlAdapter.getTrustedRemoteByChainId(ORIGIN_HL_CHAIN_ID), ORIGIN_FORWARDER);

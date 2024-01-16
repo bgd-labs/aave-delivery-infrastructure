@@ -50,7 +50,7 @@ contract CCIPAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(ccipAdapter.getAdapterName())),
+      keccak256(abi.encode(ccipAdapter.adapterName())),
       keccak256(abi.encode('CCIP adapter'))
     );
     assertEq(ccipAdapter.getTrustedRemoteByChainId(ORIGIN_CCIP_CHAIN_ID), ORIGIN_FORWARDER);

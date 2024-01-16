@@ -42,7 +42,7 @@ contract GnosisChainAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(gnosisChainAdapter.getAdapterName())),
+      keccak256(abi.encode(gnosisChainAdapter.adapterName())),
       keccak256(abi.encode('Gnosis native adapter'))
     );
     assertEq(gnosisChainAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), ORIGIN_FORWARDER);

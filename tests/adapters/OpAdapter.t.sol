@@ -42,7 +42,7 @@ contract OpAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(opAdapter.getAdapterName())),
+      keccak256(abi.encode(opAdapter.adapterName())),
       keccak256(abi.encode('Optimism native adapter'))
     );
     assertEq(opAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), ORIGIN_FORWARDER);

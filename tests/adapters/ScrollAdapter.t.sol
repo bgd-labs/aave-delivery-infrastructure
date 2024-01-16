@@ -49,7 +49,7 @@ contract ScrollAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(scrollAdapter.getAdapterName())),
+      keccak256(abi.encode(scrollAdapter.adapterName())),
       keccak256(abi.encode('Scroll native adapter'))
     );
     assertEq(scrollAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), ORIGIN_FORWARDER);

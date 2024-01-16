@@ -54,11 +54,11 @@ contract ZkEvmAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(zkEvmAdapterPolygonZkEvm.getAdapterName())),
+      keccak256(abi.encode(zkEvmAdapterPolygonZkEvm.adapterName())),
       keccak256(abi.encode('Polygon ZkEvm native adapter'))
     );
     assertEq(
-      keccak256(abi.encode(zkEvmAdapterEthereum.getAdapterName())),
+      keccak256(abi.encode(zkEvmAdapterEthereum.adapterName())),
       keccak256(abi.encode('Polygon ZkEvm native adapter'))
     );
     assertEq(
