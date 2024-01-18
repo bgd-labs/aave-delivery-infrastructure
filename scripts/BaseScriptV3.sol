@@ -46,6 +46,7 @@ library DeployerHelpers {
     address proxyFactory;
     address sameChainAdapter;
     address scrollAdapter;
+    uint256 version;
     address zkevmAdapter;
   }
 
@@ -160,7 +161,8 @@ library DeployerHelpers {
       baseAdapter: abi.decode(persistedJson.parseRaw('.baseAdapter'), (address)),
       zkevmAdapter: abi.decode(persistedJson.parseRaw('.zkevmAdapter'), (address)),
       gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address)),
-      scrollAdapter: abi.decode(persistedJson.parseRaw('.scrollAdapter'), (address))
+      scrollAdapter: abi.decode(persistedJson.parseRaw('.scrollAdapter'), (address)),
+      version: abi.decode(persistedJson.parseRaw('.version'), (uint256))
     });
 
     return addresses;
@@ -190,6 +192,7 @@ library DeployerHelpers {
     json.serialize('proxyFactory', addresses.proxyFactory);
     json.serialize('sameChainAdapter', addresses.sameChainAdapter);
     json.serialize('scrollAdapter', addresses.scrollAdapter);
+    json.serialize('version', addresses.version);
     json = json.serialize('zkevmAdapter', addresses.zkevmAdapter);
     vm.writeJson(json, path);
   }
@@ -235,11 +238,11 @@ abstract contract BaseScript is Script {
     // ----------------- Persist addresses -----------------------------------------------------------------------------
     uint256 chainId = TRANSACTION_NETWORK();
     DeployerHelpers.Addresses memory addresses = _getAddresses(chainId);
-    DeploymentConfiguration.ChainDeploymentInfo memory deploymentConfig = DeploymentConfiguration
-      ._getConfigurationByChainId(chainId, DeployerHelpers.getPathByChainId(chainId));
-
-    // -----------------------------------------------------------------------------------------------------------------
-    _execute(addresses, deploymentConfig);
+    //    DeploymentConfiguration.ChainDeploymentInfo memory deploymentConfig = DeploymentConfiguration
+    //      ._getConfigurationByChainId(chainId, DeployerHelpers.getPathByChainId(chainId));
+    //
+    //    // -----------------------------------------------------------------------------------------------------------------
+    //    _execute(addresses, deploymentConfig);
     // ----------------- Persist addresses -----------------------------------------------------------------------------
     _setAddresses(chainId, addresses);
     // -----------------------------------------------------------------------------------------------------------------

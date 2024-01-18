@@ -8,16 +8,19 @@
           "remoteNetworks": []
         }
       },
-      "forwarderConnections": [
-        {
-          "destinationChainId": 534352,
-          "scrollAdapter": true
-        }
-      ]
+      "forwarderConnections": {
+        "chainIds": [534352, 137],
+        "534352": [9],
+        "137": [1,4,7,8]
+      },
+      "ReceiverConnections": {
+        "chainIds": [137],
+        "137": [1,4,7,8]
+      }
     },
     {
       "adapters": {
-        "arbAdapter": {
+        "scrollAdapter": {
           "inbox": "0x0000000000000000000000000000000000000000",
           "remoteNetworks": [
             {
@@ -50,12 +53,10 @@
           "salt": "Some salt here"
         }
       },
-      "receiverConnections": [
-        {
-          "origin": 1,
-          "adapter": "scrollAdapter"
-        }
-      ]
+      "ReceiverConnections": {
+        "chainIds": [1],
+        "137": [9]
+      }
     }
   ]
 }

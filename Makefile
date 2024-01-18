@@ -44,6 +44,16 @@ define deploy_fn
  $(foreach network,$(2),$(call deploy_single_fn,$(1),$(network),$(3)))
 endef
 
+
+#----------------------------------------
+deploy-new-test:
+	DEPLOYMENT_VERSION=2 forge script scripts/new/JsonDeployment.s.sol
+
+
+
+
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- PRODUCTION DEPLOYMENT SCRIPTS ---------------------------------------------------------
 

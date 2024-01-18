@@ -1,0 +1,43 @@
+{
+  "chains": [1,534352],
+  "1": {
+    "adapters": {
+      "scrollAdapter": {
+        "remoteNetworks": []
+      }
+    },
+    "chainId": 1,
+    "forwarderConnections": {
+      "chainIds": [534352, 137],
+      "scroll": [9],
+      "polygon": [1,4,7,8]
+    },
+    "receiverConnections": {
+      "chainIds": [137],
+      "polygon": [1,4,7,8]
+    }
+  },
+  "534352":{
+    "adapters": {
+      "scrollAdapter": {
+        "inbox": "0x0040000000000000000000000000000000000000",
+        "remoteNetworks": [1,2]
+      }
+    },
+    "ccc": {
+      "approvedSenders": [],
+      "clEmergencyOracle": "0x0000000000000000000000000000000000000000",
+      "confirmations": 1,
+      "ethFunds": 200000,
+      "guardian": "0x0000000000000000000000000000000000000000",
+      "owner": "0x0000000000000000000000000000000000000000",
+      "salt": "CrossChainController salt"
+    },
+    "chainId": 534352,
+    "receiverConnections": {
+      "chainIds": [1],
+      "ethereum": [9]
+    }
+  }
+
+}
