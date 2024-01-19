@@ -34,6 +34,19 @@
       "salt": "CrossChainController salt"
     },
     "chainId": 534352,
+    "proxies": {
+      "create3": {
+        "salt": "Create3 Factory"
+      },
+      "proxyAdmin": {
+        "deployedAddress": "0x0000000000000000000000000000000000000003",
+        "salt": "Proxy Admin salt"
+      },
+      "transparentProxyFactory": {
+        "deployedAddress": "",
+        "salt": "Some salt here"
+      }
+    },
     "receiverConnections": {
       "chainIds": [1],
       "ethereum": [9]

@@ -4,7 +4,7 @@ pragma solidity ^0.8.12;
 import '../DeploymentConfiguration.sol';
 
 contract JsonDeployment is DeploymentConfigurationHelpers, Script {
-  function _getDeploymentConfig() internal returns (ChainDeploymentInfo[] memory) {
+  function _getDeploymentConfig() internal view returns (ChainDeploymentInfo[] memory) {
     // get deployment json path
     string memory key = 'DEPLOYMENT_VERSION';
     // check that file with version exists and that it has not already been used (> current version)
@@ -21,7 +21,7 @@ contract JsonDeployment is DeploymentConfigurationHelpers, Script {
     ChainDeploymentInfo[] memory config = _getDeploymentConfig();
 
     for (uint256 i = 0; i < config.length; i++) {
-      console.log('chainId', config[i].chainId);
+      console.log('chainId', config[i].proxies.proxyAdmin.deployedAddress);
     }
   }
 }

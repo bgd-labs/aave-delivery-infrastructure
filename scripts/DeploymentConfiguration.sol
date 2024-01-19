@@ -47,7 +47,7 @@ struct ProxyInfo {
   string salt;
 }
 
-struct ProxyContract {
+struct ProxyContracts {
   ProxyInfo create3;
   ProxyInfo proxyAdmin;
   ProxyInfo transparentProxyFactory;
@@ -68,7 +68,7 @@ struct ChainDeploymentInfo {
   CCC ccc;
   uint256 chainId;
   Connections forwarderConnections;
-  //  ProxyContract[] proxies;
+  ProxyContracts proxies;
   Connections receiverConnections;
 }
 
@@ -91,6 +91,7 @@ contract DeploymentConfigurationHelpers {
   using stdJson for string;
   using StringUtils for string;
 
+  // TODO: correctly import Addresses. this method will be useful to get the correct adapter
   //  function _getAdapterById(
   //    Addresses memory addresses,
   //    Adapters adapter
@@ -170,7 +171,7 @@ contract DeploymentConfigurationHelpers {
 
   function _getCurrentDeploymentPathByChainId(
     uint256 chainId
-  ) internal view returns (string memory) {
+  ) internal pure returns (string memory) {
     string memory path = string.concat('./deployments/current/', _getChainNameById(chainId));
     return string.concat(path, '.json');
   }
@@ -178,25 +179,32 @@ contract DeploymentConfigurationHelpers {
   function _getNetworkRevisionDeploymentPath(
     uint256 chainId,
     string memory revision
-  ) internal view returns (string memory) {
+  ) internal pure returns (string memory) {
     string memory networkName = string.concat(_getChainNameById(chainId), '_');
     string memory networkWithRevision = string.concat(networkName, revision);
     string memory path = string.concat('./deployments/revisions/', networkWithRevision);
     return string.concat(path, '.json');
   }
 
-  function decodeAddress(string memory path, string memory json) external view returns (address) {
+  function decodeAddress(string memory path, string memory json) external pure returns (address) {
     return abi.decode(json.parseRaw(path), (address));
   }
 
-  function decodeUint256(string memory path, string memory json) external view returns (uint256) {
+  function decodeUint256(string memory path, string memory json) external pure returns (uint256) {
     return abi.decode(json.parseRaw(path), (uint256));
+  }
+
+  function decodeString(
+    string memory path,
+    string memory json
+  ) external pure returns (string memory) {
+    return abi.decode(json.parseRaw(path), (string));
   }
 
   function decodeUint256Array(
     string memory path,
     string memory json
-  ) external view returns (uint256[] memory) {
+  ) external pure returns (uint256[] memory) {
     return abi.decode(json.parseRaw(path), (uint256[]));
   }
 
@@ -229,7 +237,7 @@ contract DeploymentConfigurationHelpers {
   function decodeCCIPAdapter(
     string memory adapterKey,
     string memory json
-  ) external view returns (CCIPAdapterInfo memory) {
+  ) external pure returns (CCIPAdapterInfo memory) {
     string memory ccipAdapterKey = string.concat(adapterKey, 'ccipAdapter.');
     CCIPAdapterInfo memory ccipAdapter = CCIPAdapterInfo({
       ccipRouter: abi.decode(json.parseRaw(string.concat(ccipAdapterKey, 'ccipRouter')), (address)),
@@ -269,7 +277,7 @@ contract DeploymentConfigurationHelpers {
   function decodeCCC(
     string memory firstLvlKey,
     string memory json
-  ) external view returns (CCC memory) {
+  ) external pure returns (CCC memory) {
     string memory cccKey = string.concat(firstLvlKey, 'ccc.');
     CCC memory ccc = CCC({
       approvedSenders: abi.decode(
@@ -344,6 +352,46 @@ contract DeploymentConfigurationHelpers {
     return connections;
   }
 
+  function _decodeProxyByType(
+    string memory proxiesKey,
+    string memory proxyType,
+    string memory json
+  ) internal view returns (ProxyInfo memory) {
+    string memory proxyPath = string.concat(proxiesKey, proxyType);
+    string memory proxyKey = string.concat(proxyPath, '.');
+
+    string memory salt;
+    try this.decodeString(string.concat(proxyKey, 'salt'), json) returns (
+      string memory decodedSalt
+    ) {
+      salt = decodedSalt;
+    } catch (bytes memory) {}
+
+    address deployedAddress;
+    try this.decodeAddress(string.concat(proxyKey, 'deployedAddress'), json) returns (
+      address decodedDeployedAddress
+    ) {
+      deployedAddress = decodedDeployedAddress;
+    } catch (bytes memory) {}
+
+    return ProxyInfo({deployedAddress: deployedAddress, salt: salt});
+  }
+
+  function _decodeProxies(
+    string memory networkKey1rstLvl,
+    string memory json
+  ) internal view returns (ProxyContracts memory) {
+    string memory proxiesKey = string.concat(networkKey1rstLvl, 'proxies.');
+
+    ProxyContracts memory proxies = ProxyContracts({
+      proxyAdmin: _decodeProxyByType(proxiesKey, 'proxyAdmin', json),
+      transparentProxyFactory: _decodeProxyByType(proxiesKey, 'transparentProxyFactory', json),
+      create3: _decodeProxyByType(proxiesKey, 'create3', json)
+    });
+
+    return proxies;
+  }
+
   function _decodeConfig(
     string memory deploymentJsonPath,
     Vm vm
@@ -382,12 +430,16 @@ contract DeploymentConfigurationHelpers {
       );
       deploymentConfigs[i].forwarderConnections = forwarderConnections;
 
+      // decode receiving connections
       Connections memory receiverConnections = _decodeConnections(
         networkKey1rstLvl,
         'receiverConnections',
         json
       );
       deploymentConfigs[i].receiverConnections = receiverConnections;
+
+      // decoding proxy contracts
+      deploymentConfigs[i].proxies = _decodeProxies(networkKey1rstLvl, json);
 
       console.log('remote network', deploymentConfigs[i].receiverConnections.ethereum.length);
     }
