@@ -2,24 +2,66 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Script.sol';
-import 'forge-std/Vm.sol';
+import 'forge-std/console.sol';
 import './libs/DecodeHelpers.sol';
 import {Strings} from 'openzeppelin-contracts/contracts/utils/Strings.sol';
 
-contract DeploymentConfigurationHelpers {
-  // TODO: correctly import Addresses. this method will be useful to get the correct adapter
-  //  function _getAdapterById(
-  //    Addresses memory addresses,
-  //    Adapters adapter
-  //  ) internal view returns (address) {
-  //    if (adapter == Adapters.CCIP) {
-  //      return addresses.ccipAdapter;
-  //    } else if (adapter == Adapters.Scroll_Native) {
-  //      return addresses.scrollAdapter;
-  //    } else {
-  //      return address(0);
-  //    }
-  //  }
+contract DeploymentConfigurationHelpers is Script {
+  function getAddresses(string memory path, Vm vm) external view returns (Addresses memory) {
+    string memory json = vm.readFile(path);
+
+    return AddressesHelpers.decodeAddressesJson(json);
+  }
+
+  function _getRevisionAddressesByChainId(
+    uint256 chainId,
+    string memory revision,
+    Vm vm
+  ) internal view returns (Addresses memory) {
+    string memory path = PathHelpers.getNetworkRevisionDeploymentPath(chainId, revision);
+
+    Addresses memory addresses;
+    try this.getAddresses(path, vm) returns (Addresses memory decodedAddresses) {
+      addresses = decodedAddresses;
+    } catch (bytes memory) {}
+
+    return addresses;
+  }
+
+  function _getCurrentAddressesByChainId(
+    uint256 chainId,
+    Vm vm
+  ) internal view returns (Addresses memory) {
+    string memory path = PathHelpers.getCurrentDeploymentPathByChainId(chainId);
+
+    Addresses memory addresses;
+    try this.getAddresses(path, vm) returns (Addresses memory decodedAddresses) {
+      addresses = decodedAddresses;
+    } catch (bytes memory) {}
+
+    return addresses;
+  }
+
+  function _setCurrentDeploymentAddresses(
+    uint256 chainId,
+    Addresses memory addresses,
+    Vm vm
+  ) internal {
+    string memory path = PathHelpers.getCurrentDeploymentPathByChainId(chainId);
+
+    return AddressesHelpers.saveAddresses(path, addresses, vm);
+  }
+
+  function _setRevisionAddresses(
+    uint256 chainId,
+    string memory revision,
+    Addresses memory addresses,
+    Vm vm
+  ) internal {
+    string memory path = PathHelpers.getNetworkRevisionDeploymentPath(chainId, revision);
+
+    return AddressesHelpers.saveAddresses(path, addresses, vm);
+  }
 
   function _getConfigurationConfig(
     string memory deploymentJsonPath,
@@ -84,7 +126,7 @@ contract DeploymentConfigurationHelpers {
     uint256 chainId,
     string memory deploymentJsonPath,
     Vm vm
-  ) internal returns (ChainDeploymentInfo memory) {
+  ) internal view returns (ChainDeploymentInfo memory) {
     ChainDeploymentInfo[] memory deploymentConfigs = _getConfigurationConfig(
       deploymentJsonPath,
       vm
@@ -100,5 +142,44 @@ contract DeploymentConfigurationHelpers {
     }
 
     return deploymentConfig;
+  }
+
+  function run() public {
+    vm.startBroadcast();
+    // -----------------------------------------------------------------------------------------------------------------
+
+    // get deployment json path
+    string memory key = 'DEPLOYMENT_VERSION';
+
+    // get configuration
+    string memory revision = vm.envString(key);
+    string memory deploymentConfigJsonPath = PathHelpers.getDeploymentJsonPathByVersion(revision);
+    ChainDeploymentInfo[] memory config = _getConfigurationConfig(deploymentConfigJsonPath, vm);
+
+    // ----------------- Persist addresses -----------------------------------------------------------------------------
+    for (uint256 i = 0; i < config.length; i++) {
+      // fetch current addresses
+      Addresses memory currentAddresses = _getCurrentAddressesByChainId(config[i].chainId, vm);
+      // fetch revision addresses
+      Addresses memory revisionAddresses = _getRevisionAddressesByChainId(
+        config[i].chainId,
+        revision,
+        vm
+      );
+
+      // TODO: define how we want to actually deploy.
+      // - Multi chain script: we would only need one script and add checks and so on to change networks
+      // - Different scripts: maintain makeFile with different script triggers, all of them getting same config. We would
+      //   need to add getting specific config for specific chain etc etc. Provably easier to verify and make more granular?
+      // _execute(addresses, deploymentConfig);
+
+      // save revision addresses
+      _setRevisionAddresses(config[i].chainId, revision, revisionAddresses, vm);
+      // save current addresses
+      _setCurrentDeploymentAddresses(config[i].chainId, currentAddresses, vm);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    vm.stopBroadcast();
   }
 }

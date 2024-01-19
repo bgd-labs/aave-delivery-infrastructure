@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/StdJson.sol';
+import 'forge-std/Vm.sol';
 import './PathHelpers.sol';
 
 library BaseDecodeHelpers {
@@ -110,10 +111,24 @@ library DeployJsonDecodeHelpers {
   using stdJson for string;
   using StringUtils for string;
 
+  // TODO: correctly import Addresses. this method will be useful to get the correct adapter
+  //  function _getAdapterById(
+  //    Addresses memory addresses,
+  //    Adapters adapter
+  //  ) internal view returns (address) {
+  //    if (adapter == Adapters.CCIP) {
+  //      return addresses.ccipAdapter;
+  //    } else if (adapter == Adapters.Scroll_Native) {
+  //      return addresses.scrollAdapter;
+  //    } else {
+  //      return address(0);
+  //    }
+  //  }
+
   function decodeScrollAdapter(
     string memory adapterKey,
     string memory json
-  ) internal view returns (ScrollAdapterInfo memory) {
+  ) internal pure returns (ScrollAdapterInfo memory) {
     string memory scrollAdapterKey = string.concat(adapterKey, 'scrollAdapter.');
     address inbox;
 
@@ -172,7 +187,7 @@ library DeployJsonDecodeHelpers {
   function decodeAdapters(
     string memory firstLvlKey,
     string memory json
-  ) internal view returns (AdaptersDeploymentInfo memory) {
+  ) internal pure returns (AdaptersDeploymentInfo memory) {
     string memory adaptersKey = string.concat(firstLvlKey, 'adapters.');
 
     AdaptersDeploymentInfo memory adapters = AdaptersDeploymentInfo({
@@ -210,7 +225,7 @@ library DeployJsonDecodeHelpers {
     string memory firstLvlKey,
     string memory connectionType,
     string memory json
-  ) internal view returns (Connections memory) {
+  ) internal pure returns (Connections memory) {
     string memory connectionTypeKey = string.concat(connectionType, '.');
     string memory connectionsKey = string.concat(firstLvlKey, connectionTypeKey);
     Connections memory connections;
@@ -267,7 +282,7 @@ library DeployJsonDecodeHelpers {
     string memory proxiesKey,
     string memory proxyType,
     string memory json
-  ) internal view returns (ProxyInfo memory) {
+  ) internal pure returns (ProxyInfo memory) {
     string memory proxyPath = string.concat(proxiesKey, proxyType);
     string memory proxyKey = string.concat(proxyPath, '.');
 
@@ -291,7 +306,7 @@ library DeployJsonDecodeHelpers {
   function decodeProxies(
     string memory networkKey1rstLvl,
     string memory json
-  ) internal view returns (ProxyContracts memory) {
+  ) internal pure returns (ProxyContracts memory) {
     string memory proxiesKey = string.concat(networkKey1rstLvl, 'proxies.');
 
     ProxyContracts memory proxies = ProxyContracts({
@@ -306,11 +321,102 @@ library DeployJsonDecodeHelpers {
   function decodeChainId(
     string memory networkKey1rstLvl,
     string memory json
-  ) internal view returns (uint256) {
+  ) internal pure returns (uint256) {
     return abi.decode(json.parseRaw(string.concat(networkKey1rstLvl, 'chainId')), (uint256));
   }
 
-  function decodeChains(string memory json) internal view returns (uint256[] memory) {
+  function decodeChains(string memory json) internal pure returns (uint256[] memory) {
     return abi.decode(json.parseRaw('.chains'), (uint256[]));
+  }
+}
+
+struct Addresses {
+  address arbAdapter;
+  address baseAdapter;
+  address ccipAdapter;
+  uint256 chainId;
+  address clEmergencyOracle;
+  address create3Factory;
+  address crossChainController;
+  address crossChainControllerImpl;
+  address emergencyRegistry;
+  address gnosisAdapter;
+  address guardian;
+  address hlAdapter;
+  address lzAdapter;
+  address metisAdapter;
+  address mockDestination;
+  address opAdapter;
+  address owner;
+  address polAdapter;
+  address proxyAdmin;
+  address proxyFactory;
+  address sameChainAdapter;
+  address scrollAdapter;
+  uint256 version;
+  address zkevmAdapter;
+}
+
+library AddressesHelpers {
+  using stdJson for string;
+
+  function decodeAddressesJson(string memory json) external pure returns (Addresses memory) {
+    Addresses memory addresses = Addresses({
+      proxyAdmin: abi.decode(json.parseRaw('.proxyAdmin'), (address)),
+      proxyFactory: abi.decode(json.parseRaw('.proxyFactory'), (address)),
+      owner: abi.decode(json.parseRaw('.owner'), (address)),
+      guardian: abi.decode(json.parseRaw('.guardian'), (address)),
+      clEmergencyOracle: abi.decode(json.parseRaw('.clEmergencyOracle'), (address)),
+      create3Factory: abi.decode(json.parseRaw('.create3Factory'), (address)),
+      crossChainController: abi.decode(json.parseRaw('.crossChainController'), (address)),
+      crossChainControllerImpl: abi.decode(json.parseRaw('.crossChainControllerImpl'), (address)),
+      ccipAdapter: abi.decode(json.parseRaw('.ccipAdapter'), (address)),
+      sameChainAdapter: abi.decode(json.parseRaw('.sameChainAdapter'), (address)),
+      chainId: abi.decode(json.parseRaw('.chainId'), (uint256)),
+      emergencyRegistry: abi.decode(json.parseRaw('.emergencyRegistry'), (address)),
+      lzAdapter: abi.decode(json.parseRaw('.lzAdapter'), (address)),
+      hlAdapter: abi.decode(json.parseRaw('.hlAdapter'), (address)),
+      opAdapter: abi.decode(json.parseRaw('.opAdapter'), (address)),
+      arbAdapter: abi.decode(json.parseRaw('.arbAdapter'), (address)),
+      metisAdapter: abi.decode(json.parseRaw('.metisAdapter'), (address)),
+      polAdapter: abi.decode(json.parseRaw('.polAdapter'), (address)),
+      mockDestination: abi.decode(json.parseRaw('.mockDestination'), (address)),
+      baseAdapter: abi.decode(json.parseRaw('.baseAdapter'), (address)),
+      zkevmAdapter: abi.decode(json.parseRaw('.zkevmAdapter'), (address)),
+      gnosisAdapter: abi.decode(json.parseRaw('.gnosisAdapter'), (address)),
+      scrollAdapter: abi.decode(json.parseRaw('.scrollAdapter'), (address)),
+      version: abi.decode(json.parseRaw('.version'), (uint256))
+    });
+
+    return addresses;
+  }
+
+  function saveAddresses(string memory path, Addresses memory addresses, Vm vm) internal {
+    string memory json = 'addresses';
+    json.serialize('arbAdapter', addresses.arbAdapter);
+    json.serialize('baseAdapter', addresses.baseAdapter);
+    json.serialize('ccipAdapter', addresses.ccipAdapter);
+    json.serialize('chainId', addresses.chainId);
+    json.serialize('clEmergencyOracle', addresses.clEmergencyOracle);
+    json.serialize('create3Factory', addresses.create3Factory);
+    json.serialize('crossChainController', addresses.crossChainController);
+    json.serialize('crossChainControllerImpl', addresses.crossChainControllerImpl);
+    json.serialize('emergencyRegistry', addresses.emergencyRegistry);
+    json.serialize('gnosisAdapter', addresses.gnosisAdapter);
+    json.serialize('guardian', addresses.guardian);
+    json.serialize('hlAdapter', addresses.hlAdapter);
+    json.serialize('lzAdapter', addresses.lzAdapter);
+    json.serialize('metisAdapter', addresses.metisAdapter);
+    json.serialize('mockDestination', addresses.mockDestination);
+    json.serialize('opAdapter', addresses.opAdapter);
+    json.serialize('owner', addresses.owner);
+    json.serialize('polAdapter', addresses.polAdapter);
+    json.serialize('proxyAdmin', addresses.proxyAdmin);
+    json.serialize('proxyFactory', addresses.proxyFactory);
+    json.serialize('sameChainAdapter', addresses.sameChainAdapter);
+    json.serialize('scrollAdapter', addresses.scrollAdapter);
+    json.serialize('version', addresses.version);
+    json = json.serialize('zkevmAdapter', addresses.zkevmAdapter);
+    vm.writeJson(json, path);
   }
 }
