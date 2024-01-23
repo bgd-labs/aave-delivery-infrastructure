@@ -32,9 +32,9 @@ custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 #  to use ledger, set LEDGER=true to env
 #  default to testnet deployment, to run production, set PROD=true to env
 define deploy_single_fn
-IS_TESTNET=$(if $(PROD),false,true) NETWORK=$(2) forge script \
- scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
- --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify --slow -vvvv \
+IS_TESTNET=$(if $(PROD),false,true) DEPLOYMENT_VERSION=$(2) forge script \
+ scripts/$(1).s.sol:$(if $(3),$(3),$(1)) \
+ --multi --broadcast --verify --slow -vvvv \
  $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
  $(custom_$(if $(PROD),$(2),$(2)-testnet))
 
@@ -47,7 +47,7 @@ endef
 
 #----------------------------------------
 deploy-new-test:
-	DEPLOYMENT_VERSION=2 forge script scripts/new/JsonDeployment.s.sol
+	DEPLOYMENT_VERSION=0 forge script scripts/new/JsonDeployment.s.sol
 
 
 
@@ -63,7 +63,7 @@ deploy-emergency-registry:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:
-	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
+	$(call deploy_fn,InitialDeployments,0)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra:

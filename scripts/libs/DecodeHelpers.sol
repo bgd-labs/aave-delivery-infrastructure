@@ -65,6 +65,7 @@ struct AdaptersDeploymentInfo {
 struct ProxyInfo {
   address deployedAddress;
   string salt;
+  address owner;
 }
 
 struct ProxyContracts {
@@ -78,8 +79,6 @@ struct CCC {
   address clEmergencyOracle;
   uint8 confirmations;
   uint256 ethFunds;
-  address guardian;
-  address owner;
   string salt;
 }
 
@@ -88,6 +87,7 @@ struct ChainDeploymentInfo {
   CCC ccc;
   uint256 chainId;
   Connections forwarderConnections;
+  address guardian;
   ProxyContracts proxies;
   Connections receiverConnections;
 }
@@ -198,6 +198,18 @@ library DeployJsonDecodeHelpers {
     return adapters;
   }
 
+  function decodeAddress(
+    string memory addressKey,
+    string memory json
+  ) internal pure returns (address) {
+    address addressDecoded;
+    try BaseDecodeHelpers.decodeAddress(addressKey, json) returns (address decodedAddress) {
+      addressDecoded = decodedAddress;
+    } catch (bytes memory) {}
+
+    return addressDecoded;
+  }
+
   function decodeCCC(
     string memory firstLvlKey,
     string memory json
@@ -214,8 +226,6 @@ library DeployJsonDecodeHelpers {
       ),
       confirmations: abi.decode(json.parseRaw(string.concat(cccKey, 'confirmations')), (uint8)),
       ethFunds: abi.decode(json.parseRaw(string.concat(cccKey, 'ethFunds')), (uint256)),
-      owner: abi.decode(json.parseRaw(string.concat(cccKey, 'owner')), (address)),
-      guardian: abi.decode(json.parseRaw(string.concat(cccKey, 'guardian')), (address)),
       salt: abi.decode(json.parseRaw(string.concat(cccKey, 'salt')), (string))
     });
     return ccc;
@@ -300,7 +310,14 @@ library DeployJsonDecodeHelpers {
       deployedAddress = decodedDeployedAddress;
     } catch (bytes memory) {}
 
-    return ProxyInfo({deployedAddress: deployedAddress, salt: salt});
+    address owner;
+    try BaseDecodeHelpers.decodeAddress(string.concat(proxyKey, 'owner'), json) returns (
+      address decodedOwner
+    ) {
+      owner = decodedOwner;
+    } catch (bytes memory) {}
+
+    return ProxyInfo({deployedAddress: deployedAddress, salt: salt, owner: owner});
   }
 
   function decodeProxies(
