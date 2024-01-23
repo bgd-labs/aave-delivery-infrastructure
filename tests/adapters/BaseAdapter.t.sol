@@ -10,7 +10,7 @@ contract MockAdapter is BaseAdapter {
     address crossChainController,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {}
+  ) BaseAdapter(crossChainController, providerGasLimit, 'Base adapter', trustedRemotes) {}
 
   function forwardMessage(
     address,

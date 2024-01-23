@@ -62,6 +62,14 @@ contract PolygonAdapterTest is Test {
 
   function testInitialize() public {
     assertEq(
+      keccak256(abi.encode(polygonAdapterEthereum.adapterName())),
+      keccak256(abi.encode('Polygon native adapter'))
+    );
+    assertEq(
+      keccak256(abi.encode(polygonAdapterPolygon.adapterName())),
+      keccak256(abi.encode('Polygon native adapter'))
+    );
+    assertEq(
       polygonAdapterEthereum.getTrustedRemoteByChainId(DESTINATION_CHAIN_ID),
       CROSS_CHAIN_CONTROLLER
     );

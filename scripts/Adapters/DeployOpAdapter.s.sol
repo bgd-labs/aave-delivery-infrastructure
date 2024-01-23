@@ -27,7 +27,13 @@ abstract contract BaseOpAdapter is BaseAdapterScript {
       );
     } else {
       addresses.opAdapter = address(
-        new OpAdapter(addresses.crossChainController, OVM(), GET_BASE_GAS_LIMIT(), trustedRemotes)
+        new OpAdapter(
+          addresses.crossChainController,
+          OVM(),
+          GET_BASE_GAS_LIMIT(),
+          'Optimism native adapter',
+          trustedRemotes
+        )
       );
     }
   }
