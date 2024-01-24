@@ -63,7 +63,7 @@ deploy-emergency-registry:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:
-	$(call deploy_fn,InitialDeployments,0)
+	$(call deploy_fn,InitialDeployments,1)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra:

@@ -1,0 +1,19 @@
+{
+  "chains": [80001, 43113],
+  "80001": {
+    "chainId": 80001,
+    "proxies": {
+      "create3": {
+        "salt": "Create3 2 salt"
+      }
+    }
+  },
+  "43113": {
+    "chainId": 43113,
+    "proxies": {
+      "create3": {
+        "salt": "Create3 salt"
+      }
+    }
+  }
+}

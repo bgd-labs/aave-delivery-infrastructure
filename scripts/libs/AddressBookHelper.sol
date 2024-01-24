@@ -13,6 +13,8 @@ import {MiscBase} from 'aave-address-book/MiscBase.sol';
 import {MiscGnosis} from 'aave-address-book/MiscGnosis.sol';
 import {MiscScroll} from 'aave-address-book/MiscScroll.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
+import {TestNetChainIds} from '../contract_extensions/TestNetChainIds.sol';
+import {MiscSepolia} from 'aave-address-book/MiscSepolia.sol';
 
 library AddressBookMiscHelper {
   function getTransparentProxyFactory(uint256 chainId) internal pure returns (address) {
@@ -38,6 +40,16 @@ library AddressBookMiscHelper {
       return MiscGnosis.TRANSPARENT_PROXY_FACTORY;
     } else if (chainId == ChainIds.SCROLL) {
       return MiscScroll.TRANSPARENT_PROXY_FACTORY;
+    }
+    // Testnets
+    else if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+      return MiscSepolia.TRANSPARENT_PROXY_FACTORY;
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
+      return address(0);
     } else {
       return address(0);
     }
@@ -66,6 +78,16 @@ library AddressBookMiscHelper {
       return MiscGnosis.PROXY_ADMIN;
     } else if (chainId == ChainIds.SCROLL) {
       return MiscScroll.PROXY_ADMIN;
+    }
+    // Testnets
+    else if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+      return MiscSepolia.PROXY_ADMIN;
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
+      return address(0);
     } else {
       return address(0);
     }
@@ -95,6 +117,16 @@ library AddressBookMiscHelper {
     } else if (chainId == ChainIds.SCROLL) {
       //      return MiscScroll.CREATE_3_FACTORY;
       return address(0);
+    }
+    // Testnets
+    else if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
+      return address(0);
     } else {
       return address(0);
     }
@@ -123,6 +155,16 @@ library AddressBookMiscHelper {
       return MiscGnosis.PROTOCOL_GUARDIAN;
     } else if (chainId == ChainIds.SCROLL) {
       return MiscScroll.PROTOCOL_GUARDIAN;
+    }
+    // Testnets
+    else if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
+      return address(0);
     } else {
       return address(0);
     }

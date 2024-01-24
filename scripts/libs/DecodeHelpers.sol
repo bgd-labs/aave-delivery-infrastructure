@@ -5,32 +5,6 @@ import 'forge-std/StdJson.sol';
 import 'forge-std/Vm.sol';
 import './PathHelpers.sol';
 
-library BaseDecodeHelpers {
-  using stdJson for string;
-
-  function decodeAddress(string memory path, string memory json) external pure returns (address) {
-    return abi.decode(json.parseRaw(path), (address));
-  }
-
-  function decodeUint256(string memory path, string memory json) external pure returns (uint256) {
-    return abi.decode(json.parseRaw(path), (uint256));
-  }
-
-  function decodeString(
-    string memory path,
-    string memory json
-  ) external pure returns (string memory) {
-    return abi.decode(json.parseRaw(path), (string));
-  }
-
-  function decodeUint256Array(
-    string memory path,
-    string memory json
-  ) external pure returns (uint256[] memory) {
-    return abi.decode(json.parseRaw(path), (uint256[]));
-  }
-}
-
 struct ScrollAdapterInfo {
   address inbox;
   uint256[] remoteNetworks;
@@ -107,9 +81,31 @@ enum Adapters {
   Base_Native
 }
 
-library DeployJsonDecodeHelpers {
+contract DeployJsonDecodeHelpers {
   using stdJson for string;
   using StringUtils for string;
+
+  function decodeAddress(string memory path, string memory json) external pure returns (address) {
+    return abi.decode(json.parseRaw(path), (address));
+  }
+
+  function decodeUint256(string memory path, string memory json) external pure returns (uint256) {
+    return abi.decode(json.parseRaw(path), (uint256));
+  }
+
+  function decodeString(
+    string memory path,
+    string memory json
+  ) external pure returns (string memory) {
+    return abi.decode(json.parseRaw(path), (string));
+  }
+
+  function decodeUint256Array(
+    string memory path,
+    string memory json
+  ) external pure returns (uint256[] memory) {
+    return abi.decode(json.parseRaw(path), (uint256[]));
+  }
 
   // TODO: correctly import Addresses. this method will be useful to get the correct adapter
   //  function _getAdapterById(
@@ -128,22 +124,26 @@ library DeployJsonDecodeHelpers {
   function decodeScrollAdapter(
     string memory adapterKey,
     string memory json
-  ) internal pure returns (ScrollAdapterInfo memory) {
+  ) internal view returns (ScrollAdapterInfo memory) {
     string memory scrollAdapterKey = string.concat(adapterKey, 'scrollAdapter.');
     address inbox;
 
-    try BaseDecodeHelpers.decodeAddress(string.concat(scrollAdapterKey, 'inbox'), json) returns (
+    try this.decodeAddress(string.concat(scrollAdapterKey, 'inbox'), json) returns (
       address decodedInbox
     ) {
       inbox = decodedInbox;
     } catch (bytes memory) {}
 
+    uint256[] memory remoteNetworks;
+    try this.decodeUint256Array(string.concat(scrollAdapterKey, 'remoteNetworks'), json) returns (
+      uint256[] memory decodedRemoteNetworks
+    ) {
+      remoteNetworks = decodedRemoteNetworks;
+    } catch (bytes memory) {}
+
     ScrollAdapterInfo memory scrollAdapter = ScrollAdapterInfo({
       inbox: inbox,
-      remoteNetworks: abi.decode(
-        json.parseRaw(string.concat(scrollAdapterKey, 'remoteNetworks')),
-        (uint256[])
-      )
+      remoteNetworks: remoteNetworks
     });
 
     return scrollAdapter;
@@ -152,27 +152,27 @@ library DeployJsonDecodeHelpers {
   function decodeCCIPAdapter(
     string memory adapterKey,
     string memory json
-  ) internal pure returns (CCIPAdapterInfo memory) {
+  ) internal view returns (CCIPAdapterInfo memory) {
     string memory ccipAdapterKey = string.concat(adapterKey, 'ccipAdapter.');
 
     address ccipRouter;
-    try BaseDecodeHelpers.decodeAddress(string.concat(ccipAdapterKey, 'ccipRouter'), json) returns (
+    try this.decodeAddress(string.concat(ccipAdapterKey, 'ccipRouter'), json) returns (
       address decodedCCIPRouter
     ) {
       ccipRouter = decodedCCIPRouter;
     } catch (bytes memory) {}
 
     address linkToken;
-    try BaseDecodeHelpers.decodeAddress(string.concat(ccipAdapterKey, 'linkToken'), json) returns (
+    try this.decodeAddress(string.concat(ccipAdapterKey, 'linkToken'), json) returns (
       address decodedLinkToken
     ) {
       linkToken = decodedLinkToken;
     } catch (bytes memory) {}
 
     uint256[] memory remoteNetworks;
-    try
-      BaseDecodeHelpers.decodeUint256Array(string.concat(ccipAdapterKey, 'remoteNetworks'), json)
-    returns (uint256[] memory decodedRemoteNetworks) {
+    try this.decodeUint256Array(string.concat(ccipAdapterKey, 'remoteNetworks'), json) returns (
+      uint256[] memory decodedRemoteNetworks
+    ) {
       remoteNetworks = decodedRemoteNetworks;
     } catch (bytes memory) {}
 
@@ -187,7 +187,7 @@ library DeployJsonDecodeHelpers {
   function decodeAdapters(
     string memory firstLvlKey,
     string memory json
-  ) internal pure returns (AdaptersDeploymentInfo memory) {
+  ) internal view returns (AdaptersDeploymentInfo memory) {
     string memory adaptersKey = string.concat(firstLvlKey, 'adapters.');
 
     AdaptersDeploymentInfo memory adapters = AdaptersDeploymentInfo({
@@ -198,12 +198,12 @@ library DeployJsonDecodeHelpers {
     return adapters;
   }
 
-  function decodeAddress(
+  function tryDecodeAddress(
     string memory addressKey,
     string memory json
-  ) internal pure returns (address) {
+  ) internal view returns (address) {
     address addressDecoded;
-    try BaseDecodeHelpers.decodeAddress(addressKey, json) returns (address decodedAddress) {
+    try this.decodeAddress(addressKey, json) returns (address decodedAddress) {
       addressDecoded = decodedAddress;
     } catch (bytes memory) {}
 
@@ -235,23 +235,21 @@ library DeployJsonDecodeHelpers {
     string memory firstLvlKey,
     string memory connectionType,
     string memory json
-  ) internal pure returns (Connections memory) {
+  ) internal view returns (Connections memory) {
     string memory connectionTypeKey = string.concat(connectionType, '.');
     string memory connectionsKey = string.concat(firstLvlKey, connectionTypeKey);
     Connections memory connections;
 
     // get connected chains
     string memory chainIdsKey = string.concat(connectionsKey, 'chainIds');
-    try BaseDecodeHelpers.decodeUint256Array(chainIdsKey, json) returns (
-      uint256[] memory chainIds
-    ) {
+    try this.decodeUint256Array(chainIdsKey, json) returns (uint256[] memory chainIds) {
       connections.chainIds = chainIds;
       // get adapters used by connected chain
       for (uint256 i = 0; i < chainIds.length; i++) {
         string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
         string memory networkNamekey = string.concat(connectionsKey, networkName);
         uint256[] memory connectedAdapters;
-        try BaseDecodeHelpers.decodeUint256Array(networkNamekey, json) returns (
+        try this.decodeUint256Array(networkNamekey, json) returns (
           uint256[] memory connectionAdapters
         ) {
           connectedAdapters = connectionAdapters;
@@ -292,28 +290,26 @@ library DeployJsonDecodeHelpers {
     string memory proxiesKey,
     string memory proxyType,
     string memory json
-  ) internal pure returns (ProxyInfo memory) {
+  ) internal view returns (ProxyInfo memory) {
     string memory proxyPath = string.concat(proxiesKey, proxyType);
     string memory proxyKey = string.concat(proxyPath, '.');
 
     string memory salt;
-    try BaseDecodeHelpers.decodeString(string.concat(proxyKey, 'salt'), json) returns (
+    try this.decodeString(string.concat(proxyKey, 'salt'), json) returns (
       string memory decodedSalt
     ) {
       salt = decodedSalt;
     } catch (bytes memory) {}
 
     address deployedAddress;
-    try BaseDecodeHelpers.decodeAddress(string.concat(proxyKey, 'deployedAddress'), json) returns (
+    try this.decodeAddress(string.concat(proxyKey, 'deployedAddress'), json) returns (
       address decodedDeployedAddress
     ) {
       deployedAddress = decodedDeployedAddress;
     } catch (bytes memory) {}
 
     address owner;
-    try BaseDecodeHelpers.decodeAddress(string.concat(proxyKey, 'owner'), json) returns (
-      address decodedOwner
-    ) {
+    try this.decodeAddress(string.concat(proxyKey, 'owner'), json) returns (address decodedOwner) {
       owner = decodedOwner;
     } catch (bytes memory) {}
 
@@ -323,7 +319,7 @@ library DeployJsonDecodeHelpers {
   function decodeProxies(
     string memory networkKey1rstLvl,
     string memory json
-  ) internal pure returns (ProxyContracts memory) {
+  ) internal view returns (ProxyContracts memory) {
     string memory proxiesKey = string.concat(networkKey1rstLvl, 'proxies.');
 
     ProxyContracts memory proxies = ProxyContracts({
@@ -377,7 +373,7 @@ struct Addresses {
 library AddressesHelpers {
   using stdJson for string;
 
-  function decodeAddressesJson(string memory json) external pure returns (Addresses memory) {
+  function decodeAddressesJson(string memory json) internal pure returns (Addresses memory) {
     Addresses memory addresses = Addresses({
       proxyAdmin: abi.decode(json.parseRaw('.proxyAdmin'), (address)),
       proxyFactory: abi.decode(json.parseRaw('.proxyFactory'), (address)),

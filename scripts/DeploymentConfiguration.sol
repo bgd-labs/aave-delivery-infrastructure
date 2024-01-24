@@ -7,7 +7,7 @@ import './libs/DecodeHelpers.sol';
 import './libs/AddressBookHelper.sol';
 import {Strings} from 'openzeppelin-contracts/contracts/utils/Strings.sol';
 
-abstract contract DeploymentConfigurationBaseScript is Script {
+abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, Script {
   function getAddresses(string memory path, Vm vm) external view returns (Addresses memory) {
     string memory json = vm.readFile(path);
 
@@ -70,7 +70,7 @@ abstract contract DeploymentConfigurationBaseScript is Script {
   ) internal view returns (ChainDeploymentInfo[] memory) {
     string memory json = vm.readFile(string(abi.encodePacked(deploymentJsonPath)));
 
-    uint256[] memory deploymentNetworks = DeployJsonDecodeHelpers.decodeChains(json);
+    uint256[] memory deploymentNetworks = decodeChains(json);
 
     ChainDeploymentInfo[] memory deploymentConfigs = new ChainDeploymentInfo[](
       deploymentNetworks.length
@@ -82,32 +82,27 @@ abstract contract DeploymentConfigurationBaseScript is Script {
       string memory networkKey1rstLvl = string.concat(networkKey, '.');
 
       // decode chainId
-      deploymentConfigs[i].chainId = DeployJsonDecodeHelpers.decodeChainId(networkKey1rstLvl, json);
+      deploymentConfigs[i].chainId = decodeChainId(networkKey1rstLvl, json);
 
       // decode guardian
-      deploymentConfigs[i].guardian = DeployJsonDecodeHelpers.decodeAddress(
+      deploymentConfigs[i].guardian = tryDecodeAddress(
         string.concat(networkKey1rstLvl, 'guardian'),
         json
       );
 
       // decode adapters
-      deploymentConfigs[i].adapters = DeployJsonDecodeHelpers.decodeAdapters(
-        networkKey1rstLvl,
-        json
-      );
+      deploymentConfigs[i].adapters = decodeAdapters(networkKey1rstLvl, json);
 
       // decode cross chain controller
       CCC memory ccc;
-      try DeployJsonDecodeHelpers.decodeCCC(networkKey1rstLvl, json) returns (
-        CCC memory decodedCCC
-      ) {
+      try this.decodeCCC(networkKey1rstLvl, json) returns (CCC memory decodedCCC) {
         ccc = decodedCCC;
       } catch (bytes memory) {}
 
       deploymentConfigs[i].ccc = ccc;
 
       // decode forwarding connections
-      Connections memory forwarderConnections = DeployJsonDecodeHelpers.decodeConnections(
+      Connections memory forwarderConnections = decodeConnections(
         networkKey1rstLvl,
         'forwarderConnections',
         json
@@ -115,7 +110,7 @@ abstract contract DeploymentConfigurationBaseScript is Script {
       deploymentConfigs[i].forwarderConnections = forwarderConnections;
 
       // decode receiving connections
-      Connections memory receiverConnections = DeployJsonDecodeHelpers.decodeConnections(
+      Connections memory receiverConnections = decodeConnections(
         networkKey1rstLvl,
         'receiverConnections',
         json
@@ -123,7 +118,7 @@ abstract contract DeploymentConfigurationBaseScript is Script {
       deploymentConfigs[i].receiverConnections = receiverConnections;
 
       // decoding proxy contracts
-      deploymentConfigs[i].proxies = DeployJsonDecodeHelpers.decodeProxies(networkKey1rstLvl, json);
+      deploymentConfigs[i].proxies = decodeProxies(networkKey1rstLvl, json);
     }
 
     return deploymentConfigs;
@@ -169,7 +164,7 @@ abstract contract DeploymentConfigurationBaseScript is Script {
     // ----------------- Persist addresses -----------------------------------------------------------------------------
     for (uint256 i = 0; i < config.length; i++) {
       // select network for deployment
-      vm.selectFork(vm.rpcUrl(PathHelpers.getChainNameById(config[i].chainId)));
+      vm.createSelectFork(vm.rpcUrl(PathHelpers.getChainNameById(config[i].chainId)));
 
       vm.startBroadcast();
       // ---------------------------------------------------------------------------------------------------------------

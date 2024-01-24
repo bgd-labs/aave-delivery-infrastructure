@@ -16,15 +16,15 @@ solc = "0.8.19"
 
 [rpc_endpoints]
 ethereum="${RPC_MAINNET}"
-ethereum-testnet="${RPC_MAINNET_TESTNET}"
+ethereum_sepolia="${RPC_ETHEREUM_SEPOLIA}"
 polygon="${RPC_POLYGON}"
-polygon-testnet="${RPC_POLYGON_TESTNET}"
+polygon_mumbai="${RPC_POLYGON_MUMBAI}"
 arbitrum="${RPC_ARBITRUM}"
 arbitrum-testnet="${RPC_ARBITRUM_TESTNET}"
 metis="${RPC_METIS}"
 metis-testnet="${RPC_METIS_TESTNET}"
 avalanche="${RPC_AVALANCHE}"
-avalanche-testnet="${RPC_AVALANCHE_TESTNET}"
+avalanche_fuji="${RPC_AVALANCHE_FUJI}"
 optimism="${RPC_OPTIMISM}"
 optimism-testnet="${RPC_OPTIMISM_TESTNET}"
 fantom="${RPC_FANTOM}"
@@ -38,17 +38,17 @@ gnosis-testnet="${RPC_GNOSIS_TESTNET}"
 zkevm="${RPC_ZKEVM}"
 zkevm-testnet="${RPC_ZKEVM_TESTNET}"
 scroll="${RPC_SCROLL}"
-scroll-testnet="${RPC_SCROLL_TESTNET}"
+scroll_sepolia="${RPC_SCROLL_SEPOLIA}"
 
 [etherscan]
 ethereum={key="${ETHERSCAN_API_KEY_MAINNET}", chain=1 }
-ethereum-testnet={key="${ETHERSCAN_API_KEY_MAINNET}",chain=1}
+ethereum_sepolia={key="${ETHERSCAN_API_KEY_MAINNET}",chain=11155111}
 optimism={key="${ETHERSCAN_API_KEY_OPTIMISM}",chain=10}
 optimism-testnet={key="${ETHERSCAN_API_KEY_OPTIMISM}",chain=10}
 avalanche={key="${ETHERSCAN_API_KEY_AVALANCHE}",chain=43114}
-avalanche-testnet={key="${ETHERSCAN_API_KEY_AVALANCHE}",chain=43114}
+avalanche_fuji={key="${ETHERSCAN_API_KEY_AVALANCHE}",chain=43113}
 polygon={key="${ETHERSCAN_API_KEY_POLYGON}",chain=137}
-polygon-testnet={key="${ETHERSCAN_API_KEY_POLYGON}",chain=137}
+polygon_mumbai={key="${ETHERSCAN_API_KEY_POLYGON}",chain=80001}
 arbitrum={key="${ETHERSCAN_API_KEY_ARBITRUM}",chain=42161}
 arbitrum-testnet={key="${ETHERSCAN_API_KEY_ARBITRUM}",chain=42161}
 metis={ key="any", chain=1088, url='https://andromeda-explorer.metis.io/' }
@@ -64,6 +64,6 @@ gnosis-testnet={key="${ETHERSCAN_API_KEY_GNOSIS}",chain=10200, url='https://gnos
 zkevm={key="${ETHERSCAN_API_KEY_ZKEVM}",chain=1101}
 zkevm-testnet={key="${ETHERSCAN_API_KEY_ZKEVM}",chain=1442}
 scroll={key="${ETHERSCAN_API_KEY_SCROLL}", chain=534352, utl='https://api.scrollscan.com/api/'}
-scroll-testnet={key="${ETHERSCAN_API_KEY_SCROLL}", chain=534351, url='https://api-sepolia.scrollscan.com/api/'}
+scroll_sepolia={key="${ETHERSCAN_API_KEY_SCROLL}", chain=534351, url='https://api-sepolia.scrollscan.com/api/'}
 
 # See more config options https://github.com/gakonst/foundry/tree/master/config
