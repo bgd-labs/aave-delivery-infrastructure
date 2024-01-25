@@ -19,6 +19,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 custom_ethereum := --with-gas-price 10000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
+custom_polygon_mumbai :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
@@ -32,28 +33,24 @@ custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 #  to use ledger, set LEDGER=true to env
 #  default to testnet deployment, to run production, set PROD=true to env
 define deploy_single_fn
-IS_TESTNET=$(if $(PROD),false,true) DEPLOYMENT_VERSION=$(2) forge script \
+ DEPLOYMENT_VERSION=$(4) CHAIN_ID=$(2) forge script \
  scripts/$(1).s.sol:$(if $(3),$(3),$(1)) \
- --multi --broadcast --verify --slow -vvvv \
+ --rpc-url $(2) --broadcast --verify --slow -vvvv \
  $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
- $(custom_$(if $(PROD),$(2),$(2)-testnet))
-
+ $(custom_$(2))
 endef
+
+define new_deploy_fn
+	@for chain in $$(jq -r '.chains[]' deployments/deployment_configurations/deploymentConfigs_$(3).json); do \
+		echo $$chain; \
+		$(call deploy_single_fn,$(1),$$chain,$(2),$(3)); \
+	done
+endef
+
 
 define deploy_fn
  $(foreach network,$(2),$(call deploy_single_fn,$(1),$(network),$(3)))
 endef
-
-
-#----------------------------------------
-deploy-new-test:
-	DEPLOYMENT_VERSION=0 forge script scripts/new/JsonDeployment.s.sol
-
-
-
-
-
-
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- PRODUCTION DEPLOYMENT SCRIPTS ---------------------------------------------------------
 
@@ -63,11 +60,15 @@ deploy-emergency-registry:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:
-	$(call deploy_fn,InitialDeployments,1)
+	$(call new_deploy_fn,InitialDeployments,InitialDeployments,3)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
+	$(call new_deploy_fn,CCC/Deploy_CCC,Deploy_CCC,3)
+
+# Deploy Cross Chain Infra on all networks
+deploy-cross-chain-infra:
+	$(call new_deploy_fn,CCC/Deploy_CCC,Deploy_CCC,3)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters:

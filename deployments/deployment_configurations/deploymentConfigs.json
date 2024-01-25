@@ -1,0 +1,57 @@
+{
+  "chains": [1,534352],
+  "1": {
+    "adapters": {
+      "scrollAdapter": {
+        "remoteNetworks": []
+      }
+    },
+    "chainId": 1,
+    "forwarderConnections": {
+      "chainIds": [534352, 137],
+      "scroll": [9],
+      "polygon": [1,4,7,8]
+    },
+    "guardian": "0xCA76Ebd8617a03126B6FB84F9b1c1A0fB71C2633",
+    "receiverConnections": {
+      "chainIds": [137],
+      "polygon": [1,4,7,8]
+    }
+  },
+  "534352":{
+    "adapters": {
+      "scrollAdapter": {
+        "inbox": "0x0040000000000000000000000000000000000000",
+        "remoteNetworks": [1,2]
+      }
+    },
+    "approvedSenders": [],
+    "ccc": {
+      "approvedSenders": [],
+      "clEmergencyOracle": "0x0000000000000000000000000000000000000000",
+      "confirmations": 1,
+      "ethFunds": 200000,
+      "guardian": "0x0000000000000000000000000000000000000000",
+      "onlyImpl": true,
+      "salt": "CrossChainController salt"
+    },
+    "chainId": 534352,
+    "guardian": "0x0000000000000000000000000000000000000000",
+    "proxies": {
+      "proxyAdmin": {
+        "owner": "0x0000000000000000000000000000000000000000",
+        "deployedAddress": "0x0000000000000000000000000000000000000003",
+        "salt": "Proxy Admin salt"
+      },
+      "transparentProxyFactory": {
+        "deployedAddress": "",
+        "salt": "Some salt here"
+      }
+    },
+    "receiverConnections": {
+      "chainIds": [1],
+      "ethereum": [9]
+    }
+  }
+
+}

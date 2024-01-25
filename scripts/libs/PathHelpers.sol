@@ -51,6 +51,42 @@ library PathHelpers {
     return string.concat(path, '.json');
   }
 
+  function getChainIdByName(string memory networkName) internal pure returns (uint256) {
+    if (networkName.eq('ethereum')) {
+      return ChainIds.ETHEREUM;
+    } else if (networkName.eq('polygon')) {
+      return ChainIds.POLYGON;
+    } else if (networkName.eq('avalanche')) {
+      return ChainIds.AVALANCHE;
+    } else if (networkName.eq('arbitrum')) {
+      return ChainIds.ARBITRUM;
+    } else if (networkName.eq('optimism')) {
+      return ChainIds.OPTIMISM;
+    } else if (networkName.eq('metis')) {
+      return ChainIds.METIS;
+    } else if (networkName.eq('binance')) {
+      return ChainIds.BNB;
+    } else if (networkName.eq('base')) {
+      return ChainIds.BASE;
+    } else if (networkName.eq('gnosis')) {
+      return ChainIds.GNOSIS;
+    } else if (networkName.eq('scroll')) {
+      return ChainIds.SCROLL;
+    } else if (networkName.eq('polygon_zkevm')) {
+      return ChainIds.POLYGON_ZK_EVM;
+    }
+
+    if (networkName.eq('ethereum_sepolia')) {
+      return TestNetChainIds.ETHEREUM_SEPOLIA;
+    } else if (networkName.eq('polygon_mumbai')) {
+      return TestNetChainIds.POLYGON_MUMBAI;
+    } else if (networkName.eq('avalanche_fuji')) {
+      return TestNetChainIds.AVALANCHE_FUJI;
+    } else {
+      revert('chain not accepted');
+    }
+  }
+
   function getChainNameById(uint256 chainId) internal pure returns (string memory) {
     if (chainId == ChainIds.ETHEREUM) {
       return 'ethereum';

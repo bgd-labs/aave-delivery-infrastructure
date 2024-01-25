@@ -8,21 +8,6 @@ import './DeploymentConfiguration.sol';
 contract InitialDeployments is DeploymentConfigurationBaseScript {
   // TODO: maybe these methods make sense to put them in the base script as could be useful in other
   // deployment scripts
-  function getGuardian(
-    ChainDeploymentInfo memory config,
-    Addresses memory currentAddresses
-  ) internal view returns (address) {
-    if (config.guardian != address(0)) {
-      return config.guardian;
-    } else if (AddressBookMiscHelper.getProtocolGuardian(config.chainId) != address(0)) {
-      return AddressBookMiscHelper.getProtocolGuardian(config.chainId);
-    } else if (currentAddresses.guardian != address(0)) {
-      return currentAddresses.guardian;
-    } else {
-      return msg.sender;
-    }
-  }
-
   function getCreate3Factory(
     ChainDeploymentInfo memory config,
     Addresses memory currentAddresses
@@ -38,8 +23,7 @@ contract InitialDeployments is DeploymentConfigurationBaseScript {
       if (config.chainId == ChainIds.METIS || config.chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
         return address(new Create3Factory());
       } else {
-        return
-          address(new Create3Factory{salt: keccak256(abi.encode(config.proxies.create3.salt))}());
+        return address(new Create3Factory{salt: keccak256(bytes(config.proxies.create3.salt))}());
       }
     } else {
       return address(0);
@@ -52,12 +36,12 @@ contract InitialDeployments is DeploymentConfigurationBaseScript {
   ) internal returns (address) {
     if (config.proxies.transparentProxyFactory.deployedAddress != address(0)) {
       return config.proxies.transparentProxyFactory.deployedAddress;
+    } else if (bytes(config.proxies.transparentProxyFactory.salt).length != 0) {
+      return address(new TransparentProxyFactory());
     } else if (AddressBookMiscHelper.getTransparentProxyFactory(config.chainId) != address(0)) {
       return AddressBookMiscHelper.getTransparentProxyFactory(config.chainId);
     } else if (currentAddresses.proxyFactory != address(0)) {
       return currentAddresses.proxyFactory;
-    } else if (bytes(config.proxies.transparentProxyFactory.salt).length != 0) {
-      return address(new TransparentProxyFactory());
     } else {
       return address(0);
     }
@@ -69,10 +53,6 @@ contract InitialDeployments is DeploymentConfigurationBaseScript {
   ) internal returns (address) {
     if (config.proxies.proxyAdmin.deployedAddress != address(0)) {
       return config.proxies.proxyAdmin.deployedAddress;
-    } else if (AddressBookMiscHelper.getProxyAdmin(config.chainId) != address(0)) {
-      return AddressBookMiscHelper.getProxyAdmin(config.chainId);
-    } else if (currentAddresses.proxyFactory != address(0)) {
-      return currentAddresses.proxyFactory;
     } else if (bytes(config.proxies.proxyAdmin.salt).length != 0) {
       require(currentAddresses.proxyFactory != address(0), 'INCORRECT_PROXY_FACTORY_ADDRESS');
       return
@@ -80,8 +60,12 @@ contract InitialDeployments is DeploymentConfigurationBaseScript {
           config.proxies.proxyAdmin.owner != address(0)
             ? config.proxies.proxyAdmin.owner
             : msg.sender,
-          keccak256(abi.encode(config.proxies.proxyAdmin.salt))
+          keccak256(bytes(config.proxies.proxyAdmin.salt))
         );
+    } else if (AddressBookMiscHelper.getProxyAdmin(config.chainId) != address(0)) {
+      return AddressBookMiscHelper.getProxyAdmin(config.chainId);
+    } else if (currentAddresses.proxyAdmin != address(0)) {
+      return currentAddresses.proxyAdmin;
     } else {
       return address(0);
     }
@@ -92,22 +76,19 @@ contract InitialDeployments is DeploymentConfigurationBaseScript {
     Addresses memory revisionAddresses,
     ChainDeploymentInfo memory config
   ) internal override {
-    // TODO: not sure if it makes sense to update both current and revision. Provably we could just
-    // compare if new address is different than current then update both. if not, maybe there is
-    // no need to update anything
-    currentAddresses.create3Factory = revisionAddresses.create3Factory = getCreate3Factory(
-      config,
-      currentAddresses
-    );
-    //    currentAddresses.proxyFactory = revisionAddresses.proxyFactory = getProxyFactory(
-    //      config,
-    //      currentAddresses
-    //    );
-    //    currentAddresses.proxyAdmin = revisionAddresses.proxyAdmin = getProxyAdmin(
-    //      config,
-    //      currentAddresses
-    //    );
+    address newCreate3 = getCreate3Factory(config, currentAddresses);
+    if (currentAddresses.create3Factory != newCreate3) {
+      currentAddresses.create3Factory = revisionAddresses.create3Factory = newCreate3;
+    }
 
-    currentAddresses.guardian = revisionAddresses.guardian = getGuardian(config, currentAddresses);
+    address proxyFactory = getProxyFactory(config, currentAddresses);
+    if (currentAddresses.proxyFactory != proxyFactory) {
+      currentAddresses.proxyFactory = revisionAddresses.proxyFactory = proxyFactory;
+    }
+
+    address proxyAdmin = getProxyAdmin(config, currentAddresses);
+    if (currentAddresses.proxyAdmin != proxyAdmin) {
+      currentAddresses.proxyAdmin = revisionAddresses.proxyAdmin = proxyAdmin;
+    }
   }
 }

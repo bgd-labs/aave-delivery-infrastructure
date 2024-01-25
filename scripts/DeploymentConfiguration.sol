@@ -70,25 +70,19 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
   ) internal view returns (ChainDeploymentInfo[] memory) {
     string memory json = vm.readFile(string(abi.encodePacked(deploymentJsonPath)));
 
-    uint256[] memory deploymentNetworks = decodeChains(json);
+    string[] memory deploymentNetworks = decodeChains(json);
 
     ChainDeploymentInfo[] memory deploymentConfigs = new ChainDeploymentInfo[](
       deploymentNetworks.length
     );
 
     for (uint256 i = 0; i < deploymentNetworks.length; i++) {
-      string memory networkKey = string.concat('.', Strings.toString(deploymentNetworks[i]));
+      string memory networkKey = string.concat('.', deploymentNetworks[i]);
       // first level of the config object
       string memory networkKey1rstLvl = string.concat(networkKey, '.');
 
       // decode chainId
       deploymentConfigs[i].chainId = decodeChainId(networkKey1rstLvl, json);
-
-      // decode guardian
-      deploymentConfigs[i].guardian = tryDecodeAddress(
-        string.concat(networkKey1rstLvl, 'guardian'),
-        json
-      );
 
       // decode adapters
       deploymentConfigs[i].adapters = decodeAdapters(networkKey1rstLvl, json);
@@ -156,6 +150,10 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
     // get deployment json path
     string memory key = 'DEPLOYMENT_VERSION';
 
+    // get chainId
+    uint256 chainId = PathHelpers.getChainIdByName(vm.envString('CHAIN_ID'));
+    console.log('id::', chainId);
+
     // get configuration
     string memory revision = vm.envString(key);
     string memory deploymentConfigJsonPath = PathHelpers.getDeploymentJsonPathByVersion(revision);
@@ -163,40 +161,41 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
 
     // ----------------- Persist addresses -----------------------------------------------------------------------------
     for (uint256 i = 0; i < config.length; i++) {
-      // select network for deployment
-      vm.createSelectFork(vm.rpcUrl(PathHelpers.getChainNameById(config[i].chainId)));
+      // the chain id to deploy to comes from config json, from makefile
+      if (config[i].chainId == chainId) {
+        vm.startBroadcast();
+        // ---------------------------------------------------------------------------------------------------------------
 
-      vm.startBroadcast();
-      // ---------------------------------------------------------------------------------------------------------------
+        // fetch current addresses
+        Addresses memory currentAddresses = _getCurrentAddressesByChainId(config[i].chainId, vm);
+        // fetch revision addresses
+        Addresses memory revisionAddresses = _getRevisionAddressesByChainId(
+          config[i].chainId,
+          revision,
+          vm
+        );
 
-      // fetch current addresses
-      Addresses memory currentAddresses = _getCurrentAddressesByChainId(config[i].chainId, vm);
-      // fetch revision addresses
-      Addresses memory revisionAddresses = _getRevisionAddressesByChainId(
-        config[i].chainId,
-        revision,
-        vm
-      );
+        // method to implement the different deployment logic
+        _execute(currentAddresses, revisionAddresses, config[i]);
 
-      // method to implement the different deployment logic
-      _execute(currentAddresses, revisionAddresses, config[i]);
+        // update global params
+        currentAddresses.chainId = revisionAddresses.chainId = config[i].chainId;
+        (uint256 numRevision, bool error) = StringUtils.strToUint(revision);
+        // TODO: this conflicts with the way we execute scripts in make file. Not sure what to do with it
+        //      require(
+        //        !error && currentAddresses.version < numRevision,
+        //        'New revision must be strictly bigger than current version'
+        //      );
+        currentAddresses.version = revisionAddresses.version = numRevision;
 
-      // update global params
-      currentAddresses.chainId = revisionAddresses.chainId = config[i].chainId;
-      (uint256 numRevision, bool error) = StringUtils.strToUint(revision);
-      require(
-        !error && currentAddresses.version < numRevision,
-        'New revision must be strictly bigger than current version'
-      );
-      currentAddresses.version = revisionAddresses.version = numRevision;
+        // save revision addresses
+        _setRevisionAddresses(config[i].chainId, revision, revisionAddresses, vm);
+        // save current addresses
+        _setCurrentDeploymentAddresses(config[i].chainId, currentAddresses, vm);
 
-      // save revision addresses
-      _setRevisionAddresses(config[i].chainId, revision, revisionAddresses, vm);
-      // save current addresses
-      _setCurrentDeploymentAddresses(config[i].chainId, currentAddresses, vm);
-
-      // -----------------------------------------------------------------------------------------------------------------
-      vm.stopBroadcast();
+        // ---------------------------------------------------------------------------------------------------------------
+        vm.stopBroadcast();
+      }
     }
   }
 }

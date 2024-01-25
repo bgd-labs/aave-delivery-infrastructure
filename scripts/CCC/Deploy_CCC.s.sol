@@ -1,201 +1,95 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import '../BaseScript.sol';
+import '../DeploymentConfiguration.sol';
 import {CrossChainController, ICrossChainController} from '../../src/contracts/CrossChainController.sol';
 import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../../src/contracts/CrossChainControllerWithEmergencyMode.sol';
-import {TransparentUpgradeableProxy} from 'solidity-utils/contracts/transparent-proxy/TransparentUpgradeableProxy.sol';
-import {Create3Factory, ICreate3Factory} from 'solidity-utils/contracts/create3/Create3Factory.sol';
 import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
 
-abstract contract BaseCCCNetworkDeployment is BaseScript {
-  function CL_EMERGENCY_ORACLE() public view virtual returns (address) {
-    return address(0);
-  }
+contract Deploy_CCC is DeploymentConfigurationBaseScript {
+  function _execute(
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses,
+    ChainDeploymentInfo memory config
+  ) internal override {
+    CCC memory cccConfig = config.ccc;
 
-  function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    ICrossChainController crossChainControllerImpl;
-    address crossChainController;
-
-    // if address is 0 means that ccc will not be emergency consumer
-    if (CL_EMERGENCY_ORACLE() == address(0)) {
-      crossChainControllerImpl = new CrossChainController();
-
-      crossChainController = TransparentProxyFactory(addresses.proxyFactory).createDeterministic(
-        address(crossChainControllerImpl),
-        addresses.proxyAdmin,
-        abi.encodeWithSelector(
-          CrossChainController.initialize.selector,
-          addresses.owner,
-          addresses.guardian,
-          new ICrossChainController.ConfirmationInput[](0),
-          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
-          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
-          new address[](0)
-        ),
-        Constants.CCC_SALT
-      );
+    // deploy CCC implementation
+    address crossChainControllerImpl;
+    if (cccConfig.clEmergencyOracle == address(0)) {
+      crossChainControllerImpl = address(new CrossChainController());
     } else {
-      crossChainControllerImpl = ICrossChainController(
-        address(new CrossChainControllerWithEmergencyMode(CL_EMERGENCY_ORACLE()))
+      crossChainControllerImpl = address(
+        new CrossChainControllerWithEmergencyMode(cccConfig.clEmergencyOracle)
       );
-
-      crossChainController = TransparentProxyFactory(addresses.proxyFactory).createDeterministic(
-        address(crossChainControllerImpl),
-        addresses.proxyAdmin,
-        abi.encodeWithSelector(
-          ICrossChainControllerWithEmergencyMode.initialize.selector,
-          addresses.owner,
-          addresses.guardian,
-          CL_EMERGENCY_ORACLE(),
-          new ICrossChainController.ConfirmationInput[](0),
-          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
-          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
-          new address[](0)
-        ),
-        Constants.CCC_SALT
-      );
-
-      addresses.clEmergencyOracle = CL_EMERGENCY_ORACLE();
     }
 
-    addresses.crossChainController = crossChainController;
-    addresses.crossChainControllerImpl = address(crossChainControllerImpl);
-  }
-}
+    // Deploy Proxy and set implementation
+    if (cccConfig.onlyImpl == false) {
+      address crossChainController;
 
-contract Ethereum is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.ETHEREUM;
-  }
-}
+      address proxyAdmin = revisionAddresses.proxyAdmin != address(0)
+        ? revisionAddresses.proxyAdmin
+        : currentAddresses.proxyAdmin != address(0)
+        ? currentAddresses.proxyAdmin
+        : address(0);
 
-contract Polygon is BaseCCCNetworkDeployment {
-  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
-    return 0xDAFA1989A504c48Ee20a582f2891eeB25E2fA23F;
-  }
+      address proxyFactory = revisionAddresses.proxyFactory != address(0)
+        ? revisionAddresses.proxyFactory
+        : currentAddresses.proxyFactory != address(0)
+        ? currentAddresses.proxyFactory
+        : address(0);
 
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.POLYGON;
-  }
-}
+      address owner = cccConfig.owner != address(0) ? cccConfig.owner : msg.sender;
+      address guardian = cccConfig.guardian != address(0) ? cccConfig.guardian : msg.sender;
 
-contract Avalanche is BaseCCCNetworkDeployment {
-  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
-    return 0x41185495Bc8297a65DC46f94001DC7233775EbEe;
-  }
+      require(proxyAdmin != address(0), 'PROXY ADMIN IS NEEDED');
+      require(proxyFactory != address(0), 'PROXY FACTORY IS NEEDED');
+      require(bytes(cccConfig.salt).length > 0, 'SALT NEEDED');
+      require(owner != address(0), 'OWNER IS NEEDED');
+      require(guardian != address(0), 'GUARDIAN IS NEEDED');
 
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.AVALANCHE;
-  }
-}
+      // if address is 0 means that ccc will not be emergency consumer
+      if (cccConfig.clEmergencyOracle == address(0)) {
+        crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
+          crossChainControllerImpl,
+          proxyAdmin,
+          abi.encodeWithSelector(
+            CrossChainController.initialize.selector,
+            owner,
+            guardian,
+            new ICrossChainController.ConfirmationInput[](0),
+            new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
+            new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
+            new address[](0)
+          ),
+          keccak256(bytes(cccConfig.salt))
+        );
+      } else {
+        crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
+          crossChainControllerImpl,
+          proxyAdmin,
+          abi.encodeWithSelector(
+            ICrossChainControllerWithEmergencyMode.initialize.selector,
+            owner,
+            guardian,
+            cccConfig.clEmergencyOracle,
+            new ICrossChainController.ConfirmationInput[](0),
+            new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
+            new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
+            new address[](0)
+          ),
+          keccak256(bytes(cccConfig.salt))
+        );
 
-contract Arbitrum is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.ARBITRUM;
-  }
-}
+        revisionAddresses.clEmergencyOracle = currentAddresses.clEmergencyOracle = cccConfig
+          .clEmergencyOracle;
+      }
+      revisionAddresses.crossChainController = currentAddresses
+        .crossChainController = crossChainController;
+    }
 
-contract Optimism is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.OPTIMISM;
-  }
-}
-
-contract Metis is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.METIS;
-  }
-}
-
-contract Binance is BaseCCCNetworkDeployment {
-  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
-    return 0xcabb46FfB38c93348Df16558DF156e9f68F9F7F1;
-  }
-
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.BNB;
-  }
-}
-
-contract Base is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.BASE;
-  }
-}
-
-contract Gnosis is BaseCCCNetworkDeployment {
-  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
-    return 0xF937ffAeA1363e4Fa260760bDFA2aA8Fc911F84D;
-  }
-
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.GNOSIS;
-  }
-}
-
-contract Zkevm is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.POLYGON_ZK_EVM;
-  }
-}
-
-contract Ethereum_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ETHEREUM_SEPOLIA;
-  }
-}
-
-contract Polygon_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.POLYGON_MUMBAI;
-  }
-}
-
-contract Avalanche_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.AVALANCHE_FUJI;
-  }
-}
-
-contract Arbitrum_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ARBITRUM_GOERLI;
-  }
-}
-
-contract Optimism_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.OPTIMISM_GOERLI;
-  }
-}
-
-contract Metis_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.METIS_TESTNET;
-  }
-}
-
-contract Binance_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.BNB_TESTNET;
-  }
-}
-
-contract Base_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.BASE_GOERLI;
-  }
-}
-
-contract Gnosis_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.GNOSIS_CHIADO;
-  }
-}
-
-contract Scroll_testnet is BaseCCCNetworkDeployment {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.SCROLL_SEPOLIA;
+    revisionAddresses.crossChainControllerImpl = currentAddresses
+      .crossChainControllerImpl = crossChainControllerImpl;
   }
 }

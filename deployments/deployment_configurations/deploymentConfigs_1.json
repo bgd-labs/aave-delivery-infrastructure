@@ -1,18 +1,20 @@
 {
-  "chains": [80001, 43113],
-  "80001": {
+  "chains": ["polygon_mumbai","avalanche_fuji"],
+  "polygon_mumbai": {
     "chainId": 80001,
     "proxies": {
-      "create3": {
-        "salt": "Create3 2 salt"
+      "proxyAdmin": {
+        "owner": "0x0000000000000000000000000000000000000000",
+        "salt": "Proxy Admin salt"
       }
     }
   },
-  "43113": {
+  "avalanche_fuji":{
     "chainId": 43113,
     "proxies": {
-      "create3": {
-        "salt": "Create3 salt"
+      "proxyAdmin": {
+        "owner": "0x0000000000000000000000000000000000000000",
+        "salt": "Proxy Admin salt"
       }
     }
   }

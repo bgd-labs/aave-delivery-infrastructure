@@ -15,6 +15,7 @@ import {MiscScroll} from 'aave-address-book/MiscScroll.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {TestNetChainIds} from '../contract_extensions/TestNetChainIds.sol';
 import {MiscSepolia} from 'aave-address-book/MiscSepolia.sol';
+import {MiscMumbai} from 'aave-address-book/MiscMumbai.sol';
 
 library AddressBookMiscHelper {
   function getTransparentProxyFactory(uint256 chainId) internal pure returns (address) {
@@ -47,7 +48,7 @@ library AddressBookMiscHelper {
     } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
       return address(0);
     } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
-      return address(0);
+      return MiscMumbai.TRANSPARENT_PROXY_FACTORY;
     } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
       return address(0);
     } else {

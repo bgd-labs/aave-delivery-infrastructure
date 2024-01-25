@@ -1,0 +1,17 @@
+{
+  "chains": ["polygon_mumbai"],
+  "polygon_mumbai":{
+    "ccc": {
+      "salt": "CrossChainController salt"
+    },
+    "chainId": 80001,
+    "proxies": {
+      "proxyAdmin": {
+        "salt": "Proxy Admin new salt"
+      },
+      "transparentProxyFactory": {
+        "salt": "Some salt here"
+      }
+    }
+  }
+}

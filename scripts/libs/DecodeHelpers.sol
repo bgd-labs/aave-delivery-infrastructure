@@ -38,8 +38,8 @@ struct AdaptersDeploymentInfo {
 
 struct ProxyInfo {
   address deployedAddress;
-  string salt;
   address owner;
+  string salt;
 }
 
 struct ProxyContracts {
@@ -53,6 +53,9 @@ struct CCC {
   address clEmergencyOracle;
   uint8 confirmations;
   uint256 ethFunds;
+  address guardian;
+  bool onlyImpl;
+  address owner;
   string salt;
 }
 
@@ -61,7 +64,6 @@ struct ChainDeploymentInfo {
   CCC ccc;
   uint256 chainId;
   Connections forwarderConnections;
-  address guardian;
   ProxyContracts proxies;
   Connections receiverConnections;
 }
@@ -85,8 +87,16 @@ contract DeployJsonDecodeHelpers {
   using stdJson for string;
   using StringUtils for string;
 
+  function decodeBool(string memory path, string memory json) external pure returns (bool) {
+    return abi.decode(json.parseRaw(path), (bool));
+  }
+
   function decodeAddress(string memory path, string memory json) external pure returns (address) {
     return abi.decode(json.parseRaw(path), (address));
+  }
+
+  function decodeUint8(string memory path, string memory json) external pure returns (uint8) {
+    return abi.decode(json.parseRaw(path), (uint8));
   }
 
   function decodeUint256(string memory path, string memory json) external pure returns (uint256) {
@@ -105,6 +115,76 @@ contract DeployJsonDecodeHelpers {
     string memory json
   ) external pure returns (uint256[] memory) {
     return abi.decode(json.parseRaw(path), (uint256[]));
+  }
+
+  function decodeAddressArray(
+    string memory path,
+    string memory json
+  ) external pure returns (address[] memory) {
+    return abi.decode(json.parseRaw(path), (address[]));
+  }
+
+  function tryDecodeBool(string memory key, string memory json) internal view returns (bool) {
+    bool boolDecoded;
+    try this.decodeBool(key, json) returns (bool decodedBool) {
+      boolDecoded = decodedBool;
+    } catch (bytes memory) {}
+
+    return boolDecoded;
+  }
+
+  function tryDecodeAddress(string memory key, string memory json) internal view returns (address) {
+    address addressDecoded;
+    try this.decodeAddress(key, json) returns (address decodedAddress) {
+      addressDecoded = decodedAddress;
+    } catch (bytes memory) {}
+
+    return addressDecoded;
+  }
+
+  function tryDecodeAddresses(
+    string memory key,
+    string memory json
+  ) internal view returns (address[] memory) {
+    address[] memory addresses;
+    try this.decodeAddressArray(key, json) returns (address[] memory decodedAddresses) {
+      addresses = decodedAddresses;
+    } catch (bytes memory) {}
+
+    return addresses;
+  }
+
+  function tryDecodeUint256(string memory key, string memory json) internal view returns (uint256) {
+    uint256 number;
+    try this.decodeUint256(key, json) returns (uint256 decodedNumber) {
+      number = decodedNumber;
+    } catch (bytes memory) {}
+
+    return number;
+  }
+
+  function tryDecodeUint256Array(
+    string memory key,
+    string memory json
+  ) internal view returns (uint256[] memory) {
+    uint256[] memory numbers;
+    try this.decodeUint256Array(key, json) returns (uint256[] memory decodedNumbers) {
+      numbers = decodedNumbers;
+    } catch (bytes memory) {}
+
+    return numbers;
+  }
+
+  function tryDecodeString(
+    string memory addressKey,
+    string memory json
+  ) internal view returns (string memory) {
+    string memory stringInfo;
+    try this.decodeString(addressKey, json) returns (string memory decodedString) {
+      stringInfo = decodedString;
+    } catch (bytes memory) {}
+
+    return stringInfo;
   }
 
   // TODO: correctly import Addresses. this method will be useful to get the correct adapter
@@ -126,24 +206,10 @@ contract DeployJsonDecodeHelpers {
     string memory json
   ) internal view returns (ScrollAdapterInfo memory) {
     string memory scrollAdapterKey = string.concat(adapterKey, 'scrollAdapter.');
-    address inbox;
-
-    try this.decodeAddress(string.concat(scrollAdapterKey, 'inbox'), json) returns (
-      address decodedInbox
-    ) {
-      inbox = decodedInbox;
-    } catch (bytes memory) {}
-
-    uint256[] memory remoteNetworks;
-    try this.decodeUint256Array(string.concat(scrollAdapterKey, 'remoteNetworks'), json) returns (
-      uint256[] memory decodedRemoteNetworks
-    ) {
-      remoteNetworks = decodedRemoteNetworks;
-    } catch (bytes memory) {}
 
     ScrollAdapterInfo memory scrollAdapter = ScrollAdapterInfo({
-      inbox: inbox,
-      remoteNetworks: remoteNetworks
+      inbox: tryDecodeAddress(string.concat(scrollAdapterKey, 'inbox'), json),
+      remoteNetworks: tryDecodeUint256Array(string.concat(scrollAdapterKey, 'remoteNetworks'), json)
     });
 
     return scrollAdapter;
@@ -155,32 +221,11 @@ contract DeployJsonDecodeHelpers {
   ) internal view returns (CCIPAdapterInfo memory) {
     string memory ccipAdapterKey = string.concat(adapterKey, 'ccipAdapter.');
 
-    address ccipRouter;
-    try this.decodeAddress(string.concat(ccipAdapterKey, 'ccipRouter'), json) returns (
-      address decodedCCIPRouter
-    ) {
-      ccipRouter = decodedCCIPRouter;
-    } catch (bytes memory) {}
-
-    address linkToken;
-    try this.decodeAddress(string.concat(ccipAdapterKey, 'linkToken'), json) returns (
-      address decodedLinkToken
-    ) {
-      linkToken = decodedLinkToken;
-    } catch (bytes memory) {}
-
-    uint256[] memory remoteNetworks;
-    try this.decodeUint256Array(string.concat(ccipAdapterKey, 'remoteNetworks'), json) returns (
-      uint256[] memory decodedRemoteNetworks
-    ) {
-      remoteNetworks = decodedRemoteNetworks;
-    } catch (bytes memory) {}
-
     return
       CCIPAdapterInfo({
-        ccipRouter: ccipRouter,
-        linkToken: linkToken,
-        remoteNetworks: remoteNetworks
+        ccipRouter: tryDecodeAddress(string.concat(ccipAdapterKey, 'ccipRouter'), json),
+        linkToken: tryDecodeAddress(string.concat(ccipAdapterKey, 'linkToken'), json),
+        remoteNetworks: tryDecodeUint256Array(string.concat(ccipAdapterKey, 'remoteNetworks'), json)
       });
   }
 
@@ -198,35 +243,28 @@ contract DeployJsonDecodeHelpers {
     return adapters;
   }
 
-  function tryDecodeAddress(
-    string memory addressKey,
-    string memory json
-  ) internal view returns (address) {
-    address addressDecoded;
-    try this.decodeAddress(addressKey, json) returns (address decodedAddress) {
-      addressDecoded = decodedAddress;
-    } catch (bytes memory) {}
-
-    return addressDecoded;
-  }
-
   function decodeCCC(
     string memory firstLvlKey,
     string memory json
-  ) external pure returns (CCC memory) {
+  ) external view returns (CCC memory) {
     string memory cccKey = string.concat(firstLvlKey, 'ccc.');
+
+    uint8 confirmations;
+    try this.decodeUint8(string.concat(cccKey, 'confirmations'), json) returns (
+      uint8 decodedConfirmations
+    ) {
+      confirmations = decodedConfirmations;
+    } catch (bytes memory) {}
+
     CCC memory ccc = CCC({
-      approvedSenders: abi.decode(
-        json.parseRaw(string.concat(cccKey, 'approvedSenders')),
-        (address[])
-      ),
-      clEmergencyOracle: abi.decode(
-        json.parseRaw(string.concat(cccKey, 'clEmergencyOracle')),
-        (address)
-      ),
-      confirmations: abi.decode(json.parseRaw(string.concat(cccKey, 'confirmations')), (uint8)),
-      ethFunds: abi.decode(json.parseRaw(string.concat(cccKey, 'ethFunds')), (uint256)),
-      salt: abi.decode(json.parseRaw(string.concat(cccKey, 'salt')), (string))
+      approvedSenders: tryDecodeAddresses(string.concat(cccKey, 'approvedSenders'), json),
+      clEmergencyOracle: tryDecodeAddress(string.concat(cccKey, 'clEmergencyOracle'), json),
+      confirmations: confirmations,
+      ethFunds: tryDecodeUint256(string.concat(cccKey, 'ethFunds'), json),
+      salt: tryDecodeString(string.concat(cccKey, 'salt'), json),
+      onlyImpl: tryDecodeBool(string.concat(cccKey, 'onlyImpl'), json),
+      owner: tryDecodeAddress(string.concat(cccKey, 'owner'), json), // TODO: should we put this also on deployed addresses
+      guardian: tryDecodeAddress(string.concat(cccKey, 'guardian'), json) // TODO: should we put this also on deployed addresses
     });
     return ccc;
   }
@@ -338,8 +376,8 @@ contract DeployJsonDecodeHelpers {
     return abi.decode(json.parseRaw(string.concat(networkKey1rstLvl, 'chainId')), (uint256));
   }
 
-  function decodeChains(string memory json) internal pure returns (uint256[] memory) {
-    return abi.decode(json.parseRaw('.chains'), (uint256[]));
+  function decodeChains(string memory json) internal pure returns (string[] memory) {
+    return abi.decode(json.parseRaw('.chains'), (string[]));
   }
 }
 

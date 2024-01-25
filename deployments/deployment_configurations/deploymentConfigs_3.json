@@ -1,0 +1,24 @@
+{
+  "chains": ["polygon_mumbai","avalanche_fuji"],
+  "polygon_mumbai":{
+    "ccc": {
+      "salt": "CrossChainController 2 salt"
+    },
+    "chainId": 80001
+
+  },
+  "avalanche_fuji":{
+    "ccc": {
+      "salt": "CrossChainController 2 salt"
+    },
+    "chainId": 43113,
+    "proxies": {
+      "proxyAdmin": {
+        "salt": "Proxy Admin new salt"
+      },
+      "transparentProxyFactory": {
+        "salt": "Some salt here"
+      }
+    }
+  }
+}
