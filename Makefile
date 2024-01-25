@@ -66,13 +66,9 @@ deploy-proxy-factory:
 deploy-cross-chain-infra:
 	$(call new_deploy_fn,CCC/Deploy_CCC,Deploy_CCC,3)
 
-# Deploy Cross Chain Infra on all networks
-deploy-cross-chain-infra:
-	$(call new_deploy_fn,CCC/Deploy_CCC,Deploy_CCC,3)
-
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters:
-	$(call deploy_fn,Adapters/DeployCCIP,ethereum avalanche binance polygon binance gnosis)
+	$(call deploy_fn,Adapters/DeployCCIP,DeployCCIP,3)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters:
