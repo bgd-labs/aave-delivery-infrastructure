@@ -1,0 +1,14 @@
+{
+  "chains": ["polygon_mumbai"],
+  "polygon_mumbai":{
+    "adapters": {
+      "ccipAdapter": {
+        "ccipRouter": "0x70499c328e1E2a3c41108bd3730F6670a44595D1",
+        "linkToken":"0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
+        "remoteNetworks":[43113]
+      }
+    },
+    "chainId": 80001
+
+  }
+}

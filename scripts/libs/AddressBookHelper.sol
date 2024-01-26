@@ -16,8 +16,59 @@ import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {TestNetChainIds} from '../contract_extensions/TestNetChainIds.sol';
 import {MiscSepolia} from 'aave-address-book/MiscSepolia.sol';
 import {MiscMumbai} from 'aave-address-book/MiscMumbai.sol';
+import {GovernanceV3Ethereum} from 'aave-address-book/GovernanceV3Ethereum.sol';
+import {GovernanceV3Polygon} from 'aave-address-book/GovernanceV3Polygon.sol';
+import {GovernanceV3PolygonZkEvm} from 'aave-address-book/GovernanceV3PolygonZkEvm.sol';
+import {GovernanceV3Avalanche} from 'aave-address-book/GovernanceV3Avalanche.sol';
+import {GovernanceV3Arbitrum} from 'aave-address-book/GovernanceV3Arbitrum.sol';
+import {GovernanceV3Optimism} from 'aave-address-book/GovernanceV3Optimism.sol';
+import {GovernanceV3Metis} from 'aave-address-book/GovernanceV3Metis.sol';
+import {GovernanceV3BNB} from 'aave-address-book/GovernanceV3BNB.sol';
+import {GovernanceV3Base} from 'aave-address-book/GovernanceV3Base.sol';
+import {GovernanceV3Gnosis} from 'aave-address-book/GovernanceV3Gnosis.sol';
+import {GovernanceV3Scroll} from 'aave-address-book/GovernanceV3Scroll.sol';
+import {GovernanceV3Mumbai} from 'aave-address-book/GovernanceV3Mumbai.sol';
+import {GovernanceV3Fuji} from 'aave-address-book/GovernanceV3Fuji.sol';
 
 library AddressBookMiscHelper {
+  function getCrossChainController(uint256 chainId) internal pure returns (address) {
+    if (chainId == ChainIds.ETHEREUM) {
+      return GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.POLYGON) {
+      return GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.AVALANCHE) {
+      return GovernanceV3Avalanche.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.ARBITRUM) {
+      return GovernanceV3Arbitrum.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.OPTIMISM) {
+      return GovernanceV3Optimism.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.METIS) {
+      return GovernanceV3Metis.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.BNB) {
+      return GovernanceV3BNB.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.BASE) {
+      return GovernanceV3Base.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
+      return GovernanceV3PolygonZkEvm.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.GNOSIS) {
+      return GovernanceV3Gnosis.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == ChainIds.SCROLL) {
+      return GovernanceV3Scroll.CROSS_CHAIN_CONTROLLER;
+    }
+    // Testnets
+    else if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return address(0);
+    } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
+      return GovernanceV3Mumbai.CROSS_CHAIN_CONTROLLER;
+    } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
+      return GovernanceV3Fuji.CROSS_CHAIN_CONTROLLER;
+    } else {
+      return address(0);
+    }
+  }
+
   function getTransparentProxyFactory(uint256 chainId) internal pure returns (address) {
     if (chainId == ChainIds.ETHEREUM) {
       return MiscEthereum.TRANSPARENT_PROXY_FACTORY;

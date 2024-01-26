@@ -68,7 +68,7 @@ deploy-cross-chain-infra:
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters:
-	$(call deploy_fn,Adapters/DeployCCIP,DeployCCIP,3)
+	$(call new_deploy_fn,Adapters/DeployCCIP,DeployCCIPAdapter,4)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters:

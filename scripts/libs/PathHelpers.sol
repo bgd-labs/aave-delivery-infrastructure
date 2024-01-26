@@ -140,4 +140,25 @@ library PathHelpers {
       revert('chain id is not supported');
     }
   }
+
+  function isTestNet(uint256 chainId) internal pure returns (bool) {
+    if (
+      chainId == TestNetChainIds.ETHEREUM_SEPOLIA ||
+      chainId == TestNetChainIds.ETHEREUM_GOERLI ||
+      chainId == TestNetChainIds.POLYGON_MUMBAI ||
+      chainId == TestNetChainIds.AVALANCHE_FUJI ||
+      chainId == TestNetChainIds.ARBITRUM_GOERLI ||
+      chainId == TestNetChainIds.OPTIMISM_GOERLI ||
+      chainId == TestNetChainIds.METIS_TESTNET ||
+      chainId == TestNetChainIds.BNB_TESTNET ||
+      chainId == TestNetChainIds.BASE_GOERLI ||
+      chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI ||
+      chainId == TestNetChainIds.GNOSIS_CHIADO ||
+      chainId == TestNetChainIds.SCROLL_SEPOLIA
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

@@ -6,24 +6,52 @@ import './BaseAdapterScript.sol';
 import {CCIPAdapterTestnet} from '../contract_extensions/CCIPAdapter.sol';
 
 contract DeployCCIPAdapter is BaseAdapterScript {
+  function REMOTE_NETWORKS(
+    ChainDeploymentInfo memory config
+  ) internal pure override returns (uint256[] memory) {
+    return config.adapters.ccipAdapter.remoteNetworks;
+  }
+
   function _deployAdapter(
-    DeployerHelpers.Addresses memory addresses,
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses,
+    ChainDeploymentInfo memory config,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    if (isTestNet()) {
-      addresses.ccipAdapter = address(
+    require(trustedRemotes.length > 0, 'Adapter needs trusted remotes');
+    address crossChainController = _getCrossChainController(
+      currentAddresses,
+      revisionAddresses,
+      config.chainId
+    );
+    require(crossChainController != address(0), 'CCC needs to be deployed');
+
+    CCIPAdapterInfo memory ccipConfig = config.adapters.ccipAdapter;
+    require(ccipConfig.ccipRouter != address(0), 'CCIP Router can not be 0');
+    require(ccipConfig.linkToken != address(0), 'Link Token can not be 0');
+
+    address ccipAdapter;
+    if (PathHelpers.isTestNet(config.chainId)) {
+      ccipAdapter = address(
         new CCIPAdapterTestnet(
-          addresses.crossChainController,
-          CCIP_ROUTER(),
+          crossChainController,
+          ccipConfig.ccipRouter,
           trustedRemotes,
-          LINK_TOKEN()
+          ccipConfig.linkToken
         )
       );
     } else {
-      addresses.ccipAdapter = address(
-        new CCIPAdapter(addresses.crossChainController, CCIP_ROUTER(), trustedRemotes, LINK_TOKEN())
+      ccipAdapter = address(
+        new CCIPAdapter(
+          crossChainController,
+          ccipConfig.ccipRouter,
+          trustedRemotes,
+          ccipConfig.linkToken
+        )
       );
     }
+
+    currentAddresses.ccipAdapter = revisionAddresses.ccipAdapter = ccipAdapter;
   }
 }
 

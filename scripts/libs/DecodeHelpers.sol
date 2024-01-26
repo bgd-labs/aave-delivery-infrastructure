@@ -66,6 +66,7 @@ struct ChainDeploymentInfo {
   Connections forwarderConnections;
   ProxyContracts proxies;
   Connections receiverConnections;
+  string revision;
 }
 
 enum Adapters {

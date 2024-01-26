@@ -66,6 +66,7 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
 
   function _getConfigurationConfig(
     string memory deploymentJsonPath,
+    string memory revision,
     Vm vm
   ) internal view returns (ChainDeploymentInfo[] memory) {
     string memory json = vm.readFile(string(abi.encodePacked(deploymentJsonPath)));
@@ -77,6 +78,8 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
     );
 
     for (uint256 i = 0; i < deploymentNetworks.length; i++) {
+      deploymentConfigs[i].revision = revision;
+
       string memory networkKey = string.concat('.', deploymentNetworks[i]);
       // first level of the config object
       string memory networkKey1rstLvl = string.concat(networkKey, '.');
@@ -121,10 +124,12 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
   function _getDeploymentConfigurationByChainId(
     uint256 chainId,
     string memory deploymentJsonPath,
+    string memory revision,
     Vm vm
   ) internal view returns (ChainDeploymentInfo memory) {
     ChainDeploymentInfo[] memory deploymentConfigs = _getConfigurationConfig(
       deploymentJsonPath,
+      revision,
       vm
     );
     ChainDeploymentInfo memory deploymentConfig;
@@ -157,7 +162,11 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
     // get configuration
     string memory revision = vm.envString(key);
     string memory deploymentConfigJsonPath = PathHelpers.getDeploymentJsonPathByVersion(revision);
-    ChainDeploymentInfo[] memory config = _getConfigurationConfig(deploymentConfigJsonPath, vm);
+    ChainDeploymentInfo[] memory config = _getConfigurationConfig(
+      deploymentConfigJsonPath,
+      revision,
+      vm
+    );
 
     // ----------------- Persist addresses -----------------------------------------------------------------------------
     for (uint256 i = 0; i < config.length; i++) {
