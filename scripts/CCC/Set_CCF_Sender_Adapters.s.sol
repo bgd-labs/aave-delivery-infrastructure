@@ -1,422 +1,91 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import '../DeploymentConfiguration.sol';
 import {ICrossChainForwarder} from '../../src/contracts/interfaces/ICrossChainForwarder.sol';
-import '../BaseScript.sol';
 
-abstract contract BaseCCFSenderAdapters is BaseScript {
-  function getBridgeAdaptersToEnable(
-    DeployerHelpers.Addresses memory addresses
-  ) public view virtual returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory);
-
-  function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    ICrossChainForwarder(addresses.crossChainController).enableBridgeAdapters(
-      getBridgeAdaptersToEnable(addresses)
-    );
+contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
+  function getAdapter(
+    uint256 chainId,
+    Adapters adapterId,
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses
+  ) internal pure returns (address) {
+    // TODO: do we need more checks here?
+    if (_getAdapterById(revisionAddresses, adapterId) != address(0)) {
+      return _getAdapterById(revisionAddresses, adapterId);
+    } else if (_getAdapterById(currentAddresses, adapterId) != address(0)) {
+      return _getAdapterById(currentAddresses, adapterId);
+    } else {
+      return address(0);
+    }
   }
-}
 
-contract Ethereum is BaseCCFSenderAdapters {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.ETHEREUM;
-  }
+  function _execute(
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses,
+    ChainDeploymentInfo memory config
+  ) internal override {
+    Connections memory fdConfig = config.forwarderConnections;
 
-  function getBridgeAdaptersToEnable(
-    DeployerHelpers.Addresses memory addresses
-  ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        19
+    uint256[] memory chainIds = fdConfig.chainIds;
+
+    // TODO: create method to get full length of array. and modify how we assign
+    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable;
+
+    for (uint256 i = 0; i < chainIds.length; i++) {
+      uint8[] memory adapterIds = _getAdapterIds(chainIds[i], fdConfig);
+
+      // fetch current addresses
+      Addresses memory remoteCurrentAddresses = _getCurrentAddressesByChainId(chainIds[i], vm);
+      // fetch revision addresses
+      Addresses memory remoteRevisionAddresses = _getRevisionAddressesByChainId(
+        chainIds[i],
+        config.revision,
+        vm
       );
 
-    // polygon path
-    DeployerHelpers.Addresses memory addressesPolygon = _getAddresses(ChainIds.POLYGON);
-    bridgeAdaptersToEnable[14] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.polAdapter,
-      destinationBridgeAdapter: addressesPolygon.polAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: addressesPolygon.ccipAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: addressesPolygon.lzAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesPolygon.hlAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
+      for (uint256 j = 0; j < adapterIds.length; j++) {
+        require(adapterIds[j] > uint8(Adapters.Null_Adapter), 'Adapter id can not be 0');
 
-    // avalanche path
-    DeployerHelpers.Addresses memory addressesAvax = _getAddresses(ChainIds.AVALANCHE);
+        address currentChainAdapter = getAdapter(
+          config.chainId,
+          Adapters(adapterIds[j]),
+          currentAddresses,
+          revisionAddresses
+        );
+        require(currentChainAdapter != address(0), 'Current chain adapter can not be 0');
 
-    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: addressesAvax.ccipAdapter,
-      destinationChainId: addressesAvax.chainId
-    });
-    bridgeAdaptersToEnable[4] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: addressesAvax.lzAdapter,
-      destinationChainId: addressesAvax.chainId
-    });
-    bridgeAdaptersToEnable[5] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesAvax.hlAdapter,
-      destinationChainId: addressesAvax.chainId
-    });
+        if (adapterIds[j] == uint8(Adapters.Same_Chain)) {
+          bridgeAdaptersToEnable.push(
+            ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+              currentChainBridgeAdapter: currentChainAdapter,
+              destinationBridgeAdapter: currentChainAdapter,
+              destinationChainId: config.chainId
+            })
+          );
+        } else {
+          address remoteChainAdapter = getAdapter(
+            chainIds[i],
+            Adapters(adapterIds[j]),
+            remoteCurrentAddresses,
+            remoteRevisionAddresses
+          );
+          require(remoteChainAdapter != address(0), 'Remote chain adapter can not be 0');
 
-    // binance path
-    DeployerHelpers.Addresses memory addressesBNB = _getAddresses(ChainIds.BNB);
+          bridgeAdaptersToEnable.push(
+            ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+              currentChainBridgeAdapter: currentChainAdapter,
+              destinationBridgeAdapter: remoteChainAdapter,
+              destinationChainId: chainIds[i]
+            })
+          );
+        }
+      }
+    }
 
-    bridgeAdaptersToEnable[6] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: addressesBNB.lzAdapter,
-      destinationChainId: addressesBNB.chainId
-    });
-    bridgeAdaptersToEnable[7] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesBNB.hlAdapter,
-      destinationChainId: addressesBNB.chainId
-    });
-    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: addressesBNB.ccipAdapter,
-      destinationChainId: addressesBNB.chainId
-    });
-
-    // rollups
-    DeployerHelpers.Addresses memory addressesOp = _getAddresses(ChainIds.OPTIMISM);
-    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.opAdapter,
-      destinationBridgeAdapter: addressesOp.opAdapter,
-      destinationChainId: addressesOp.chainId
-    });
-
-    DeployerHelpers.Addresses memory addressesArb = _getAddresses(ChainIds.ARBITRUM);
-    bridgeAdaptersToEnable[10] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.arbAdapter,
-      destinationBridgeAdapter: addressesArb.arbAdapter,
-      destinationChainId: addressesArb.chainId
-    });
-
-    DeployerHelpers.Addresses memory addressesMetis = _getAddresses(ChainIds.METIS);
-    bridgeAdaptersToEnable[11] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.metisAdapter,
-      destinationBridgeAdapter: addressesMetis.metisAdapter,
-      destinationChainId: addressesMetis.chainId
-    });
-    DeployerHelpers.Addresses memory addressesBase = _getAddresses(ChainIds.BASE);
-    bridgeAdaptersToEnable[12] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.baseAdapter,
-      destinationBridgeAdapter: addressesBase.baseAdapter,
-      destinationChainId: addressesBase.chainId
-    });
-
-    // same chain path
-    bridgeAdaptersToEnable[13] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.sameChainAdapter,
-      destinationBridgeAdapter: addresses.sameChainAdapter,
-      destinationChainId: addresses.chainId
-    });
-
-    // gnosis
-    DeployerHelpers.Addresses memory addressesGnosis = _getAddresses(ChainIds.GNOSIS);
-    bridgeAdaptersToEnable[15] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.gnosisAdapter,
-      destinationBridgeAdapter: addressesGnosis.gnosisAdapter,
-      destinationChainId: addressesGnosis.chainId
-    });
-    bridgeAdaptersToEnable[16] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: addressesGnosis.lzAdapter,
-      destinationChainId: addressesGnosis.chainId
-    });
-    bridgeAdaptersToEnable[17] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesGnosis.hlAdapter,
-      destinationChainId: addressesGnosis.chainId
-    });
-
-    // ZkEVM
-    DeployerHelpers.Addresses memory addressesZkEVM = _getAddresses(ChainIds.POLYGON_ZK_EVM);
-    bridgeAdaptersToEnable[18] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.zkevmAdapter,
-      destinationBridgeAdapter: addressesZkEVM.zkevmAdapter,
-      destinationChainId: addressesZkEVM.chainId
-    });
-
-    return bridgeAdaptersToEnable;
-  }
-}
-
-contract Polygon is BaseCCFSenderAdapters {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.POLYGON;
-  }
-
-  function getBridgeAdaptersToEnable(
-    DeployerHelpers.Addresses memory addresses
-  ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        4
-      );
-
-    // ethereum path
-    DeployerHelpers.Addresses memory ethereumAddresses = _getAddresses(ChainIds.ETHEREUM);
-
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: ethereumAddresses.lzAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: ethereumAddresses.hlAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.polAdapter,
-      destinationBridgeAdapter: ethereumAddresses.polAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    return bridgeAdaptersToEnable;
-  }
-}
-
-contract Avalanche is BaseCCFSenderAdapters {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.AVALANCHE;
-  }
-
-  function getBridgeAdaptersToEnable(
-    DeployerHelpers.Addresses memory addresses
-  ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        3
-      );
-
-    // ethereum path
-    DeployerHelpers.Addresses memory ethereumAddresses = _getAddresses(ChainIds.ETHEREUM);
-
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: ethereumAddresses.lzAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: ethereumAddresses.hlAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-
-    return bridgeAdaptersToEnable;
-  }
-}
-
-contract Ethereum_testnet is BaseCCFSenderAdapters {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ETHEREUM_SEPOLIA;
-  }
-
-  function getBridgeAdaptersToEnable(
-    DeployerHelpers.Addresses memory addresses
-  ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        1
-      );
-
-    // scroll sepolia path
-    DeployerHelpers.Addresses memory addressesScrollSepolia = _getAddresses(
-      TestNetChainIds.SCROLL_SEPOLIA
-    );
-
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.scrollAdapter,
-      destinationBridgeAdapter: addressesScrollSepolia.scrollAdapter,
-      destinationChainId: addressesScrollSepolia.chainId
-      //    });
-      //    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.lzAdapter,
-      //      destinationBridgeAdapter: addressesPolygon.lzAdapter,
-      //      destinationChainId: addressesPolygon.chainId
-      //    });
-      //    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.hlAdapter,
-      //      destinationBridgeAdapter: addressesPolygon.hlAdapter,
-      //      destinationChainId: addressesPolygon.chainId
-      //    });
-      //
-      //    //     avalanche path
-      //    DeployerHelpers.Addresses memory addressesAvax = _getAddresses(TestNetChainIds.AVALANCHE_FUJI);
-      //
-      //    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.ccipAdapter,
-      //      destinationBridgeAdapter: addressesAvax.ccipAdapter,
-      //      destinationChainId: addressesAvax.chainId
-      //    });
-      //    bridgeAdaptersToEnable[4] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.lzAdapter,
-      //      destinationBridgeAdapter: addressesAvax.lzAdapter,
-      //      destinationChainId: addressesAvax.chainId
-      //    });
-      //    bridgeAdaptersToEnable[5] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.hlAdapter,
-      //      destinationBridgeAdapter: addressesAvax.hlAdapter,
-      //      destinationChainId: addressesAvax.chainId
-      //    });
-      //
-      //    // binance path
-      //    DeployerHelpers.Addresses memory addressesBNB = _getAddresses(TestNetChainIds.BNB_TESTNET);
-      //
-      //    bridgeAdaptersToEnable[6] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.lzAdapter,
-      //      destinationBridgeAdapter: addressesBNB.lzAdapter,
-      //      destinationChainId: addressesBNB.chainId
-      //    });
-      //    bridgeAdaptersToEnable[7] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.hlAdapter,
-      //      destinationBridgeAdapter: addressesBNB.hlAdapter,
-      //      destinationChainId: addressesBNB.chainId
-      //    });
-      //
-      //    // gnosis path
-      //    DeployerHelpers.Addresses memory addressesGnosis = _getAddresses(TestNetChainIds.GNOSIS_CHIADO);
-      //
-      //    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      //      currentChainBridgeAdapter: addresses.gnosisAdapter,
-      //      destinationBridgeAdapter: addressesGnosis.gnosisAdapter,
-      //      destinationChainId: addressesGnosis.chainId
-    });
-
-    //     rollups
-    //    DeployerHelpers.Addresses memory addressesOp = _getAddresses(TestNetChainIds.OPTIMISM_GOERLI);
-    //    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.opAdapter,
-    //      destinationBridgeAdapter: addressesOp.opAdapter,
-    //      destinationChainId: addressesOp.chainId
-    //    });
-    //
-    //    DeployerHelpers.Addresses memory addressesArb = _getAddresses(TestNetChainIds.ARBITRUM_GOERLI);
-    //    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.arbAdapter,
-    //      destinationBridgeAdapter: addressesArb.arbAdapter,
-    //      destinationChainId: addressesArb.chainId
-    //    });
-    //
-    //    DeployerHelpers.Addresses memory addressesMetis = _getAddresses(TestNetChainIds.METIS_TESTNET);
-    //    bridgeAdaptersToEnable[10] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.metisAdapter,
-    //      destinationBridgeAdapter: addressesMetis.metisAdapter,
-    //      destinationChainId: addressesMetis.chainId
-    //    });
-    //    DeployerHelpers.Addresses memory addressesBase = _getAddresses(ChainIds.BASE_GOERLI);
-    //    bridgeAdaptersToEnable[11] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.baseAdapter,
-    //      destinationBridgeAdapter: addressesBase.baseAdapter,
-    //      destinationChainId: addressesBase.chainId
-    //    });
-
-    //     same chain path
-    //    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.sameChainAdapter,
-    //      destinationBridgeAdapter: addresses.sameChainAdapter,
-    //      destinationChainId: addresses.chainId
-    //    });
-    return bridgeAdaptersToEnable;
-  }
-}
-
-contract Polygon_testnet is BaseCCFSenderAdapters {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.POLYGON_MUMBAI;
-  }
-
-  function getBridgeAdaptersToEnable(
-    DeployerHelpers.Addresses memory addresses
-  ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        3
-      );
-
-    // ethereum path
-    DeployerHelpers.Addresses memory ethereumAddresses = _getAddresses(
-      TestNetChainIds.ETHEREUM_SEPOLIA
-    );
-
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: ethereumAddresses.lzAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: ethereumAddresses.hlAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-
-    return bridgeAdaptersToEnable;
-  }
-}
-
-contract Avalanche_testnet is BaseCCFSenderAdapters {
-  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.AVALANCHE_FUJI;
-  }
-
-  function getBridgeAdaptersToEnable(
-    DeployerHelpers.Addresses memory addresses
-  ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        3
-      );
-
-    // ethereum path
-    DeployerHelpers.Addresses memory ethereumAddresses = _getAddresses(
-      TestNetChainIds.ETHEREUM_SEPOLIA
-    );
-
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.lzAdapter,
-      destinationBridgeAdapter: ethereumAddresses.lzAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: ethereumAddresses.hlAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-
-    return bridgeAdaptersToEnable;
+    address crossChainController = AddressBookMiscHelper.getCrossChainController(config.chainId);
+    require(crossChainController != address(0), 'CCC can not be 0 when setting adapters');
+    ICrossChainForwarder(crossChainController).enableBridgeAdapters(bridgeAdaptersToEnable);
   }
 }

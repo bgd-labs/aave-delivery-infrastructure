@@ -18,17 +18,20 @@ struct CCIPAdapterInfo {
 
 struct Connections {
   uint256[] chainIds;
-  uint256[] ethereum;
-  uint256[] avalanche;
-  uint256[] polygon;
-  uint256[] arbitrum;
-  uint256[] optimism;
-  uint256[] polygon_zkevm;
-  uint256[] binance;
-  uint256[] metis;
-  uint256[] gnosis;
-  uint256[] scroll;
-  uint256[] base;
+  uint8[] ethereum;
+  uint8[] avalanche;
+  uint8[] polygon;
+  uint8[] arbitrum;
+  uint8[] optimism;
+  uint8[] polygon_zkevm;
+  uint8[] binance;
+  uint8[] base;
+  uint8[] metis;
+  uint8[] gnosis;
+  uint8[] scroll;
+  uint8[] ethereum_sepolia;
+  uint8[] polygon_mumbai;
+  uint8[] avalanche_fuji;
 }
 
 struct AdaptersDeploymentInfo {
@@ -71,6 +74,7 @@ struct ChainDeploymentInfo {
 
 enum Adapters {
   Null_Adapter,
+  Same_Chain,
   CCIP,
   Arbitrum_Native,
   Optimism_Native,
@@ -109,6 +113,13 @@ contract DeployJsonDecodeHelpers {
     string memory json
   ) external pure returns (string memory) {
     return abi.decode(json.parseRaw(path), (string));
+  }
+
+  function decodeUint8Array(
+    string memory path,
+    string memory json
+  ) external pure returns (uint8[] memory) {
+    return abi.decode(json.parseRaw(path), (uint8[]));
   }
 
   function decodeUint256Array(
@@ -188,19 +199,77 @@ contract DeployJsonDecodeHelpers {
     return stringInfo;
   }
 
-  // TODO: correctly import Addresses. this method will be useful to get the correct adapter
-  //  function _getAdapterById(
-  //    Addresses memory addresses,
-  //    Adapters adapter
-  //  ) internal view returns (address) {
-  //    if (adapter == Adapters.CCIP) {
-  //      return addresses.ccipAdapter;
-  //    } else if (adapter == Adapters.Scroll_Native) {
-  //      return addresses.scrollAdapter;
-  //    } else {
-  //      return address(0);
-  //    }
-  //  }
+  function _getAdapterIds(
+    uint256 chainId,
+    Connections memory connections
+  ) internal pure returns (uint8[] memory) {
+    if (chainId == ChainIds.ETHEREUM) {
+      return connections.ethereum;
+    } else if (chainId == ChainIds.POLYGON) {
+      return connections.polygon;
+    } else if (chainId == ChainIds.AVALANCHE) {
+      return connections.avalanche;
+    } else if (chainId == ChainIds.ARBITRUM) {
+      return connections.arbitrum;
+    } else if (chainId == ChainIds.OPTIMISM) {
+      return connections.optimism;
+    } else if (chainId == ChainIds.METIS) {
+      return connections.metis;
+    } else if (chainId == ChainIds.BNB) {
+      return connections.binance;
+    } else if (chainId == ChainIds.BASE) {
+      return connections.base;
+    } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
+      return connections.polygon_zkevm;
+    } else if (chainId == ChainIds.GNOSIS) {
+      return connections.gnosis;
+    } else if (chainId == ChainIds.SCROLL) {
+      return connections.scroll;
+    }
+    // Testnets
+    else if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+      return connections.ethereum_sepolia;
+    } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
+      return connections.polygon_mumbai;
+    } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
+      return connections.avalanche_fuji;
+    } else {
+      return new uint8[](0);
+    }
+  }
+
+  function _getAdapterById(
+    Addresses memory addresses,
+    Adapters adapter
+  ) internal view returns (address) {
+    if (adapter == Adapters.CCIP) {
+      return addresses.ccipAdapter;
+    } else if (adapter == Adapters.Scroll_Native) {
+      return addresses.scrollAdapter;
+    } else if (adapter == Adapters.Arbitrum_Native) {
+      return addresses.arbAdapter;
+    } else if (adapter == Adapters.Optimism_Native) {
+      return addresses.opAdapter;
+    } else if (adapter == Adapters.Polygon_Native) {
+      return addresses.polAdapter;
+    } else if (adapter == Adapters.Gnosis_Native) {
+      return addresses.gnosisAdapter;
+    } else if (adapter == Adapters.Metis_Native) {
+      return addresses.metisAdapter;
+    } else if (adapter == Adapters.LayerZero) {
+      return addresses.lzAdapter;
+    } else if (adapter == Adapters.Hyperlane) {
+      return addresses.hlAdapter;
+    } else if (adapter == Adapters.Polygon_ZkEvm_Native) {
+      return addresses.zkevmAdapter;
+    } else if (adapter == Adapters.Base_Native) {
+      return addresses.baseAdapter;
+    } else if (adapter == Adapters.Same_Chain) {
+      return addresses.sameChainAdapter;
+    } else {
+      return address(0);
+    }
+  }
 
   function decodeScrollAdapter(
     string memory adapterKey,
@@ -287,9 +356,9 @@ contract DeployJsonDecodeHelpers {
       for (uint256 i = 0; i < chainIds.length; i++) {
         string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
         string memory networkNamekey = string.concat(connectionsKey, networkName);
-        uint256[] memory connectedAdapters;
-        try this.decodeUint256Array(networkNamekey, json) returns (
-          uint256[] memory connectionAdapters
+        uint8[] memory connectedAdapters;
+        try this.decodeUint8Array(networkNamekey, json) returns (
+          uint8[] memory connectionAdapters
         ) {
           connectedAdapters = connectionAdapters;
         } catch (bytes memory) {}
@@ -314,9 +383,16 @@ contract DeployJsonDecodeHelpers {
         } else if (networkName.eq('scroll')) {
           connections.scroll = connectedAdapters;
         } else if (networkName.eq('polygon_zkevm')) {
-          connections.scroll = connectedAdapters;
+          connections.polygon_zkevm = connectedAdapters;
+        }
+        // TODO: add test chains
+        else if (networkName.eq('ethereum_sepolia')) {
+          connections.ethereum_sepolia = connectedAdapters;
+        } else if (networkName.eq('polygon_mumbai')) {
+          connections.polygon_mumbai = connectedAdapters;
+        } else if (networkName.eq('avalanche_fuji')) {
+          connections.avalanche_fuji = connectedAdapters;
         } else {
-          // TODO: add test chains
           revert('Unrecognized network name');
         }
       }

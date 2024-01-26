@@ -108,7 +108,7 @@ deploy-zkevm-adapters:
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
-	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
+	$(call new_deploy_fn,CCC/Set_CCF_Sender_Adapters,EnableCCFSenderAdapters,4)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters:

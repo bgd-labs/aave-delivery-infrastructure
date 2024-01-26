@@ -38,7 +38,6 @@ abstract contract BaseAdapterScript is DeploymentConfigurationBaseScript {
     ChainDeploymentInfo memory config
   ) internal override {
     uint256[] memory remoteNetworks = REMOTE_NETWORKS(config);
-    console.log('length: ', remoteNetworks.length);
     require(remoteNetworks.length > 0, 'Remote neworks are needed for adapter connection');
 
     // generate trusted trustedRemotes
