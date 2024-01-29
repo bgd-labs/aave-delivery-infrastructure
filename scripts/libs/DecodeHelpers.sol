@@ -78,6 +78,7 @@ struct CCC {
   bool onlyImpl;
   address owner;
   string salt;
+  address[] sendersToRemove;
 }
 
 struct ChainDeploymentInfo {
@@ -400,6 +401,7 @@ contract DeployJsonDecodeHelpers {
 
     CCC memory ccc = CCC({
       approvedSenders: tryDecodeAddresses(string.concat(cccKey, 'approvedSenders'), json),
+      sendersToRemove: tryDecodeAddresses(string.concat(cccKey, 'sendersToRemove'), json),
       clEmergencyOracle: tryDecodeAddress(string.concat(cccKey, 'clEmergencyOracle'), json),
       confirmations: decodeConfirmations(cccKey, json),
       ethFunds: tryDecodeUint256(string.concat(cccKey, 'ethFunds'), json),
@@ -469,6 +471,7 @@ contract DeployJsonDecodeHelpers {
     return confirmationsByNetwork;
   }
 
+  // TODO: quite similar to decodeConfirmations method, but could not find a way to deduplicate
   function decodeConnections(
     string memory firstLvlKey,
     string memory connectionType,

@@ -29,11 +29,15 @@
     "ccc": {
       "approvedSenders": [],
       "clEmergencyOracle": "0x0000000000000000000000000000000000000000",
-      "confirmations": 1,
+      "confirmations": {
+        "chainIds": [80001],
+        "polygon_mumbai": 1
+      },
       "ethFunds": 200000,
       "guardian": "0x0000000000000000000000000000000000000000",
       "onlyImpl": true,
-      "salt": "CrossChainController salt"
+      "salt": "CrossChainController salt",
+      "sendersToRemove": []
     },
     "chainId": 534352,
     "guardian": "0x0000000000000000000000000000000000000000",
