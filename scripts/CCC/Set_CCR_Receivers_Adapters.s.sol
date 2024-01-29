@@ -71,8 +71,12 @@ contract SetCCRAdapters is DeploymentConfigurationBaseScript {
       }
     }
 
-    address crossChainController = AddressBookMiscHelper.getCrossChainController(config.chainId);
-    require(crossChainController != address(0), 'CCC can not be 0 when setting adapters');
+    address crossChainController = _getCrossChainController(
+      currentAddresses,
+      revisionAddresses,
+      config.chainId
+    );
+    require(crossChainController != address(0), 'CCC can not be 0 when setting receiver adapters');
     require(bridgeAdapterConfig.length > 0, 'Some receiver adapters are needed');
     ICrossChainReceiver(crossChainController).allowReceiverBridgeAdapters(bridgeAdapterConfig);
   }

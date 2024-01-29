@@ -34,6 +34,24 @@ struct Connections {
   uint8[] avalanche_fuji;
 }
 
+struct Confirmations {
+  uint256[] chainIds;
+  uint8 ethereum;
+  uint8 avalanche;
+  uint8 polygon;
+  uint8 arbitrum;
+  uint8 optimism;
+  uint8 polygon_zkevm;
+  uint8 binance;
+  uint8 base;
+  uint8 metis;
+  uint8 gnosis;
+  uint8 scroll;
+  uint8 ethereum_sepolia;
+  uint8 polygon_mumbai;
+  uint8 avalanche_fuji;
+}
+
 struct AdaptersDeploymentInfo {
   CCIPAdapterInfo ccipAdapter;
   ScrollAdapterInfo scrollAdapter;
@@ -54,7 +72,7 @@ struct ProxyContracts {
 struct CCC {
   address[] approvedSenders;
   address clEmergencyOracle;
-  uint8 confirmations;
+  Confirmations confirmations;
   uint256 ethFunds;
   address guardian;
   bool onlyImpl;
@@ -197,6 +215,45 @@ contract DeployJsonDecodeHelpers {
     } catch (bytes memory) {}
 
     return stringInfo;
+  }
+
+  function _getConfirmations(
+    uint256 chainId,
+    Confirmations memory confirmations
+  ) internal pure returns (uint8) {
+    if (chainId == ChainIds.ETHEREUM) {
+      return confirmations.ethereum;
+    } else if (chainId == ChainIds.POLYGON) {
+      return confirmations.polygon;
+    } else if (chainId == ChainIds.AVALANCHE) {
+      return confirmations.avalanche;
+    } else if (chainId == ChainIds.ARBITRUM) {
+      return confirmations.arbitrum;
+    } else if (chainId == ChainIds.OPTIMISM) {
+      return confirmations.optimism;
+    } else if (chainId == ChainIds.METIS) {
+      return confirmations.metis;
+    } else if (chainId == ChainIds.BNB) {
+      return confirmations.binance;
+    } else if (chainId == ChainIds.BASE) {
+      return confirmations.base;
+    } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
+      return confirmations.polygon_zkevm;
+    } else if (chainId == ChainIds.GNOSIS) {
+      return confirmations.gnosis;
+    } else if (chainId == ChainIds.SCROLL) {
+      return confirmations.scroll;
+    }
+    // Testnets
+    else if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+      return confirmations.ethereum_sepolia;
+    } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
+      return confirmations.polygon_mumbai;
+    } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
+      return confirmations.avalanche_fuji;
+    } else {
+      return uint8(0);
+    }
   }
 
   function _getAdapterIds(
@@ -344,7 +401,7 @@ contract DeployJsonDecodeHelpers {
     CCC memory ccc = CCC({
       approvedSenders: tryDecodeAddresses(string.concat(cccKey, 'approvedSenders'), json),
       clEmergencyOracle: tryDecodeAddress(string.concat(cccKey, 'clEmergencyOracle'), json),
-      confirmations: confirmations,
+      confirmations: decodeConfirmations(cccKey, json),
       ethFunds: tryDecodeUint256(string.concat(cccKey, 'ethFunds'), json),
       salt: tryDecodeString(string.concat(cccKey, 'salt'), json),
       onlyImpl: tryDecodeBool(string.concat(cccKey, 'onlyImpl'), json),
@@ -352,6 +409,64 @@ contract DeployJsonDecodeHelpers {
       guardian: tryDecodeAddress(string.concat(cccKey, 'guardian'), json) // TODO: should we put this also on deployed addresses
     });
     return ccc;
+  }
+
+  function decodeConfirmations(
+    string memory firstLvlKey,
+    string memory json
+  ) internal view returns (Confirmations memory) {
+    string memory confirmationsKey = string.concat(firstLvlKey, 'confirmations.');
+    Confirmations memory confirmationsByNetwork;
+
+    // get connected chains
+    string memory chainIdsKey = string.concat(confirmationsKey, 'chainIds');
+    try this.decodeUint256Array(chainIdsKey, json) returns (uint256[] memory chainIds) {
+      confirmationsByNetwork.chainIds = chainIds;
+      // get adapters used by connected chain
+      for (uint256 i = 0; i < chainIds.length; i++) {
+        string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
+        string memory networkNameKey = string.concat(confirmationsKey, networkName);
+        uint8 confirmations;
+        try this.decodeUint8(networkNameKey, json) returns (uint8 decodedConfirmations) {
+          confirmations = decodedConfirmations;
+        } catch (bytes memory) {}
+        if (networkName.eq('ethereum')) {
+          confirmationsByNetwork.ethereum = confirmations;
+        } else if (networkName.eq('polygon')) {
+          confirmationsByNetwork.polygon = confirmations;
+        } else if (networkName.eq('avalanche')) {
+          confirmationsByNetwork.avalanche = confirmations;
+        } else if (networkName.eq('arbitrum')) {
+          confirmationsByNetwork.arbitrum = confirmations;
+        } else if (networkName.eq('optimism')) {
+          confirmationsByNetwork.optimism = confirmations;
+        } else if (networkName.eq('metis')) {
+          confirmationsByNetwork.metis = confirmations;
+        } else if (networkName.eq('binance')) {
+          confirmationsByNetwork.binance = confirmations;
+        } else if (networkName.eq('base')) {
+          confirmationsByNetwork.base = confirmations;
+        } else if (networkName.eq('gnosis')) {
+          confirmationsByNetwork.gnosis = confirmations;
+        } else if (networkName.eq('scroll')) {
+          confirmationsByNetwork.scroll = confirmations;
+        } else if (networkName.eq('polygon_zkevm')) {
+          confirmationsByNetwork.polygon_zkevm = confirmations;
+        }
+        // TODO: add test chains
+        else if (networkName.eq('ethereum_sepolia')) {
+          confirmationsByNetwork.ethereum_sepolia = confirmations;
+        } else if (networkName.eq('polygon_mumbai')) {
+          confirmationsByNetwork.polygon_mumbai = confirmations;
+        } else if (networkName.eq('avalanche_fuji')) {
+          confirmationsByNetwork.avalanche_fuji = confirmations;
+        } else {
+          revert('Unrecognized network name');
+        }
+      }
+    } catch (bytes memory) {}
+
+    return confirmationsByNetwork;
   }
 
   function decodeConnections(

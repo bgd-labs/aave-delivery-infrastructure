@@ -14,6 +14,22 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
     return AddressesHelpers.decodeAddressesJson(json);
   }
 
+  function _getCrossChainController(
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses,
+    uint256 chainId
+  ) internal pure returns (address) {
+    if (revisionAddresses.crossChainController != address(0)) {
+      return revisionAddresses.crossChainController;
+    } else if (AddressBookMiscHelper.getCrossChainController(chainId) != address(0)) {
+      return AddressBookMiscHelper.getCrossChainController(chainId);
+    } else if (currentAddresses.crossChainController != address(0)) {
+      return currentAddresses.crossChainController;
+    } else {
+      return address(0);
+    }
+  }
+
   function _getRevisionAddressesByChainId(
     uint256 chainId,
     string memory revision,

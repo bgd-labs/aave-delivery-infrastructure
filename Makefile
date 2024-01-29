@@ -116,7 +116,7 @@ set-ccr-receiver-adapters:
 
 # Sets the required confirmations
 set-ccr-confirmations:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm)
+	$(call new_deploy_fn,CCC/Set_CCR_Confirmations,SetCCRConfirmations,6)
 
 # Generate Addresses Json
 write-json-addresses :; forge script scripts/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv

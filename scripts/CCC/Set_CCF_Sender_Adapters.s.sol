@@ -64,8 +64,15 @@ contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
       }
     }
 
-    address crossChainController = AddressBookMiscHelper.getCrossChainController(config.chainId);
-    require(crossChainController != address(0), 'CCC can not be 0 when setting adapters');
+    address crossChainController = _getCrossChainController(
+      currentAddresses,
+      revisionAddresses,
+      config.chainId
+    );
+    require(
+      crossChainController != address(0),
+      'CCC can not be 0 when setting forwarding adapters'
+    );
 
     require(bridgeAdaptersToEnable.length > 0, 'Some forwarder adapters are needed');
     ICrossChainForwarder(crossChainController).enableBridgeAdapters(bridgeAdaptersToEnable);
