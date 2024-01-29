@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import '../DeploymentConfiguration.sol';
 import {ICrossChainForwarder} from '../../src/contracts/interfaces/ICrossChainForwarder.sol';
 
-contract BaseSetCCFApprovedSenders is DeploymentConfigurationBaseScript {
+contract SetCCFApprovedSenders is DeploymentConfigurationBaseScript {
   function _execute(
     Addresses memory currentAddresses,
     Addresses memory revisionAddresses,

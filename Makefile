@@ -220,7 +220,7 @@ deploy_mock_destination:
 	$(call deploy_fn,helpers/Deploy_Mock_destination,zkevm)
 
 set-approved-ccf-senders:
-	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum avalanche polygon)
+	$(call new_deploy_fn,CCC/Set_CCF_Approved_Senders,SetCCFApprovedSenders,6)
 
 send-message:
 	@$(call deploy_fn,helpers/Testnet_ForwardMessage,ethereum,Testnet_ForwardMessage)
