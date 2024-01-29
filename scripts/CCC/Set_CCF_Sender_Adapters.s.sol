@@ -5,8 +5,9 @@ import '../DeploymentConfiguration.sol';
 import {ICrossChainForwarder} from '../../src/contracts/interfaces/ICrossChainForwarder.sol';
 
 contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
+  ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] bridgeAdaptersToEnable;
+
   function getAdapter(
-    uint256 chainId,
     Adapters adapterId,
     Addresses memory currentAddresses,
     Addresses memory revisionAddresses
@@ -30,26 +31,13 @@ contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
 
     uint256[] memory chainIds = fdConfig.chainIds;
 
-    // TODO: create method to get full length of array. and modify how we assign
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable;
-
     for (uint256 i = 0; i < chainIds.length; i++) {
       uint8[] memory adapterIds = _getAdapterIds(chainIds[i], fdConfig);
-
-      // fetch current addresses
-      Addresses memory remoteCurrentAddresses = _getCurrentAddressesByChainId(chainIds[i], vm);
-      // fetch revision addresses
-      Addresses memory remoteRevisionAddresses = _getRevisionAddressesByChainId(
-        chainIds[i],
-        config.revision,
-        vm
-      );
 
       for (uint256 j = 0; j < adapterIds.length; j++) {
         require(adapterIds[j] > uint8(Adapters.Null_Adapter), 'Adapter id can not be 0');
 
         address currentChainAdapter = getAdapter(
-          config.chainId,
           Adapters(adapterIds[j]),
           currentAddresses,
           revisionAddresses
@@ -65,8 +53,15 @@ contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
             })
           );
         } else {
-          address remoteChainAdapter = getAdapter(
+          // fetch current addresses
+          Addresses memory remoteCurrentAddresses = _getCurrentAddressesByChainId(chainIds[i], vm);
+          // fetch revision addresses
+          Addresses memory remoteRevisionAddresses = _getRevisionAddressesByChainId(
             chainIds[i],
+            config.revision,
+            vm
+          );
+          address remoteChainAdapter = getAdapter(
             Adapters(adapterIds[j]),
             remoteCurrentAddresses,
             remoteRevisionAddresses

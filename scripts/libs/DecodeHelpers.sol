@@ -241,7 +241,7 @@ contract DeployJsonDecodeHelpers {
   function _getAdapterById(
     Addresses memory addresses,
     Adapters adapter
-  ) internal view returns (address) {
+  ) internal pure returns (address) {
     if (adapter == Adapters.CCIP) {
       return addresses.ccipAdapter;
     } else if (adapter == Adapters.Scroll_Native) {
