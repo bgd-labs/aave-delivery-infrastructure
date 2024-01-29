@@ -112,7 +112,7 @@ set-ccf-sender-adapters:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm)
+	$(call new_deploy_fn,CCC/Set_CCR_Receivers_Adapters,SetCCRAdapters,5)
 
 # Sets the required confirmations
 set-ccr-confirmations:

@@ -271,6 +271,21 @@ contract DeployJsonDecodeHelpers {
     }
   }
 
+  function getAdapter(
+    Adapters adapterId,
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses
+  ) internal pure returns (address) {
+    // TODO: do we need more checks here?
+    if (_getAdapterById(revisionAddresses, adapterId) != address(0)) {
+      return _getAdapterById(revisionAddresses, adapterId);
+    } else if (_getAdapterById(currentAddresses, adapterId) != address(0)) {
+      return _getAdapterById(currentAddresses, adapterId);
+    } else {
+      return address(0);
+    }
+  }
+
   function decodeScrollAdapter(
     string memory adapterKey,
     string memory json

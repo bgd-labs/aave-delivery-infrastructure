@@ -7,21 +7,6 @@ import {ICrossChainForwarder} from '../../src/contracts/interfaces/ICrossChainFo
 contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
   ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] bridgeAdaptersToEnable;
 
-  function getAdapter(
-    Adapters adapterId,
-    Addresses memory currentAddresses,
-    Addresses memory revisionAddresses
-  ) internal pure returns (address) {
-    // TODO: do we need more checks here?
-    if (_getAdapterById(revisionAddresses, adapterId) != address(0)) {
-      return _getAdapterById(revisionAddresses, adapterId);
-    } else if (_getAdapterById(currentAddresses, adapterId) != address(0)) {
-      return _getAdapterById(currentAddresses, adapterId);
-    } else {
-      return address(0);
-    }
-  }
-
   function _execute(
     Addresses memory currentAddresses,
     Addresses memory revisionAddresses,
@@ -81,6 +66,8 @@ contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
 
     address crossChainController = AddressBookMiscHelper.getCrossChainController(config.chainId);
     require(crossChainController != address(0), 'CCC can not be 0 when setting adapters');
+
+    require(bridgeAdaptersToEnable.length > 0, 'Some forwarder adapters are needed');
     ICrossChainForwarder(crossChainController).enableBridgeAdapters(bridgeAdaptersToEnable);
   }
 }
