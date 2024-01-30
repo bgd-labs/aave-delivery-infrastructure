@@ -56,7 +56,7 @@ endef
 
 # deploy emergency registry
 deploy-emergency-registry:
-	$(call deploy_fn,Deploy_EmergencyRegistry,ethereum)
+	$(call new_deploy_fn,Deploy_EmergencyRegistry,DeployEmergencyMode,7)
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:

@@ -81,10 +81,15 @@ struct CCC {
   address[] sendersToRemove;
 }
 
+struct EmergencyRegistryInfo {
+  address owner;
+}
+
 struct ChainDeploymentInfo {
   AdaptersDeploymentInfo adapters;
   CCC ccc;
   uint256 chainId;
+  EmergencyRegistryInfo emergencyRegistry;
   Connections forwarderConnections;
   ProxyContracts proxies;
   Connections receiverConnections;
@@ -384,6 +389,19 @@ contract DeployJsonDecodeHelpers {
     });
 
     return adapters;
+  }
+
+  function decodeEmergencyRegistry(
+    string memory firstLvlKey,
+    string memory json
+  ) internal view returns (EmergencyRegistryInfo memory) {
+    string memory erKey = string.concat(firstLvlKey, 'emergencyRegistry.');
+
+    EmergencyRegistryInfo memory emergencyRegistry = EmergencyRegistryInfo({
+      owner: tryDecodeAddress(string.concat(erKey, 'owner'), json)
+    });
+
+    return emergencyRegistry;
   }
 
   function decodeCCC(

@@ -45,8 +45,8 @@ library PathHelpers {
     uint256 chainId,
     string memory revision
   ) internal pure returns (string memory) {
-    string memory networkName = string.concat(getChainNameById(chainId), '_');
-    string memory networkWithRevision = string.concat(networkName, revision);
+    string memory networkName = string.concat('_', getChainNameById(chainId));
+    string memory networkWithRevision = string.concat(revision, networkName);
     string memory path = string.concat('./deployments/revisions/', networkWithRevision);
     return string.concat(path, '.json');
   }

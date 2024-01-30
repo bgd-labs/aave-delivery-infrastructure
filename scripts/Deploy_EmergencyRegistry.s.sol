@@ -1,23 +1,24 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import './DeploymentConfiguration.sol';
 import {EmergencyRegistry} from '../src/contracts/emergency/EmergencyRegistry.sol';
 import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
-import './BaseScriptV2.sol';
 
-abstract contract BaseDeployEmergencyMode is BaseScript {
-  function getOwner() public view virtual returns (address) {
-    return address(msg.sender);
+contract DeployEmergencyMode is DeploymentConfigurationBaseScript {
+  function _execute(
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses,
+    ChainDeploymentInfo memory config
+  ) internal override {
+    currentAddresses.emergencyRegistry = revisionAddresses.emergencyRegistry = address(
+      new EmergencyRegistry()
+    );
+
+    address owner = config.emergencyRegistry.owner != address(0)
+      ? config.emergencyRegistry.owner
+      : msg.sender;
+
+    Ownable(address(currentAddresses.emergencyRegistry)).transferOwnership(owner);
   }
-
-  function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    addresses.emergencyRegistry = address(new EmergencyRegistry());
-    Ownable(address(addresses.emergencyRegistry)).transferOwnership(getOwner());
-  }
-}
-
-contract Ethereum_testnet is BaseDeployEmergencyMode {
-//  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-//    return TestNetChainIds.ETHEREUM_SEPOLIA;
-//  }
 }

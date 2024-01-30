@@ -1,46 +1,34 @@
 {
-  "chains": [1,534352],
-  "1": {
+  "chains": ["avalanche_fuji"],
+  "avalanche_fuji":{
     "adapters": {
-      "scrollAdapter": {
-        "remoteNetworks": []
+      "ccip": {
+        "ccipRouter": "0x554472a2720E5E7D5D3C817529aBA05EEd5F82D8",
+        "linkToken":"0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
+        "remoteNetworks":["ethereum_sepolia"]
       }
     },
-    "chainId": 1,
-    "forwarderConnections": {
-      "chainIds": [534352, 137],
-      "scroll": [9],
-      "polygon": [1,4,7,8]
-    },
-    "guardian": "0xCA76Ebd8617a03126B6FB84F9b1c1A0fB71C2633",
-    "receiverConnections": {
-      "chainIds": [137],
-      "polygon": [1,4,7,8]
-    }
-  },
-  "534352":{
-    "adapters": {
-      "scrollAdapter": {
-        "inbox": "0x0040000000000000000000000000000000000000",
-        "remoteNetworks": [1,2]
-      }
-    },
-    "approvedSenders": [],
     "ccc": {
+      "sendersToRemove": [],
       "approvedSenders": [],
       "clEmergencyOracle": "0x0000000000000000000000000000000000000000",
       "confirmations": {
-        "chainIds": [80001],
+        "chains": ["polygon_mumbai"],
         "polygon_mumbai": 1
       },
       "ethFunds": 200000,
       "guardian": "0x0000000000000000000000000000000000000000",
+      "owner": "0x0000000000000000000000000000000000000000",
       "onlyImpl": true,
-      "salt": "CrossChainController salt",
-      "sendersToRemove": []
+      "salt": "CrossChainController salt"
     },
-    "chainId": 534352,
-    "guardian": "0x0000000000000000000000000000000000000000",
+    "emergencyRegistry": {
+      "owner": "0x0000000000000000000000000000000000000000"
+    },
+    "forwarderConnections": {
+      "chains": ["polygon_mumbai"],
+      "polygon_mumbai": ["ccip"]
+    },
     "proxies": {
       "proxyAdmin": {
         "owner": "0x0000000000000000000000000000000000000000",
@@ -48,54 +36,12 @@
         "salt": "Proxy Admin salt"
       },
       "transparentProxyFactory": {
-        "deployedAddress": "",
         "salt": "Some salt here"
       }
     },
     "receiverConnections": {
-      "chainIds": [1],
-      "ethereum": [9]
+      "chains": ["polygon_mumbai"],
+      "polygon_mumbai": ["ccip"]
     }
-  },
-  "polygon_mumbai":{
-    "adapters": {
-      "ccipAdapter": {
-        "ccipRouter": "0x70499c328e1E2a3c41108bd3730F6670a44595D1",
-        "linkToken":"0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
-        "remoteNetworks":[11155111]
-      }
-    },
-    "chainId": 80001
-
-  },
-  "avalanche_fuji":{
-    "adapters": {
-      "ccipAdapter": {
-        "ccipRouter": "0x554472a2720E5E7D5D3C817529aBA05EEd5F82D8",
-        "linkToken":"0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
-        "remoteNetworks":[11155111]
-      }
-    },
-    "chainId": 43113,
-  },
-  "ethereum_sepolia": {
-    "adapters": {
-      "ccipAdapter": {
-        "ccipRouter": "0xD0daae2231E9CB96b94C8512223533293C3693Bf",
-        "linkToken":"0x779877A7B0D9E8603169DdbD7836e478b4624789",
-        "remoteNetworks":[80001, 43113]
-      }
-    },
-    "chainId": 11155111
-  },
-  "binance_testnet": {
-    "adapters": {
-      "ccipAdapter": {
-        "ccipRouter": "0x9527E2d01A3064ef6b50c1Da1C0cC523803BCFF2",
-        "linkToken":"0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06",
-        "remoteNetworks":[11155111]
-      }
-    },
-    "chainId": 97
   }
 }

@@ -132,6 +132,9 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
 
       // decoding proxy contracts
       deploymentConfigs[i].proxies = decodeProxies(networkKey1rstLvl, json);
+
+      // decode emergency registry
+      deploymentConfigs[i].emergencyRegistry = decodeEmergencyRegistry(networkKey1rstLvl, json);
     }
 
     return deploymentConfigs;
