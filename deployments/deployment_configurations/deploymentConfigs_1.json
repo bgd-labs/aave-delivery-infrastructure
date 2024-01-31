@@ -1,20 +1,57 @@
 {
-  "chains": ["polygon_mumbai","avalanche_fuji"],
-  "polygon_mumbai": {
-    "chainId": 80001,
-    "proxies": {
-      "proxyAdmin": {
-        "owner": "0x0000000000000000000000000000000000000000",
-        "salt": "Proxy Admin salt"
+  "chains": ["ethereum_sepolia", "scroll_sepolia"],
+  "ethereum_sepolia": {
+    "adapters": {
+      "arbitrum_native": {
+        "endpoint": "0x6BEbC4925716945D46F0Ec336D5C2564F419682C",
+        "remoteNetworks": []
+      },
+      "base_native": {
+        "endpoint": "0x8e5693140eA606bcEB98761d9beB1BC87383706D",
+        "remoteNetworks": []
+      },
+      "gnosis_native": {
+        "endpoint": "0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e",
+        "remoteNetworks": []
+      },
+      "hyperlane": {
+        "mailBox": "0xCC737a94FecaeC165AbCf12dED095BB13F037685",
+        "igp": "0xF987d7edcb5890cB321437d8145E3D51131298b6",
+        "remoteNetworks": []
+      },
+      "layerzero": {
+        "endpoint": "0xae92d5aD7583AD66E49A0c67BAd18F6ba52dDDc1",
+        "remoteNetworks": []
+      },
+      "metis_native": {
+        "endpoint": "0x081D1101855bD523bA69A9794e0217F0DB6323ff",
+        "remoteNetworks": []
+      },
+      "optimism_native": {
+        "endpoint": "0x5086d1eEF304eb5284A0f6720f79403b4e9bE294",
+        "remoteNetworks": []
+      },
+      "polygon": {
+        "endpoint": "0x0",
+        "remoteNetworks": []
+      },
+      "polygon_zkevm": {
+        "endpoint": "0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7",
+        "remoteNetworks": []
+      },
+      "scroll_native": {
+        "endpoint": "0x50c7d3e7f7c656493D1D76aaa1a836CedfCBB16A",
+        "remoteNetworks": []
       }
     }
   },
-  "avalanche_fuji":{
-    "chainId": 43113,
-    "proxies": {
-      "proxyAdmin": {
-        "owner": "0x0000000000000000000000000000000000000000",
-        "salt": "Proxy Admin salt"
+  "scroll_sepolia": {
+    "adapters": {
+      "scroll_native": {
+        "ovm": "0xBa50f5340FB9F3Bd074bD638c9BE13eCB36E603d",
+        "remoteNetworks": [
+          "ethereum_sepolia"
+        ]
       }
     }
   }

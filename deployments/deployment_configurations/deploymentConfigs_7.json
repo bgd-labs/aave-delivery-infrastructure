@@ -1,8 +1,0 @@
-{
-  "chains": ["avalanche_fuji"],
-  "avalanche_fuji":{
-    "chainId": 43113,
-    "emergencyRegistry": {
-    }
-  }
-}

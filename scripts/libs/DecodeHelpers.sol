@@ -5,14 +5,20 @@ import 'forge-std/StdJson.sol';
 import 'forge-std/Vm.sol';
 import './PathHelpers.sol';
 
-struct ScrollAdapterInfo {
-  address inbox;
+struct EndpointAdapterInfo {
+  address endpoint;
   uint256[] remoteNetworks;
 }
 
 struct CCIPAdapterInfo {
   address ccipRouter;
   address linkToken;
+  uint256[] remoteNetworks;
+}
+
+struct HyperlaneAdapterInfo {
+  address mailBox;
+  address igp;
   uint256[] remoteNetworks;
 }
 
@@ -54,7 +60,16 @@ struct Confirmations {
 
 struct AdaptersDeploymentInfo {
   CCIPAdapterInfo ccipAdapter;
-  ScrollAdapterInfo scrollAdapter;
+  EndpointAdapterInfo scrollAdapter;
+  EndpointAdapterInfo arbitrumAdapter;
+  EndpointAdapterInfo optimismAdapter;
+  EndpointAdapterInfo baseAdapter;
+  EndpointAdapterInfo metisAdapter;
+  EndpointAdapterInfo gnosisAdapter;
+  EndpointAdapterInfo lzAdapter;
+  HyperlaneAdapterInfo hlAdapter;
+  EndpointAdapterInfo zkevmAdapter;
+  EndpointAdapterInfo polAdapter;
 }
 
 struct ProxyInfo {
@@ -368,23 +383,44 @@ contract DeployJsonDecodeHelpers {
     }
   }
 
-  function decodeScrollAdapter(
+  function decodeEndpointAdapter(
     string memory adapterKey,
-    string memory json
-  ) internal view returns (ScrollAdapterInfo memory) {
-    string memory scrollAdapterKey = string.concat(adapterKey, 'scrollAdapter.');
+    string memory json,
+    string memory adapterIdKey
+  ) internal view returns (EndpointAdapterInfo memory) {
+    string memory baseAdapterKey = string.concat(adapterKey, adapterIdKey);
+    string memory endpointAdapterKey = string.concat(baseAdapterKey, '.');
 
     string[] memory chains = tryDecodeStringArray(
-      string.concat(scrollAdapterKey, 'remoteNetworks'),
+      string.concat(endpointAdapterKey, 'remoteNetworks'),
       json
     );
 
-    ScrollAdapterInfo memory scrollAdapter = ScrollAdapterInfo({
-      inbox: tryDecodeAddress(string.concat(scrollAdapterKey, 'inbox'), json),
+    EndpointAdapterInfo memory endpointAdapter = EndpointAdapterInfo({
+      endpoint: tryDecodeAddress(string.concat(endpointAdapterKey, 'endpoint'), json),
       remoteNetworks: PathHelpers.getChainIdsFromNames(chains)
     });
 
-    return scrollAdapter;
+    return endpointAdapter;
+  }
+
+  function decodeHyperlaneAdapter(
+    string memory adapterKey,
+    string memory json
+  ) internal view returns (HyperlaneAdapterInfo memory) {
+    string memory hlAdapterKey = string.concat(adapterKey, 'hlAdapter.');
+
+    string[] memory chains = tryDecodeStringArray(
+      string.concat(hlAdapterKey, 'remoteNetworks'),
+      json
+    );
+
+    return
+      HyperlaneAdapterInfo({
+        mailBox: tryDecodeAddress(string.concat(hlAdapterKey, 'mailBox'), json),
+        igp: tryDecodeAddress(string.concat(hlAdapterKey, 'igp'), json),
+        remoteNetworks: PathHelpers.getChainIdsFromNames(chains)
+      });
   }
 
   function decodeCCIPAdapter(
@@ -413,8 +449,17 @@ contract DeployJsonDecodeHelpers {
     string memory adaptersKey = string.concat(firstLvlKey, 'adapters.');
 
     AdaptersDeploymentInfo memory adapters = AdaptersDeploymentInfo({
-      scrollAdapter: decodeScrollAdapter(adaptersKey, json),
-      ccipAdapter: decodeCCIPAdapter(adaptersKey, json)
+      scrollAdapter: decodeEndpointAdapter(adaptersKey, json, 'scroll_native'),
+      optimismAdapter: decodeEndpointAdapter(adaptersKey, json, 'optimism_native'),
+      baseAdapter: decodeEndpointAdapter(adaptersKey, json, 'base_native'),
+      metisAdapter: decodeEndpointAdapter(adaptersKey, json, 'metis_native'),
+      ccipAdapter: decodeCCIPAdapter(adaptersKey, json),
+      arbitrumAdapter: decodeEndpointAdapter(adaptersKey, json, 'arbitrum_native'),
+      gnosisAdapter: decodeEndpointAdapter(adaptersKey, json, 'gnosis_native'),
+      lzAdapter: decodeEndpointAdapter(adaptersKey, json, 'layerzero'),
+      hlAdapter: decodeHyperlaneAdapter(adaptersKey, json),
+      zkevmAdapter: decodeEndpointAdapter(adaptersKey, json, 'polygon_zkevm'),
+      polAdapter: decodeEndpointAdapter(adaptersKey, json, 'polygon')
     });
 
     return adapters;

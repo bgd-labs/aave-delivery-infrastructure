@@ -1,124 +1,98 @@
-//// SPDX-License-Identifier: BUSL-1.1
-//pragma solidity ^0.8.0;
-//
-//import {ArbAdapter, IArbAdapter, IBaseAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
-//import './BaseAdapterScript.sol';
-//import {ArbitrumAdapterTestnet} from '../contract_extensions/ArbitrumAdapter.sol';
-//
-//abstract contract BaseArbAdapter is BaseAdapterScript {
-//  function INBOX() public view virtual returns (address);
-//
-//  function DESTINATION_CCC() public view virtual returns (address);
-//
-//  function isTestnet() public view virtual returns (bool) {
-//    return false;
-//  }
-//
-//  function _deployAdapter(
-//    DeployerHelpers.Addresses memory addresses,
-//    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-//  ) internal override {
-//    if (isTestnet()) {
-//      addresses.arbAdapter = address(
-//        new ArbitrumAdapterTestnet(
-//          addresses.crossChainController,
-//          INBOX(),
-//          DESTINATION_CCC(),
-//          trustedRemotes
-//        )
-//      );
-//    } else {
-//      addresses.arbAdapter = address(
-//        new ArbAdapter(addresses.crossChainController, INBOX(), DESTINATION_CCC(), trustedRemotes)
-//      );
-//    }
-//  }
-//}
-//
-//contract Ethereum is BaseArbAdapter {
-//  function INBOX() public pure override returns (address) {
-//    return 0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f;
-//  }
-//
-//  function DESTINATION_CCC() public view override returns (address) {
-//    return _getAddresses(ChainIds.ARBITRUM).crossChainController;
-//  }
-//
-//  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-//    return ChainIds.ETHEREUM;
-//  }
-//
-//  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-//    uint256[] memory remoteNetworks = new uint256[](0);
-//
-//    return remoteNetworks;
-//  }
-//}
-//
-//contract Arbitrum is BaseArbAdapter {
-//  function INBOX() public pure override returns (address) {
-//    return address(0); // can be 0 as it will not be used to send or receive
-//  }
-//
-//  function DESTINATION_CCC() public pure override returns (address) {
-//    return address(0); // can be 0 as it will not be used to send or receive
-//  }
-//
-//  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-//    return ChainIds.ARBITRUM;
-//  }
-//
-//  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-//    uint256[] memory remoteNetworks = new uint256[](1);
-//    remoteNetworks[0] = ChainIds.ETHEREUM;
-//    return remoteNetworks;
-//  }
-//}
-//
-//contract Ethereum_testnet is BaseArbAdapter {
-//  function INBOX() public pure override returns (address) {
-//    return 0x6BEbC4925716945D46F0Ec336D5C2564F419682C;
-//  }
-//
-//  function isTestnet() public pure override returns (bool) {
-//    return true;
-//  }
-//
-//  function DESTINATION_CCC() public view override returns (address) {
-//    return _getAddresses(TestNetChainIds.ARBITRUM_GOERLI).crossChainController;
-//  }
-//
-//  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-//    return TestNetChainIds.ETHEREUM_GOERLI;
-//  }
-//
-//  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-//    uint256[] memory remoteNetworks = new uint256[](0);
-//
-//    return remoteNetworks;
-//  }
-//}
-//
-//contract Arbitrum_testnet is BaseArbAdapter {
-//  function INBOX() public pure override returns (address) {
-//    return address(0); // can be 0 as it will not be used to send or receive
-//  }
-//
-//  function isTestnet() public pure override returns (bool) {
-//    return true;
-//  }
-//
-//  function DESTINATION_CCC() public pure override returns (address) {
-//    return address(0); // can be 0 as it will not be used to send or receive
-//  }
-//
-//  function TRANSACTION_NETWORK() public pure override returns (uint256) {
-//    return TestNetChainIds.ARBITRUM_GOERLI;
-//  }
-//
-//  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-//    uint256[] memory remoteNetworks = new uint256[](1);
-//    remoteNetworks[0] = TestNetChainIds.ETHEREUM_GOERLI;
-//    return remoteNetworks;
-//  }
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.0;
+
+import './BaseAdapterScript.sol';
+import {ArbAdapter, IArbAdapter, IBaseAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
+import {ArbitrumAdapterTestnet} from '../contract_extensions/ArbitrumAdapter.sol';
+
+contract DeployArbAdapter is BaseAdapterScript {
+  function REMOTE_NETWORKS(
+    ChainDeploymentInfo memory config
+  ) internal pure override returns (uint256[] memory) {
+    return config.adapters.arbitrumAdapter.remoteNetworks;
+  }
+
+  function _deployAdapter(
+    Addresses memory currentAddresses,
+    Addresses memory revisionAddresses,
+    ChainDeploymentInfo memory config,
+    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+  ) internal override {
+    require(trustedRemotes.length > 0, 'Adapter needs trusted remotes');
+    address crossChainController = _getCrossChainController(
+      currentAddresses,
+      revisionAddresses,
+      config.chainId
+    );
+    require(crossChainController != address(0), 'CCC needs to be deployed');
+
+    EndpointAdapterInfo memory arbConfig = config.adapters.arbitrumAdapter;
+
+    address arbAdapter;
+    if (PathHelpers.isTestNet(config.chainId)) {
+      address destinationCCC;
+      if (config.chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
+        // fetch current addresses
+        Addresses memory remoteCurrentAddresses = _getCurrentAddressesByChainId(
+          TestNetChainIds.ARBITRUM_SEPOLIA,
+          vm
+        );
+        // fetch revision addresses
+        Addresses memory remoteRevisionAddresses = _getRevisionAddressesByChainId(
+          TestNetChainIds.ARBITRUM_SEPOLIA,
+          config.revision,
+          vm
+        );
+        destinationCCC = _getCrossChainController(
+          remoteCurrentAddresses,
+          remoteRevisionAddresses,
+          TestNetChainIds.ARBITRUM_SEPOLIA
+        );
+
+        require(arbConfig.endpoint != address(0), 'Arbitrum inbox can not be 0');
+        require(destinationCCC != address(0), 'Arbitrum CCC must be deployed');
+      }
+
+      arbAdapter = address(
+        new ArbitrumAdapterTestnet(
+          crossChainController,
+          arbConfig.endpoint,
+          destinationCCC,
+          trustedRemotes
+        )
+      );
+    } else {
+      address destinationCCC;
+      if (config.chainId == ChainIds.ETHEREUM) {
+        // fetch current addresses
+        Addresses memory remoteCurrentAddresses = _getCurrentAddressesByChainId(
+          ChainIds.ARBITRUM,
+          vm
+        );
+        // fetch revision addresses
+        Addresses memory remoteRevisionAddresses = _getRevisionAddressesByChainId(
+          ChainIds.ARBITRUM,
+          config.revision,
+          vm
+        );
+        destinationCCC = _getCrossChainController(
+          remoteCurrentAddresses,
+          remoteRevisionAddresses,
+          TestNetChainIds.ARBITRUM_SEPOLIA
+        );
+
+        require(arbConfig.endpoint != address(0), 'Arbitrum inbox can not be 0');
+        require(destinationCCC != address(0), 'Arbitrum CCC must be deployed');
+      }
+      arbAdapter = address(
+        new ArbAdapter(crossChainController, arbConfig.endpoint, destinationCCC, trustedRemotes)
+      );
+    }
+
+    currentAddresses.arbAdapter = revisionAddresses.arbAdapter = arbAdapter;
+  }
+}
+
+//{
+//ethereum_inbox: 0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f
 //}

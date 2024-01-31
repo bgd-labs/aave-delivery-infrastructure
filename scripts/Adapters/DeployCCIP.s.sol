@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {CCIPAdapter, ICCIPAdapter, IBaseAdapter} from '../../src/contracts/adapters/ccip/CCIPAdapter.sol';
 import './BaseAdapterScript.sol';
+import {CCIPAdapter, ICCIPAdapter, IBaseAdapter} from '../../src/contracts/adapters/ccip/CCIPAdapter.sol';
 import {CCIPAdapterTestnet} from '../contract_extensions/CCIPAdapter.sol';
 
 contract DeployCCIPAdapter is BaseAdapterScript {
