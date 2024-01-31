@@ -139,6 +139,13 @@ contract DeployJsonDecodeHelpers {
     return abi.decode(json.parseRaw(path), (string));
   }
 
+  function decodeStringArray(
+    string memory path,
+    string memory json
+  ) external pure returns (string[] memory) {
+    return abi.decode(json.parseRaw(path), (string[]));
+  }
+
   function decodeUint8Array(
     string memory path,
     string memory json
@@ -217,6 +224,18 @@ contract DeployJsonDecodeHelpers {
   ) internal view returns (string memory) {
     string memory stringInfo;
     try this.decodeString(addressKey, json) returns (string memory decodedString) {
+      stringInfo = decodedString;
+    } catch (bytes memory) {}
+
+    return stringInfo;
+  }
+
+  function tryDecodeStringArray(
+    string memory addressKey,
+    string memory json
+  ) internal view returns (string[] memory) {
+    string[] memory stringInfo;
+    try this.decodeStringArray(addressKey, json) returns (string[] memory decodedString) {
       stringInfo = decodedString;
     } catch (bytes memory) {}
 
@@ -355,9 +374,14 @@ contract DeployJsonDecodeHelpers {
   ) internal view returns (ScrollAdapterInfo memory) {
     string memory scrollAdapterKey = string.concat(adapterKey, 'scrollAdapter.');
 
+    string[] memory chains = tryDecodeStringArray(
+      string.concat(scrollAdapterKey, 'remoteNetworks'),
+      json
+    );
+
     ScrollAdapterInfo memory scrollAdapter = ScrollAdapterInfo({
       inbox: tryDecodeAddress(string.concat(scrollAdapterKey, 'inbox'), json),
-      remoteNetworks: tryDecodeUint256Array(string.concat(scrollAdapterKey, 'remoteNetworks'), json)
+      remoteNetworks: PathHelpers.getChainIdsFromNames(chains)
     });
 
     return scrollAdapter;
@@ -369,11 +393,16 @@ contract DeployJsonDecodeHelpers {
   ) internal view returns (CCIPAdapterInfo memory) {
     string memory ccipAdapterKey = string.concat(adapterKey, 'ccipAdapter.');
 
+    string[] memory chains = tryDecodeStringArray(
+      string.concat(ccipAdapterKey, 'remoteNetworks'),
+      json
+    );
+
     return
       CCIPAdapterInfo({
         ccipRouter: tryDecodeAddress(string.concat(ccipAdapterKey, 'ccipRouter'), json),
         linkToken: tryDecodeAddress(string.concat(ccipAdapterKey, 'linkToken'), json),
-        remoteNetworks: tryDecodeUint256Array(string.concat(ccipAdapterKey, 'remoteNetworks'), json)
+        remoteNetworks: PathHelpers.getChainIdsFromNames(chains)
       });
   }
 
@@ -410,13 +439,6 @@ contract DeployJsonDecodeHelpers {
   ) external view returns (CCC memory) {
     string memory cccKey = string.concat(firstLvlKey, 'ccc.');
 
-    uint8 confirmations;
-    try this.decodeUint8(string.concat(cccKey, 'confirmations'), json) returns (
-      uint8 decodedConfirmations
-    ) {
-      confirmations = decodedConfirmations;
-    } catch (bytes memory) {}
-
     CCC memory ccc = CCC({
       approvedSenders: tryDecodeAddresses(string.concat(cccKey, 'approvedSenders'), json),
       sendersToRemove: tryDecodeAddresses(string.concat(cccKey, 'sendersToRemove'), json),
@@ -439,52 +461,54 @@ contract DeployJsonDecodeHelpers {
     Confirmations memory confirmationsByNetwork;
 
     // get connected chains
-    string memory chainIdsKey = string.concat(confirmationsKey, 'chainIds');
-    try this.decodeUint256Array(chainIdsKey, json) returns (uint256[] memory chainIds) {
-      confirmationsByNetwork.chainIds = chainIds;
-      // get adapters used by connected chain
-      for (uint256 i = 0; i < chainIds.length; i++) {
-        string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
-        string memory networkNameKey = string.concat(confirmationsKey, networkName);
-        uint8 confirmations;
-        try this.decodeUint8(networkNameKey, json) returns (uint8 decodedConfirmations) {
-          confirmations = decodedConfirmations;
-        } catch (bytes memory) {}
-        if (networkName.eq('ethereum')) {
-          confirmationsByNetwork.ethereum = confirmations;
-        } else if (networkName.eq('polygon')) {
-          confirmationsByNetwork.polygon = confirmations;
-        } else if (networkName.eq('avalanche')) {
-          confirmationsByNetwork.avalanche = confirmations;
-        } else if (networkName.eq('arbitrum')) {
-          confirmationsByNetwork.arbitrum = confirmations;
-        } else if (networkName.eq('optimism')) {
-          confirmationsByNetwork.optimism = confirmations;
-        } else if (networkName.eq('metis')) {
-          confirmationsByNetwork.metis = confirmations;
-        } else if (networkName.eq('binance')) {
-          confirmationsByNetwork.binance = confirmations;
-        } else if (networkName.eq('base')) {
-          confirmationsByNetwork.base = confirmations;
-        } else if (networkName.eq('gnosis')) {
-          confirmationsByNetwork.gnosis = confirmations;
-        } else if (networkName.eq('scroll')) {
-          confirmationsByNetwork.scroll = confirmations;
-        } else if (networkName.eq('polygon_zkevm')) {
-          confirmationsByNetwork.polygon_zkevm = confirmations;
-        }
-        // TODO: add test chains
-        else if (networkName.eq('ethereum_sepolia')) {
-          confirmationsByNetwork.ethereum_sepolia = confirmations;
-        } else if (networkName.eq('polygon_mumbai')) {
-          confirmationsByNetwork.polygon_mumbai = confirmations;
-        } else if (networkName.eq('avalanche_fuji')) {
-          confirmationsByNetwork.avalanche_fuji = confirmations;
-        } else {
-          revert('Unrecognized network name');
-        }
+    string memory chainsKey = string.concat(confirmationsKey, 'chains');
+    string[] memory chains = tryDecodeStringArray(chainsKey, json);
+    uint256[] memory chainIds = PathHelpers.getChainIdsFromNames(chains);
+    confirmationsByNetwork.chainIds = chainIds;
+    // get adapters used by connected chain
+    for (uint256 i = 0; i < chainIds.length; i++) {
+      string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
+      string memory networkNameKey = string.concat(confirmationsKey, networkName);
+
+      uint8 confirmations;
+      try this.decodeUint8(networkNameKey, json) returns (uint8 decodedConfirmations) {
+        confirmations = decodedConfirmations;
+      } catch (bytes memory) {}
+
+      if (networkName.eq('ethereum')) {
+        confirmationsByNetwork.ethereum = confirmations;
+      } else if (networkName.eq('polygon')) {
+        confirmationsByNetwork.polygon = confirmations;
+      } else if (networkName.eq('avalanche')) {
+        confirmationsByNetwork.avalanche = confirmations;
+      } else if (networkName.eq('arbitrum')) {
+        confirmationsByNetwork.arbitrum = confirmations;
+      } else if (networkName.eq('optimism')) {
+        confirmationsByNetwork.optimism = confirmations;
+      } else if (networkName.eq('metis')) {
+        confirmationsByNetwork.metis = confirmations;
+      } else if (networkName.eq('binance')) {
+        confirmationsByNetwork.binance = confirmations;
+      } else if (networkName.eq('base')) {
+        confirmationsByNetwork.base = confirmations;
+      } else if (networkName.eq('gnosis')) {
+        confirmationsByNetwork.gnosis = confirmations;
+      } else if (networkName.eq('scroll')) {
+        confirmationsByNetwork.scroll = confirmations;
+      } else if (networkName.eq('polygon_zkevm')) {
+        confirmationsByNetwork.polygon_zkevm = confirmations;
       }
-    } catch (bytes memory) {}
+      // TODO: add test chains
+      else if (networkName.eq('ethereum_sepolia')) {
+        confirmationsByNetwork.ethereum_sepolia = confirmations;
+      } else if (networkName.eq('polygon_mumbai')) {
+        confirmationsByNetwork.polygon_mumbai = confirmations;
+      } else if (networkName.eq('avalanche_fuji')) {
+        confirmationsByNetwork.avalanche_fuji = confirmations;
+      } else {
+        revert('Unrecognized network name');
+      }
+    }
 
     return confirmationsByNetwork;
   }
@@ -500,54 +524,53 @@ contract DeployJsonDecodeHelpers {
     Connections memory connections;
 
     // get connected chains
-    string memory chainIdsKey = string.concat(connectionsKey, 'chainIds');
-    try this.decodeUint256Array(chainIdsKey, json) returns (uint256[] memory chainIds) {
-      connections.chainIds = chainIds;
-      // get adapters used by connected chain
-      for (uint256 i = 0; i < chainIds.length; i++) {
-        string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
-        string memory networkNamekey = string.concat(connectionsKey, networkName);
-        uint8[] memory connectedAdapters;
-        try this.decodeUint8Array(networkNamekey, json) returns (
-          uint8[] memory connectionAdapters
-        ) {
-          connectedAdapters = connectionAdapters;
-        } catch (bytes memory) {}
-        if (networkName.eq('ethereum')) {
-          connections.ethereum = connectedAdapters;
-        } else if (networkName.eq('polygon')) {
-          connections.polygon = connectedAdapters;
-        } else if (networkName.eq('avalanche')) {
-          connections.avalanche = connectedAdapters;
-        } else if (networkName.eq('arbitrum')) {
-          connections.arbitrum = connectedAdapters;
-        } else if (networkName.eq('optimism')) {
-          connections.optimism = connectedAdapters;
-        } else if (networkName.eq('metis')) {
-          connections.metis = connectedAdapters;
-        } else if (networkName.eq('binance')) {
-          connections.binance = connectedAdapters;
-        } else if (networkName.eq('base')) {
-          connections.base = connectedAdapters;
-        } else if (networkName.eq('gnosis')) {
-          connections.gnosis = connectedAdapters;
-        } else if (networkName.eq('scroll')) {
-          connections.scroll = connectedAdapters;
-        } else if (networkName.eq('polygon_zkevm')) {
-          connections.polygon_zkevm = connectedAdapters;
-        }
-        // TODO: add test chains
-        else if (networkName.eq('ethereum_sepolia')) {
-          connections.ethereum_sepolia = connectedAdapters;
-        } else if (networkName.eq('polygon_mumbai')) {
-          connections.polygon_mumbai = connectedAdapters;
-        } else if (networkName.eq('avalanche_fuji')) {
-          connections.avalanche_fuji = connectedAdapters;
-        } else {
-          revert('Unrecognized network name');
-        }
+    string memory chainsKey = string.concat(connectionsKey, 'chains');
+    string[] memory chains = tryDecodeStringArray(chainsKey, json);
+    uint256[] memory chainIds = PathHelpers.getChainIdsFromNames(chains);
+    connections.chainIds = chainIds;
+
+    // get adapters used by connected chain
+    for (uint256 i = 0; i < chainIds.length; i++) {
+      string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
+      string memory networkNamekey = string.concat(connectionsKey, networkName);
+      uint8[] memory connectedAdapters;
+      try this.decodeUint8Array(networkNamekey, json) returns (uint8[] memory connectionAdapters) {
+        connectedAdapters = connectionAdapters;
+      } catch (bytes memory) {}
+      if (networkName.eq('ethereum')) {
+        connections.ethereum = connectedAdapters;
+      } else if (networkName.eq('polygon')) {
+        connections.polygon = connectedAdapters;
+      } else if (networkName.eq('avalanche')) {
+        connections.avalanche = connectedAdapters;
+      } else if (networkName.eq('arbitrum')) {
+        connections.arbitrum = connectedAdapters;
+      } else if (networkName.eq('optimism')) {
+        connections.optimism = connectedAdapters;
+      } else if (networkName.eq('metis')) {
+        connections.metis = connectedAdapters;
+      } else if (networkName.eq('binance')) {
+        connections.binance = connectedAdapters;
+      } else if (networkName.eq('base')) {
+        connections.base = connectedAdapters;
+      } else if (networkName.eq('gnosis')) {
+        connections.gnosis = connectedAdapters;
+      } else if (networkName.eq('scroll')) {
+        connections.scroll = connectedAdapters;
+      } else if (networkName.eq('polygon_zkevm')) {
+        connections.polygon_zkevm = connectedAdapters;
       }
-    } catch (bytes memory) {}
+      // TODO: add test chains
+      else if (networkName.eq('ethereum_sepolia')) {
+        connections.ethereum_sepolia = connectedAdapters;
+      } else if (networkName.eq('polygon_mumbai')) {
+        connections.polygon_mumbai = connectedAdapters;
+      } else if (networkName.eq('avalanche_fuji')) {
+        connections.avalanche_fuji = connectedAdapters;
+      } else {
+        revert('Unrecognized network name');
+      }
+    }
 
     return connections;
   }

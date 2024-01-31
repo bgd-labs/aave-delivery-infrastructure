@@ -41,6 +41,15 @@ library PathHelpers {
     return string.concat(path, '.json');
   }
 
+  function getChainIdsFromNames(string[] memory chains) internal pure returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](chains.length);
+    for (uint256 i = 0; i < chains.length; i++) {
+      chainIds[i] = getChainIdByName(chains[i]);
+    }
+
+    return chainIds;
+  }
+
   function getNetworkRevisionDeploymentPath(
     uint256 chainId,
     string memory revision
