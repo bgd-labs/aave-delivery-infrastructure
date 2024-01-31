@@ -10,6 +10,7 @@ abstract contract BaseAdapterScript is DeploymentConfigurationBaseScript {
   ) internal view virtual returns (uint256[] memory);
 
   function _deployAdapter(
+    address crossChainController,
     Addresses memory currentAddresses,
     Addresses memory revisionAddresses,
     ChainDeploymentInfo memory config,
@@ -53,6 +54,18 @@ abstract contract BaseAdapterScript is DeploymentConfigurationBaseScript {
       });
     }
 
-    _deployAdapter(currentAddresses, revisionAddresses, config, trustedRemotes);
+    address crossChainController = _getCrossChainController(
+      currentAddresses,
+      revisionAddresses,
+      config.chainId
+    );
+
+    _deployAdapter(
+      crossChainController,
+      currentAddresses,
+      revisionAddresses,
+      config,
+      trustedRemotes
+    );
   }
 }

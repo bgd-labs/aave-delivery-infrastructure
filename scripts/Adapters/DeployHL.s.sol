@@ -12,17 +12,13 @@ contract DeployHLAdapter is BaseAdapterScript {
   }
 
   function _deployAdapter(
+    address crossChainController,
     Addresses memory currentAddresses,
     Addresses memory revisionAddresses,
     ChainDeploymentInfo memory config,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
     require(trustedRemotes.length > 0, 'Adapter needs trusted remotes');
-    address crossChainController = _getCrossChainController(
-      currentAddresses,
-      revisionAddresses,
-      config.chainId
-    );
     require(crossChainController != address(0), 'CCC needs to be deployed');
 
     HyperlaneAdapterInfo memory hlConfig = config.adapters.hlAdapter;
