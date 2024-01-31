@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 import 'forge-std/console2.sol';
 import 'forge-std/Script.sol';
 
-import {FxTunnelPolygon} from '../src/contracts/adapters/polygon/tunnel/FxTunnelPolygon.sol';
-import {FxTunnelEthereum} from '../src/contracts/adapters/polygon/tunnel/FxTunnelEthereum.sol';
+import {FxTunnelPolygon} from '../../src/contracts/adapters/polygon/tunnel/FxTunnelPolygon.sol';
+import {FxTunnelEthereum} from '../../src/contracts/adapters/polygon/tunnel/FxTunnelEthereum.sol';
 
 address constant ETHEREUM_CHECKPOINT_MANAGER = 0x86E4Dc95c7FBdBf52e33D563BbDB00823894C287;
 address constant ETHEREUM_FX_ROOT = 0xfe5e5D361b2ad62c541bAb87C45a0B9B018389a2;
