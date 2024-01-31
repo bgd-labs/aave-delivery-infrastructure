@@ -8,13 +8,13 @@ contract SetCCRAdapters is DeploymentConfigurationBaseScript {
   ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] bridgeAdapterConfig;
 
   function getChainIdsForAdapter(
-    uint8 adapter,
+    Adapters adapter,
     Connections memory rConfig
   ) internal pure returns (uint256[] memory) {
     uint256 counter;
     uint256[] memory chainIds = rConfig.chainIds;
     for (uint256 i = 0; i < chainIds.length; i++) {
-      uint8[] memory adapterIds = _getAdapterIds(chainIds[i], rConfig);
+      Adapters[] memory adapterIds = _getAdapterIds(chainIds[i], rConfig);
       for (uint256 j = 0; j < adapterIds.length; j++) {
         if (adapterIds[j] == adapter) {
           counter++;
@@ -24,7 +24,7 @@ contract SetCCRAdapters is DeploymentConfigurationBaseScript {
     uint256[] memory chains = new uint256[](counter);
     uint256 chainCounter;
     for (uint256 k = 0; k < chainIds.length; k++) {
-      uint8[] memory adapterIds = _getAdapterIds(chainIds[k], rConfig);
+      Adapters[] memory adapterIds = _getAdapterIds(chainIds[k], rConfig);
       for (uint256 j = 0; j < adapterIds.length; j++) {
         if (adapterIds[j] == adapter) {
           chains[chainCounter] = chainIds[k];
@@ -45,12 +45,12 @@ contract SetCCRAdapters is DeploymentConfigurationBaseScript {
 
     uint256[] memory chainIds = rConfig.chainIds;
     for (uint256 i = 0; i < chainIds.length; i++) {
-      uint8[] memory adapterIds = _getAdapterIds(chainIds[i], rConfig);
+      Adapters[] memory adapterIds = _getAdapterIds(chainIds[i], rConfig);
 
       for (uint256 j = 0; j < adapterIds.length; j++) {
-        require(adapterIds[j] > uint8(Adapters.Null_Adapter), 'Adapter id can not be 0');
+        require(adapterIds[j] > Adapters.Null_Adapter, 'Adapter id can not be 0');
         address currentChainAdapter = getAdapter(
-          Adapters(adapterIds[j]),
+          adapterIds[j],
           currentAddresses,
           revisionAddresses
         );

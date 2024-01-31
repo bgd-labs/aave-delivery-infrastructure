@@ -17,19 +17,19 @@ contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
     uint256[] memory chainIds = fdConfig.chainIds;
 
     for (uint256 i = 0; i < chainIds.length; i++) {
-      uint8[] memory adapterIds = _getAdapterIds(chainIds[i], fdConfig);
+      Adapters[] memory adapterIds = _getAdapterIds(chainIds[i], fdConfig);
 
       for (uint256 j = 0; j < adapterIds.length; j++) {
-        require(adapterIds[j] > uint8(Adapters.Null_Adapter), 'Adapter id can not be 0');
+        require(adapterIds[j] > Adapters.Null_Adapter, 'Adapter id can not be 0');
 
         address currentChainAdapter = getAdapter(
-          Adapters(adapterIds[j]),
+          adapterIds[j],
           currentAddresses,
           revisionAddresses
         );
         require(currentChainAdapter != address(0), 'Current chain adapter can not be 0');
 
-        if (adapterIds[j] == uint8(Adapters.Same_Chain)) {
+        if (adapterIds[j] == Adapters.Same_Chain) {
           bridgeAdaptersToEnable.push(
             ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
               currentChainBridgeAdapter: currentChainAdapter,
@@ -47,7 +47,7 @@ contract EnableCCFSenderAdapters is DeploymentConfigurationBaseScript {
             vm
           );
           address remoteChainAdapter = getAdapter(
-            Adapters(adapterIds[j]),
+            adapterIds[j],
             remoteCurrentAddresses,
             remoteRevisionAddresses
           );

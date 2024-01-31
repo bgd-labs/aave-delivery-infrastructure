@@ -18,20 +18,20 @@ struct CCIPAdapterInfo {
 
 struct Connections {
   uint256[] chainIds;
-  uint8[] ethereum;
-  uint8[] avalanche;
-  uint8[] polygon;
-  uint8[] arbitrum;
-  uint8[] optimism;
-  uint8[] polygon_zkevm;
-  uint8[] binance;
-  uint8[] base;
-  uint8[] metis;
-  uint8[] gnosis;
-  uint8[] scroll;
-  uint8[] ethereum_sepolia;
-  uint8[] polygon_mumbai;
-  uint8[] avalanche_fuji;
+  Adapters[] ethereum;
+  Adapters[] avalanche;
+  Adapters[] polygon;
+  Adapters[] arbitrum;
+  Adapters[] optimism;
+  Adapters[] polygon_zkevm;
+  Adapters[] binance;
+  Adapters[] base;
+  Adapters[] metis;
+  Adapters[] gnosis;
+  Adapters[] scroll;
+  Adapters[] ethereum_sepolia;
+  Adapters[] polygon_mumbai;
+  Adapters[] avalanche_fuji;
 }
 
 struct Confirmations {
@@ -284,7 +284,7 @@ contract DeployJsonDecodeHelpers {
   function _getAdapterIds(
     uint256 chainId,
     Connections memory connections
-  ) internal pure returns (uint8[] memory) {
+  ) internal pure returns (Adapters[] memory) {
     if (chainId == ChainIds.ETHEREUM) {
       return connections.ethereum;
     } else if (chainId == ChainIds.POLYGON) {
@@ -316,7 +316,7 @@ contract DeployJsonDecodeHelpers {
     } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
       return connections.avalanche_fuji;
     } else {
-      return new uint8[](0);
+      return new Adapters[](0);
     }
   }
 
@@ -513,6 +513,43 @@ contract DeployJsonDecodeHelpers {
     return confirmationsByNetwork;
   }
 
+  function getAdapterIdsByName(
+    string[] memory adapterNames
+  ) internal pure returns (Adapters[] memory) {
+    Adapters[] memory adapterIds = new Adapters[](adapterNames.length);
+    for (uint256 i = 0; i < adapterNames.length; i++) {
+      if (adapterNames[i].eq('same_chain')) {
+        adapterIds[i] = Adapters.Same_Chain;
+      } else if (adapterNames[i].eq('ccip')) {
+        adapterIds[i] = Adapters.CCIP;
+      } else if (adapterNames[i].eq('arbitrum_native')) {
+        adapterIds[i] = Adapters.Arbitrum_Native;
+      } else if (adapterNames[i].eq('optimism_native')) {
+        adapterIds[i] = Adapters.Optimism_Native;
+      } else if (adapterNames[i].eq('polygon_native')) {
+        adapterIds[i] = Adapters.Polygon_Native;
+      } else if (adapterNames[i].eq('gnosis_native')) {
+        adapterIds[i] = Adapters.Gnosis_Native;
+      } else if (adapterNames[i].eq('metis_native')) {
+        adapterIds[i] = Adapters.Metis_Native;
+      } else if (adapterNames[i].eq('layerzero')) {
+        adapterIds[i] = Adapters.LayerZero;
+      } else if (adapterNames[i].eq('hyperlane')) {
+        adapterIds[i] = Adapters.Hyperlane;
+      } else if (adapterNames[i].eq('scroll_native')) {
+        adapterIds[i] = Adapters.Scroll_Native;
+      } else if (adapterNames[i].eq('polygon_zkevm_native')) {
+        adapterIds[i] = Adapters.Polygon_ZkEvm_Native;
+      } else if (adapterNames[i].eq('base_native')) {
+        adapterIds[i] = Adapters.Base_Native;
+      } else {
+        revert('Adapter not supported');
+      }
+    }
+
+    return adapterIds;
+  }
+
   // TODO: quite similar to decodeConfirmations method, but could not find a way to deduplicate
   function decodeConnections(
     string memory firstLvlKey,
@@ -533,10 +570,10 @@ contract DeployJsonDecodeHelpers {
     for (uint256 i = 0; i < chainIds.length; i++) {
       string memory networkName = PathHelpers.getChainNameById(chainIds[i]);
       string memory networkNamekey = string.concat(connectionsKey, networkName);
-      uint8[] memory connectedAdapters;
-      try this.decodeUint8Array(networkNamekey, json) returns (uint8[] memory connectionAdapters) {
-        connectedAdapters = connectionAdapters;
-      } catch (bytes memory) {}
+
+      string[] memory connectedAdapterNames = tryDecodeStringArray(networkNamekey, json);
+      Adapters[] memory connectedAdapters = getAdapterIdsByName(connectedAdapterNames);
+
       if (networkName.eq('ethereum')) {
         connections.ethereum = connectedAdapters;
       } else if (networkName.eq('polygon')) {
