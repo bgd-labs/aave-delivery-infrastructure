@@ -262,7 +262,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   }
 
   /// @inheritdoc ICrossChainForwarder
-  function enableFirstBridgeAdapter(
+  function enableInitialBridgeAdapter(
     ForwarderBridgeAdapterConfigInput memory bridgeAdapter
   ) external onlyOwnerOrGuardian {
     ChainIdBridgeConfig[] memory destinationChainConfig = _bridgeAdaptersByChain[

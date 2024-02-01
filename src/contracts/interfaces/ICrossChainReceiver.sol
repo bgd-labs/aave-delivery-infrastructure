@@ -276,5 +276,5 @@ interface ICrossChainReceiver {
    * @param chainId id of the chain that the bridge adapter will receive messages from
    * @dev callable by guardian and owner
    */
-  function allowFirstReceiverBridgeAdapter(address bridgeAdapter, uint256 chainId) external;
+  function allowInitialReceiverBridgeAdapter(address bridgeAdapter, uint256 chainId) external;
 }

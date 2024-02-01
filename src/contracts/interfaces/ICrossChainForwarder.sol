@@ -190,7 +190,7 @@ interface ICrossChainForwarder {
    * @param bridgeAdapter object with the new bridge adapter configuration
    * @dev only callable by guardian and owner
    */
-  function enableFirstBridgeAdapter(
+  function enableInitialBridgeAdapter(
     ForwarderBridgeAdapterConfigInput memory bridgeAdapter
   ) external;
 

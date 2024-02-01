@@ -144,7 +144,7 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
   // Also could make sense to allow the full ReceiverBridgeAdapterConfigInput object in case we want to set an adapter
   // for multiple new chains???
   /// @inheritdoc ICrossChainReceiver
-  function allowFirstReceiverBridgeAdapter(
+  function allowInitialReceiverBridgeAdapter(
     address bridgeAdapter,
     uint256 chainId
   ) external onlyOwnerOrGuardian {
