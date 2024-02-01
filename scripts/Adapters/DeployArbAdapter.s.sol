@@ -19,7 +19,6 @@ contract DeployArbAdapter is BaseAdapterScript {
     ChainDeploymentInfo memory config,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    require(trustedRemotes.length > 0, 'Adapter needs trusted remotes');
     require(crossChainController != address(0), 'CCC needs to be deployed');
 
     EndpointAdapterInfo memory arbConfig = config.adapters.arbitrumAdapter;
