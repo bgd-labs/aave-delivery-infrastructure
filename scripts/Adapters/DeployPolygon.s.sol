@@ -29,21 +29,41 @@ contract DeployPolygonAdapter is BaseAdapterScript {
     if (PathHelpers.isTestNet(config.chainId)) {
       if (config.chainId == TestNetChainIds.ETHEREUM_GOERLI) {
         polAdapter = address(
-          new PolygonAdapterGoerli(crossChainController, polConfig.endpoint, trustedRemotes)
+          new PolygonAdapterGoerli(
+            crossChainController,
+            polConfig.endpoint,
+            polConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       } else if (config.chainId == TestNetChainIds.POLYGON_MUMBAI) {
         polAdapter = address(
-          new PolygonAdapterMumbai(crossChainController, polConfig.endpoint, trustedRemotes)
+          new PolygonAdapterMumbai(
+            crossChainController,
+            polConfig.endpoint,
+            polConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       }
     } else {
       if (config.chainId == ChainIds.ETHEREUM) {
         polAdapter = address(
-          new PolygonAdapterEthereum(crossChainController, polConfig.endpoint, trustedRemotes)
+          new PolygonAdapterEthereum(
+            crossChainController,
+            polConfig.endpoint,
+            polConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       } else if (config.chainId == ChainIds.POLYGON) {
         polAdapter = address(
-          new PolygonAdapterPolygon(crossChainController, polConfig.endpoint, trustedRemotes)
+          new PolygonAdapterPolygon(
+            crossChainController,
+            polConfig.endpoint,
+            polConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       }
     }

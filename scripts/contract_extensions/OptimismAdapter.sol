@@ -17,8 +17,17 @@ contract OptimismAdapterTestnet is OpAdapter {
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {}
+  )
+    OpAdapter(
+      crossChainController,
+      ovmCrossDomainMessenger,
+      providerGasLimit,
+      'Optimism native adapter',
+      trustedRemotes
+    )
+  {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {

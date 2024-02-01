@@ -13,11 +13,13 @@ contract ZkEVMAdapterEthereum is ZkEVMAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param zkEVMBridge address of the zkEVMBridge that will be used to send/receive messages to the root/child chain
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address zkEVMBridge,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) ZkEVMAdapter(crossChainController, zkEVMBridge, trustedRemotes) {}
+  ) ZkEVMAdapter(crossChainController, zkEVMBridge, providerGasLimit, trustedRemotes) {}
 }

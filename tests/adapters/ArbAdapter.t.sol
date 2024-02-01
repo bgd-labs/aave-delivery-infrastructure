@@ -16,6 +16,8 @@ contract ArbAdapterTest is Test {
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
 
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
+
   ArbAdapter public arbAdapter;
 
   IBaseAdapter.TrustedRemotesConfig internal originConfig =
@@ -33,11 +35,16 @@ contract ArbAdapterTest is Test {
       CROSS_CHAIN_CONTROLLER,
       INBOX,
       RECEIVER_CROSS_CHAIN_CONTROLLER,
+      BASE_GAS_LIMIT,
       originConfigs
     );
   }
 
   function testInitialize() public {
+    assertEq(
+      keccak256(abi.encode(arbAdapter.adapterName())),
+      keccak256(abi.encode('Arbitrum native adapter'))
+    );
     assertEq(arbAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), CROSS_CHAIN_CONTROLLER);
   }
 
@@ -75,7 +82,7 @@ contract ArbAdapterTest is Test {
         maxSubmission,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
-        dstGasLimit,
+        dstGasLimit + BASE_GAS_LIMIT,
         arbAdapter.L2_MAX_FEE_PER_GAS(),
         data
       ),

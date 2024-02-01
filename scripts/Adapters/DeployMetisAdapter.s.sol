@@ -27,11 +27,21 @@ contract DeployMetisAdapter is BaseAdapterScript {
     address metisAdapter;
     if (PathHelpers.isTestNet(config.chainId)) {
       metisAdapter = address(
-        new MetisAdapterTestnet(crossChainController, metisConfig.endpoint, trustedRemotes)
+        new MetisAdapterTestnet(
+          crossChainController,
+          metisConfig.endpoint,
+          metisConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     } else {
       metisAdapter = address(
-        new MetisAdapter(crossChainController, metisConfig.endpoint, trustedRemotes)
+        new MetisAdapter(
+          crossChainController,
+          metisConfig.endpoint,
+          metisConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     }
 

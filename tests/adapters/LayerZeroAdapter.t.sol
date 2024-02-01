@@ -18,6 +18,7 @@ contract LayerZeroAdapterTest is Test {
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(12345678);
   address public constant ADDRESS_WITH_ETH = address(12301234);
   uint16 public constant BRIDGE_CHAIN_ID = uint16(109);
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   LayerZeroAdapter layerZeroAdapter;
 
@@ -32,7 +33,12 @@ contract LayerZeroAdapterTest is Test {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    layerZeroAdapter = new LayerZeroAdapter(LZ_ENDPOINT, CROSS_CHAIN_CONTROLLER, originConfigs);
+    layerZeroAdapter = new LayerZeroAdapter(
+      LZ_ENDPOINT,
+      CROSS_CHAIN_CONTROLLER,
+      BASE_GAS_LIMIT,
+      originConfigs
+    );
   }
 
   function testAddressToBytes() public {
@@ -46,7 +52,10 @@ contract LayerZeroAdapterTest is Test {
 
   function testInit() public {
     address originForwarder = layerZeroAdapter.getTrustedRemoteByChainId(1);
-
+    assertEq(
+      keccak256(abi.encode(layerZeroAdapter.adapterName())),
+      keccak256(abi.encode('LayerZero adapter'))
+    );
     assertEq(originForwarder, ORIGIN_FORWARDER);
     assertEq(address(layerZeroAdapter.LZ_ENDPOINT()), LZ_ENDPOINT);
   }

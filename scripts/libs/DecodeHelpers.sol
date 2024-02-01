@@ -7,18 +7,21 @@ import './PathHelpers.sol';
 
 struct EndpointAdapterInfo {
   address endpoint;
+  uint256 providerGasLimit;
   uint256[] remoteNetworks;
 }
 
 struct CCIPAdapterInfo {
   address ccipRouter;
   address linkToken;
+  uint256 providerGasLimit;
   uint256[] remoteNetworks;
 }
 
 struct HyperlaneAdapterInfo {
   address mailBox;
   address igp;
+  uint256 providerGasLimit;
   uint256[] remoteNetworks;
 }
 
@@ -440,6 +443,10 @@ contract DeployJsonDecodeHelpers {
 
     EndpointAdapterInfo memory endpointAdapter = EndpointAdapterInfo({
       endpoint: tryDecodeAddress(string.concat(endpointAdapterKey, 'endpoint'), json),
+      providerGasLimit: tryDecodeUint256(
+        string.concat(endpointAdapterKey, 'providerGasLimit'),
+        json
+      ),
       remoteNetworks: PathHelpers.getChainIdsFromNames(chains)
     });
 
@@ -461,6 +468,7 @@ contract DeployJsonDecodeHelpers {
       HyperlaneAdapterInfo({
         mailBox: tryDecodeAddress(string.concat(hlAdapterKey, 'mailBox'), json),
         igp: tryDecodeAddress(string.concat(hlAdapterKey, 'igp'), json),
+        providerGasLimit: tryDecodeUint256(string.concat(hlAdapterKey, 'providerGasLimit'), json),
         remoteNetworks: PathHelpers.getChainIdsFromNames(chains)
       });
   }
@@ -480,6 +488,7 @@ contract DeployJsonDecodeHelpers {
       CCIPAdapterInfo({
         ccipRouter: tryDecodeAddress(string.concat(ccipAdapterKey, 'ccipRouter'), json),
         linkToken: tryDecodeAddress(string.concat(ccipAdapterKey, 'linkToken'), json),
+        providerGasLimit: tryDecodeUint256(string.concat(ccipAdapterKey, 'providerGasLimit'), json),
         remoteNetworks: PathHelpers.getChainIdsFromNames(chains)
       });
   }

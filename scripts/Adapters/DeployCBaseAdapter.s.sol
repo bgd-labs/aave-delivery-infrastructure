@@ -27,11 +27,21 @@ contract DeployCBAdapter is BaseAdapterScript {
     address baseAdapter;
     if (PathHelpers.isTestNet(config.chainId)) {
       baseAdapter = address(
-        new CBaseAdapterTestnet(crossChainController, baseConfig.endpoint, trustedRemotes)
+        new CBaseAdapterTestnet(
+          crossChainController,
+          baseConfig.endpoint,
+          baseConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     } else {
       baseAdapter = address(
-        new CBaseAdapter(crossChainController, baseConfig.endpoint, trustedRemotes)
+        new CBaseAdapter(
+          crossChainController,
+          baseConfig.endpoint,
+          baseConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     }
 

@@ -8,7 +8,7 @@ contract DeploySameChainAdapter is DeploymentConfigurationBaseScript {
   function _execute(
     Addresses memory currentAddresses,
     Addresses memory revisionAddresses,
-    ChainDeploymentInfo memory config
+    ChainDeploymentInfo memory
   ) internal override {
     currentAddresses.sameChainAdapter = revisionAddresses.sameChainAdapter = address(
       new SameChainAdapter()

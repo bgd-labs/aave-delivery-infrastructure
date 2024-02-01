@@ -18,6 +18,8 @@ contract CCIPAdapterTest is Test {
 
   uint256 public constant ORIGIN_CCIP_CHAIN_ID = ChainIds.ETHEREUM;
 
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
+
   IERC20 public LINK_TOKEN;
 
   IBaseAdapter.TrustedRemotesConfig internal originConfig =
@@ -39,6 +41,7 @@ contract CCIPAdapterTest is Test {
     ccipAdapter = new CCIPAdapter(
       CROSS_CHAIN_CONTROLLER,
       CCIP_ROUTER,
+      BASE_GAS_LIMIT,
       originConfigs,
       address(LINK_TOKEN)
     );
@@ -46,6 +49,10 @@ contract CCIPAdapterTest is Test {
   }
 
   function testInitialize() public {
+    assertEq(
+      keccak256(abi.encode(ccipAdapter.adapterName())),
+      keccak256(abi.encode('CCIP adapter'))
+    );
     assertEq(ccipAdapter.getTrustedRemoteByChainId(ORIGIN_CCIP_CHAIN_ID), ORIGIN_FORWARDER);
   }
 

@@ -33,14 +33,16 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param mailBox HyperLane router contract address to send / receive cross chain messages
    * @param igp HyperLane contract to get the gas estimation to pay for sending messages
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address mailBox,
     address igp,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, 'Hyperlane adapter', trustedRemotes) {
     HL_MAIL_BOX = IMailbox(mailBox);
     IGP = IInterchainGasPaymaster(igp);
   }
@@ -48,7 +50,7 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 destinationGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
@@ -62,8 +64,10 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
       message
     );
 
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
+
     // Get the required payment from the IGP.
-    uint256 quotedPayment = IGP.quoteGasPayment(nativeChainId, destinationGasLimit);
+    uint256 quotedPayment = IGP.quoteGasPayment(nativeChainId, totalGasLimit);
 
     require(quotedPayment <= address(this).balance, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
 
@@ -71,7 +75,7 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
     IGP.payForGas{value: quotedPayment}(
       messageId, // The ID of the message that was just dispatched
       nativeChainId, // The destination domain of the message
-      destinationGasLimit,
+      totalGasLimit,
       address(this) // refunds go to CrossChainController, who paid the msg.value
     );
 

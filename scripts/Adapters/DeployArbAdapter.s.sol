@@ -53,6 +53,7 @@ contract DeployArbAdapter is BaseAdapterScript {
           crossChainController,
           arbConfig.endpoint,
           destinationCCC,
+          arbConfig.providerGasLimit,
           trustedRemotes
         )
       );
@@ -80,7 +81,13 @@ contract DeployArbAdapter is BaseAdapterScript {
         require(destinationCCC != address(0), 'Arbitrum CCC must be deployed');
       }
       arbAdapter = address(
-        new ArbAdapter(crossChainController, arbConfig.endpoint, destinationCCC, trustedRemotes)
+        new ArbAdapter(
+          crossChainController,
+          arbConfig.endpoint,
+          destinationCCC,
+          arbConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     }
 

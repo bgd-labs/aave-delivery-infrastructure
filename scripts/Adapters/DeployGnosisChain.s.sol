@@ -24,7 +24,12 @@ contract DeployGnosisChainAdapter is BaseAdapterScript {
     require(gnosisConfig.endpoint != address(0), 'Gnosis amb bridge can not be 0');
 
     address gnosisAdapter = address(
-      new GnosisChainAdapter(crossChainController, gnosisConfig.endpoint, trustedRemotes)
+      new GnosisChainAdapter(
+        crossChainController,
+        gnosisConfig.endpoint,
+        gnosisConfig.providerGasLimit,
+        trustedRemotes
+      )
     );
     currentAddresses.gnosisAdapter = revisionAddresses.gnosisAdapter = gnosisAdapter;
   }

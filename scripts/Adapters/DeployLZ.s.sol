@@ -27,11 +27,21 @@ contract DeployLZAdapter is BaseAdapterScript {
     address lzAdapter;
     if (PathHelpers.isTestNet(config.chainId)) {
       lzAdapter = address(
-        new LayerZeroAdapterTestnet(lzConfig.endpoint, crossChainController, trustedRemotes)
+        new LayerZeroAdapterTestnet(
+          lzConfig.endpoint,
+          crossChainController,
+          lzConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     } else {
       lzAdapter = address(
-        new LayerZeroAdapter(lzConfig.endpoint, crossChainController, trustedRemotes)
+        new LayerZeroAdapter(
+          lzConfig.endpoint,
+          crossChainController,
+          lzConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     }
     currentAddresses.lzAdapter = revisionAddresses.lzAdapter = lzAdapter;

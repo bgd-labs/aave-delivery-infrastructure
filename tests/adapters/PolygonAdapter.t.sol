@@ -19,6 +19,7 @@ contract PolygonAdapterTest is Test {
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   uint256 public constant DESTINATION_CHAIN_ID = ChainIds.POLYGON;
   address public constant ADDRESS_WITH_ETH = address(12301234);
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   PolygonAdapterEthereum public polygonAdapterEthereum;
   PolygonAdapterPolygon public polygonAdapterPolygon;
@@ -43,6 +44,7 @@ contract PolygonAdapterTest is Test {
     polygonAdapterEthereum = new PolygonAdapterEthereum(
       CROSS_CHAIN_CONTROLLER,
       FX_TUNNEL_ETHEREUM,
+      BASE_GAS_LIMIT,
       originConfigsEthereum
     );
 
@@ -53,11 +55,20 @@ contract PolygonAdapterTest is Test {
     polygonAdapterPolygon = new PolygonAdapterPolygon(
       CROSS_CHAIN_CONTROLLER,
       FX_TUNNEL_POLYGON,
+      BASE_GAS_LIMIT,
       originConfigsPolygon
     );
   }
 
   function testInitialize() public {
+    assertEq(
+      keccak256(abi.encode(polygonAdapterEthereum.adapterName())),
+      keccak256(abi.encode('Polygon native adapter'))
+    );
+    assertEq(
+      keccak256(abi.encode(polygonAdapterPolygon.adapterName())),
+      keccak256(abi.encode('Polygon native adapter'))
+    );
     assertEq(
       polygonAdapterEthereum.getTrustedRemoteByChainId(DESTINATION_CHAIN_ID),
       CROSS_CHAIN_CONTROLLER

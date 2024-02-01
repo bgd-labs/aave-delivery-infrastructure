@@ -8,8 +8,9 @@ import {Errors} from '../../src/contracts/libs/Errors.sol';
 contract MockAdapter is BaseAdapter {
   constructor(
     address crossChainController,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, trustedRemotes) {}
+  ) BaseAdapter(crossChainController, providerGasLimit, 'Base adapter', trustedRemotes) {}
 
   function forwardMessage(
     address,
@@ -34,6 +35,6 @@ contract BaseAdapterTest is Test {
 
   function testContractCreationWhenAddress0() public {
     vm.expectRevert(bytes(Errors.INVALID_BASE_ADAPTER_CROSS_CHAIN_CONTROLLER));
-    new MockAdapter(address(0), new IBaseAdapter.TrustedRemotesConfig[](1));
+    new MockAdapter(address(0), 0, new IBaseAdapter.TrustedRemotesConfig[](1));
   }
 }

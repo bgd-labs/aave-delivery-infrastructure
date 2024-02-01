@@ -17,8 +17,9 @@ contract MetisAdapterTestnet is MetisAdapter {
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) MetisAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {}
+  ) MetisAdapter(crossChainController, ovmCrossDomainMessenger, providerGasLimit, trustedRemotes) {}
 
   /// @inheritdoc IOpAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {

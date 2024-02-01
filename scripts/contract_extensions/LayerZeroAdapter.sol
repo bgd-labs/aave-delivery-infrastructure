@@ -25,8 +25,9 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
   constructor(
     address lzEndpoint,
     address crossChainController,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory originConfigs
-  ) LayerZeroAdapter(lzEndpoint, crossChainController, originConfigs) {}
+  ) LayerZeroAdapter(lzEndpoint, crossChainController, providerGasLimit, originConfigs) {}
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {

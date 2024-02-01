@@ -25,7 +25,13 @@ contract DeployHLAdapter is BaseAdapterScript {
     require(hlConfig.igp != address(0), 'Hyperlane igp can not be 0');
 
     address hlAdapter = address(
-      new HyperLaneAdapter(crossChainController, hlConfig.mailBox, hlConfig.igp, trustedRemotes)
+      new HyperLaneAdapter(
+        crossChainController,
+        hlConfig.mailBox,
+        hlConfig.igp,
+        hlConfig.providerGasLimit,
+        trustedRemotes
+      )
     );
 
     currentAddresses.hlAdapter = revisionAddresses.hlAdapter = hlAdapter;

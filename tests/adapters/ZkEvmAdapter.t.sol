@@ -18,6 +18,7 @@ contract ZkEvmAdapterTest is Test {
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   uint256 public constant DESTINATION_CHAIN_ID = ChainIds.POLYGON_ZK_EVM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
+  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   ZkEVMAdapterEthereum public zkEvmAdapterEthereum;
   ZkEVMAdapterPolygonZkEVM public zkEvmAdapterPolygonZkEvm;
@@ -35,6 +36,7 @@ contract ZkEvmAdapterTest is Test {
     zkEvmAdapterEthereum = new ZkEVMAdapterEthereum(
       CROSS_CHAIN_CONTROLLER,
       ZK_EVM_BRIDGE,
+      BASE_GAS_LIMIT,
       originConfigsEthereum
     );
 
@@ -45,11 +47,20 @@ contract ZkEvmAdapterTest is Test {
     zkEvmAdapterPolygonZkEvm = new ZkEVMAdapterPolygonZkEVM(
       RECEIVER_CROSS_CHAIN_CONTROLLER,
       ZK_EVM_BRIDGE,
+      BASE_GAS_LIMIT,
       originConfigsPolygon
     );
   }
 
   function testInitialize() public {
+    assertEq(
+      keccak256(abi.encode(zkEvmAdapterPolygonZkEvm.adapterName())),
+      keccak256(abi.encode('Polygon ZkEvm native adapter'))
+    );
+    assertEq(
+      keccak256(abi.encode(zkEvmAdapterEthereum.adapterName())),
+      keccak256(abi.encode('Polygon ZkEvm native adapter'))
+    );
     assertEq(
       zkEvmAdapterPolygonZkEvm.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID),
       CROSS_CHAIN_CONTROLLER

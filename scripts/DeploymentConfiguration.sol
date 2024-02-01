@@ -207,7 +207,7 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
 
         // update global params
         currentAddresses.chainId = revisionAddresses.chainId = config[i].chainId;
-        (uint256 numRevision, bool error) = StringUtils.strToUint(revision);
+        (uint256 numRevision, ) = StringUtils.strToUint(revision);
         // TODO: this conflicts with the way we execute scripts in make file. Not sure what to do with it
         //      require(
         //        !error && currentAddresses.version < numRevision,

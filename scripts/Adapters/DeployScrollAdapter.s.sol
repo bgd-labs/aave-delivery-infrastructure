@@ -27,11 +27,21 @@ contract DeployScrollAdapter is BaseAdapterScript {
     address scrollAdapter;
     if (PathHelpers.isTestNet(config.chainId)) {
       scrollAdapter = address(
-        new ScrollAdapterTestnet(crossChainController, scrollConfig.endpoint, trustedRemotes)
+        new ScrollAdapterTestnet(
+          crossChainController,
+          scrollConfig.endpoint,
+          scrollConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     } else {
       scrollAdapter = address(
-        new ScrollAdapter(crossChainController, scrollConfig.endpoint, trustedRemotes)
+        new ScrollAdapter(
+          crossChainController,
+          scrollConfig.endpoint,
+          scrollConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     }
 

@@ -26,13 +26,15 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
    * @notice constructor for the Layer Zero adapter
    * @param lzEndpoint address of the layer zero endpoint on the current chain where adapter is deployed
    * @param crossChainController address of the contract that manages cross chain infrastructure
-   * @param originConfigs array of objects with chain id and origin addresses which will be allowed to send messages to this adapter
+   * @param providerGasLimit base gas limit used by the bridge adapter
+   * @param trustedRemotes array of objects with chain id and origin addresses which will be allowed to send messages to this adapter
    */
   constructor(
     address lzEndpoint,
     address crossChainController,
-    TrustedRemotesConfig[] memory originConfigs
-  ) BaseAdapter(crossChainController, originConfigs) {
+    uint256 providerGasLimit,
+    TrustedRemotesConfig[] memory trustedRemotes
+  ) BaseAdapter(crossChainController, providerGasLimit, 'LayerZero adapter', trustedRemotes) {
     require(lzEndpoint != address(0), Errors.INVALID_LZ_ENDPOINT);
     LZ_ENDPOINT = ILayerZeroEndpoint(lzEndpoint);
   }
@@ -65,7 +67,7 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 destinationGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
@@ -73,7 +75,9 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
     require(nativeChainId != uint16(0), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    bytes memory adapterParams = abi.encodePacked(VERSION, destinationGasLimit);
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
+
+    bytes memory adapterParams = abi.encodePacked(VERSION, totalGasLimit);
 
     (uint256 nativeFee, ) = LZ_ENDPOINT.estimateFees(
       nativeChainId,

@@ -7,19 +7,20 @@ import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainRec
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ICrossDomainMessenger} from '../../src/contracts/adapters/optimism/OpAdapter.sol';
-import {MetisAdapter, IOpAdapter} from '../../src/contracts/adapters/metis/MetisAdapter.sol';
+import {ScrollAdapter, IOpAdapter, IL1MessageQueue, IScrollMessenger} from '../../src/contracts/adapters/scroll/ScrollAdapter.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 
-contract MetisAdapterTest is Test {
+contract ScrollAdapterTest is Test {
   address public constant ORIGIN_FORWARDER = address(123);
   address public constant CROSS_CHAIN_CONTROLLER = address(1234);
   address public constant OVM_CROSS_DOMAIN_MESSENGER = address(12345);
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
+  address public constant SCROLL_MESSAGE_QUEUE = address(12487159);
   uint256 public constant BASE_GAS_LIMIT = 10_000;
 
-  MetisAdapter public metisAdapter;
+  ScrollAdapter public scrollAdapter;
 
   IBaseAdapter.TrustedRemotesConfig internal originConfig =
     IBaseAdapter.TrustedRemotesConfig({
@@ -32,38 +33,54 @@ contract MetisAdapterTest is Test {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    metisAdapter = new MetisAdapter(
+    vm.mockCall(
+      OVM_CROSS_DOMAIN_MESSENGER,
+      abi.encodeWithSelector(IScrollMessenger.messageQueue.selector),
+      abi.encode(SCROLL_MESSAGE_QUEUE)
+    );
+    scrollAdapter = new ScrollAdapter(
       CROSS_CHAIN_CONTROLLER,
       OVM_CROSS_DOMAIN_MESSENGER,
       BASE_GAS_LIMIT,
       originConfigs
     );
+    vm.clearMockedCalls();
   }
 
   function testInitialize() public {
     assertEq(
-      keccak256(abi.encode(metisAdapter.adapterName())),
-      keccak256(abi.encode('Metis native adapter'))
+      keccak256(abi.encode(scrollAdapter.adapterName())),
+      keccak256(abi.encode('Scroll native adapter'))
     );
-    assertEq(metisAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), ORIGIN_FORWARDER);
+    assertEq(scrollAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), ORIGIN_FORWARDER);
   }
 
   function testGetInfraChainFromBridgeChain() public {
-    assertEq(metisAdapter.nativeToInfraChainId(ChainIds.ETHEREUM), ChainIds.ETHEREUM);
+    assertEq(scrollAdapter.nativeToInfraChainId(ChainIds.ETHEREUM), ChainIds.ETHEREUM);
   }
 
   function testGetBridgeChainFromInfraChain() public {
-    assertEq(metisAdapter.infraToNativeChainId(ChainIds.ETHEREUM), ChainIds.ETHEREUM);
+    assertEq(scrollAdapter.infraToNativeChainId(ChainIds.ETHEREUM), ChainIds.ETHEREUM);
   }
 
   function testForwardMessage() public {
     uint40 payloadId = uint40(0);
     bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
     uint32 dstGasLimit = 600000;
+    uint256 fee = 345;
 
     hoax(ADDRESS_WITH_ETH, 10 ether);
     vm.mockCall(
+      SCROLL_MESSAGE_QUEUE,
+      abi.encodeWithSelector(
+        IL1MessageQueue.estimateCrossDomainMessageFee.selector,
+        dstGasLimit + BASE_GAS_LIMIT
+      ),
+      abi.encode(fee)
+    );
+    vm.mockCall(
       OVM_CROSS_DOMAIN_MESSENGER,
+      fee,
       abi.encodeWithSelector(
         ICrossDomainMessenger.sendMessage.selector,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
@@ -72,12 +89,12 @@ contract MetisAdapterTest is Test {
       ),
       abi.encode()
     );
-    (bool success, bytes memory returnData) = address(metisAdapter).delegatecall(
+    (bool success, bytes memory returnData) = address(scrollAdapter).delegatecall(
       abi.encodeWithSelector(
         IBaseAdapter.forwardMessage.selector,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         dstGasLimit,
-        ChainIds.METIS,
+        ChainIds.SCROLL,
         message
       )
     );
@@ -93,7 +110,7 @@ contract MetisAdapterTest is Test {
     uint256 dstGasLimit = 600000;
 
     vm.expectRevert(bytes(Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED));
-    metisAdapter.forwardMessage(
+    scrollAdapter.forwardMessage(
       RECEIVER_CROSS_CHAIN_CONTROLLER,
       dstGasLimit,
       ChainIds.ETHEREUM,
@@ -107,7 +124,7 @@ contract MetisAdapterTest is Test {
     uint256 dstGasLimit = 600000;
 
     vm.expectRevert(bytes(Errors.RECEIVER_NOT_SET));
-    metisAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.METIS, message);
+    scrollAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.SCROLL, message);
   }
 
   function testOvmReceive() public {
@@ -129,14 +146,14 @@ contract MetisAdapterTest is Test {
       abi.encodeWithSelector(ICrossDomainMessenger.xDomainMessageSender.selector),
       abi.encode(ORIGIN_FORWARDER)
     );
-    metisAdapter.ovmReceive(message);
+    scrollAdapter.ovmReceive(message);
   }
 
   function testOvmReceiveWhenCallerNotRouter() public {
     bytes memory message = abi.encode('some message');
 
     vm.expectRevert(bytes(Errors.CALLER_NOT_OVM));
-    metisAdapter.ovmReceive(message);
+    scrollAdapter.ovmReceive(message);
   }
 
   function testOvmReceiveWhenRemoteNotTrusted() public {
@@ -150,6 +167,6 @@ contract MetisAdapterTest is Test {
       abi.encode(address(120984))
     );
     vm.expectRevert(bytes(Errors.REMOTE_NOT_TRUSTED));
-    metisAdapter.ovmReceive(message);
+    scrollAdapter.ovmReceive(message);
   }
 }

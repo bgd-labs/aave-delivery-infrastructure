@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
-import 'forge-std/Script.sol';
 
 import {ChainIds} from '../../libs/ChainIds.sol';
 import {OpAdapter, IOpAdapter, IBaseAdapter, Errors} from '../optimism/OpAdapter.sol';
@@ -23,14 +22,23 @@ contract ScrollAdapter is OpAdapter {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param ovmCrossDomainMessenger optimism entry point address
+   * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address ovmCrossDomainMessenger,
+    uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) OpAdapter(crossChainController, ovmCrossDomainMessenger, trustedRemotes) {
-    console2.log(IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).messageQueue());
+  )
+    OpAdapter(
+      crossChainController,
+      ovmCrossDomainMessenger,
+      providerGasLimit,
+      'Scroll native adapter',
+      trustedRemotes
+    )
+  {
     SCROLL_MESSAGE_QUEUE = IL1MessageQueue(
       IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).messageQueue()
     );
@@ -39,7 +47,7 @@ contract ScrollAdapter is OpAdapter {
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 destinationGasLimit,
+    uint256 executionGasLimit,
     uint256 destinationChainId,
     bytes calldata message
   ) external virtual override returns (address, uint256) {
@@ -49,14 +57,16 @@ contract ScrollAdapter is OpAdapter {
     );
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
+
     // L2 message delivery fee
-    uint256 fee = SCROLL_MESSAGE_QUEUE.estimateCrossDomainMessageFee(destinationGasLimit);
+    uint256 fee = SCROLL_MESSAGE_QUEUE.estimateCrossDomainMessageFee(totalGasLimit);
 
     IScrollMessenger(OVM_CROSS_DOMAIN_MESSENGER).sendMessage{value: fee}(
       receiver,
       0,
       abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
-      destinationGasLimit
+      totalGasLimit
     );
 
     return (OVM_CROSS_DOMAIN_MESSENGER, 0);

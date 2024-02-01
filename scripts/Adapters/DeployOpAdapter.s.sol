@@ -27,10 +27,23 @@ contract DeployOpAdapter is BaseAdapterScript {
     address opAdapter;
     if (PathHelpers.isTestNet(config.chainId)) {
       opAdapter = address(
-        new OptimismAdapterTestnet(crossChainController, opConfig.endpoint, trustedRemotes)
+        new OptimismAdapterTestnet(
+          crossChainController,
+          opConfig.endpoint,
+          opConfig.providerGasLimit,
+          trustedRemotes
+        )
       );
     } else {
-      opAdapter = address(new OpAdapter(crossChainController, opConfig.endpoint, trustedRemotes));
+      opAdapter = address(
+        new OpAdapter(
+          crossChainController,
+          opConfig.endpoint,
+          opConfig.providerGasLimit,
+          'Optimism native adapter',
+          trustedRemotes
+        )
+      );
     }
 
     currentAddresses.opAdapter = revisionAddresses.opAdapter = opAdapter;

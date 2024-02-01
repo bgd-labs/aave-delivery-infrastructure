@@ -30,21 +30,41 @@ contract DeployZkEVMAdapter is BaseAdapterScript {
     if (PathHelpers.isTestNet(config.chainId)) {
       if (config.chainId == TestNetChainIds.ETHEREUM_GOERLI) {
         zkevmAdapter = address(
-          new ZkEVMAdapterGoerli(crossChainController, zkevmConfig.endpoint, trustedRemotes)
+          new ZkEVMAdapterGoerli(
+            crossChainController,
+            zkevmConfig.endpoint,
+            zkevmConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       } else if (config.chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI) {
         zkevmAdapter = address(
-          new ZkEVMAdapterZkEVMGoerli(crossChainController, zkevmConfig.endpoint, trustedRemotes)
+          new ZkEVMAdapterZkEVMGoerli(
+            crossChainController,
+            zkevmConfig.endpoint,
+            zkevmConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       }
     } else {
       if (config.chainId == ChainIds.ETHEREUM) {
         zkevmAdapter = address(
-          new ZkEVMAdapterEthereum(crossChainController, zkevmConfig.endpoint, trustedRemotes)
+          new ZkEVMAdapterEthereum(
+            crossChainController,
+            zkevmConfig.endpoint,
+            zkevmConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       } else if (config.chainId == ChainIds.POLYGON_ZK_EVM) {
         zkevmAdapter = address(
-          new ZkEVMAdapterPolygonZkEVM(crossChainController, zkevmConfig.endpoint, trustedRemotes)
+          new ZkEVMAdapterPolygonZkEVM(
+            crossChainController,
+            zkevmConfig.endpoint,
+            zkevmConfig.providerGasLimit,
+            trustedRemotes
+          )
         );
       }
     }

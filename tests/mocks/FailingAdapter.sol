@@ -6,7 +6,7 @@ import {BaseAdapter, IBaseAdapter} from '../../src/contracts/adapters/BaseAdapte
 contract FailingAdapter is BaseAdapter {
   constructor(
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(address(1), trustedRemotes) {}
+  ) BaseAdapter(address(1), 0, 'failing adapter', trustedRemotes) {}
 
   /// @inheritdoc IBaseAdapter
   function forwardMessage(

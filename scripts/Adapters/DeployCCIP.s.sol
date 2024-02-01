@@ -31,6 +31,7 @@ contract DeployCCIPAdapter is BaseAdapterScript {
         new CCIPAdapterTestnet(
           crossChainController,
           ccipConfig.ccipRouter,
+          ccipConfig.providerGasLimit,
           trustedRemotes,
           ccipConfig.linkToken
         )
@@ -40,6 +41,7 @@ contract DeployCCIPAdapter is BaseAdapterScript {
         new CCIPAdapter(
           crossChainController,
           ccipConfig.ccipRouter,
+          ccipConfig.providerGasLimit,
           trustedRemotes,
           ccipConfig.linkToken
         )
