@@ -269,4 +269,12 @@ interface ICrossChainReceiver {
   function disallowReceiverBridgeAdapters(
     ReceiverBridgeAdapterConfigInput[] memory bridgeAdaptersInput
   ) external;
+
+  /**
+   * @notice method to add a bridge adapter to the allowed list, for a chain with no current adapter set
+   * @param bridgeAdapter address of the bridge adapter to set
+   * @param chainId id of the chain that the bridge adapter will receive messages from
+   * @dev callable by guardian and owner
+   */
+  function allowFirstReceiverBridgeAdapter(address bridgeAdapter, uint256 chainId) external;
 }

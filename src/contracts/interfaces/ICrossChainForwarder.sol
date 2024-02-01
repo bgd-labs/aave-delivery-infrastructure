@@ -186,6 +186,15 @@ interface ICrossChainForwarder {
   function disableBridgeAdapters(BridgeAdapterToDisable[] memory bridgeAdapters) external;
 
   /**
+   * @notice method to enable a bridge adapter for a network where no adapter is set yet
+   * @param bridgeAdapter object with the new bridge adapter configuration
+   * @dev only callable by guardian and owner
+   */
+  function enableFirstBridgeAdapter(
+    ForwarderBridgeAdapterConfigInput memory bridgeAdapter
+  ) external;
+
+  /**
    * @notice method to remove sender addresses
    * @param senders list of addresses to remove
    */

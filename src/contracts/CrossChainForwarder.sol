@@ -261,6 +261,24 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     _disableBridgeAdapters(bridgeAdapters);
   }
 
+  /// @inheritdoc ICrossChainForwarder
+  function enableFirstBridgeAdapter(
+    ForwarderBridgeAdapterConfigInput memory bridgeAdapter
+  ) external onlyOwnerOrGuardian {
+    ChainIdBridgeConfig[] memory destinationChainConfig = _bridgeAdaptersByChain[
+      bridgeAdapter.destinationChainId
+    ];
+    require(
+      destinationChainConfig.length == 0,
+      Errors.ADAPTERS_ALREADY_ENABLED_FOR_DESTINATION_CHAIN
+    );
+    ForwarderBridgeAdapterConfigInput[]
+      memory bridgeAdapters = new ForwarderBridgeAdapterConfigInput[](1);
+    bridgeAdapters[0] = bridgeAdapter;
+
+    _enableBridgeAdapters(bridgeAdapters);
+  }
+
   /**
    * @notice internal method that has the logic to forward a transaction to the specified chain
    * @param envelopeId the id of the envelope

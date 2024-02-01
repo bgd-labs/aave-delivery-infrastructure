@@ -46,4 +46,6 @@ library Errors {
   string public constant CALLER_NOT_GNOSIS_ARBITRARY_MESSAGE_BRIDGE = '37'; // the caller must be the Gnosis AMB contract
   string public constant ZERO_GNOSIS_ARBITRARY_MESSAGE_BRIDGE = '38'; // The passed Gnosis AMB contract is zero
   string public constant CALLER_NOT_ZK_EVM_BRIDGE = '39'; // the caller must be the zk evm bridge
+  string public constant ADAPTERS_ALREADY_ENABLED_FOR_DESTINATION_CHAIN = '40'; // destination chain already has at least one adapter set, for communication
+  string public constant CHAIN_MUST_NOT_HAVE_ANY_RECEIVER_ADAPTER_SET = '41'; // there is already one adapter set, that can receive messages from origin chain
 }

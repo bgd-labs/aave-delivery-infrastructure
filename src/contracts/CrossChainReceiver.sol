@@ -140,6 +140,31 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
     _updateReceiverBridgeAdapters(bridgeAdaptersInput, true);
   }
 
+  // TODO: not entirely sure if this method makes sense.
+  // Also could make sense to allow the full ReceiverBridgeAdapterConfigInput object in case we want to set an adapter
+  // for multiple new chains???
+  /// @inheritdoc ICrossChainReceiver
+  function allowFirstReceiverBridgeAdapter(
+    address bridgeAdapter,
+    uint256 chainId
+  ) external onlyOwnerOrGuardian {
+    require(
+      _configurationsByChain[chainId].allowedBridgeAdapters.values().length == 0,
+      Errors.CHAIN_MUST_NOT_HAVE_ANY_RECEIVER_ADAPTER_SET
+    );
+
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = chainId;
+    ReceiverBridgeAdapterConfigInput[]
+      memory bridgeAdaptersInput = new ReceiverBridgeAdapterConfigInput[](1);
+    bridgeAdaptersInput[0] = ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: bridgeAdapter,
+      chainIds: chainIds
+    });
+
+    _updateReceiverBridgeAdapters(bridgeAdaptersInput, true);
+  }
+
   /// @inheritdoc ICrossChainReceiver
   function disallowReceiverBridgeAdapters(
     ReceiverBridgeAdapterConfigInput[] memory bridgeAdapters
