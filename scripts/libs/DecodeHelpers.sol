@@ -38,6 +38,13 @@ struct Connections {
   Adapters[] ethereum_sepolia;
   Adapters[] polygon_mumbai;
   Adapters[] avalanche_fuji;
+  Adapters[] arbitrum_sepolia;
+  Adapters[] metis_testnet;
+  Adapters[] binance_testnet;
+  Adapters[] base_sepolia;
+  Adapters[] polygon_zkevm_goerli;
+  Adapters[] gnosis_chiado;
+  Adapters[] scroll_sepolia;
 }
 
 struct Confirmations {
@@ -56,6 +63,13 @@ struct Confirmations {
   uint8 ethereum_sepolia;
   uint8 polygon_mumbai;
   uint8 avalanche_fuji;
+  uint8 arbitrum_sepolia;
+  uint8 metis_testnet;
+  uint8 binance_testnet;
+  uint8 base_sepolia;
+  uint8 polygon_zkevm_goerli;
+  uint8 gnosis_chiado;
+  uint8 scroll_sepolia;
 }
 
 struct AdaptersDeploymentInfo {
@@ -291,6 +305,20 @@ contract DeployJsonDecodeHelpers {
       return confirmations.polygon_mumbai;
     } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
       return confirmations.avalanche_fuji;
+    } else if (chainId == TestNetChainIds.METIS_TESTNET) {
+      return confirmations.metis_testnet;
+    } else if (chainId == TestNetChainIds.BNB_TESTNET) {
+      return confirmations.binance_testnet;
+    } else if (chainId == TestNetChainIds.BASE_SEPOLIA) {
+      return confirmations.base_sepolia;
+    } else if (chainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
+      return confirmations.arbitrum_sepolia;
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return confirmations.scroll_sepolia;
+    } else if (chainId == TestNetChainIds.GNOSIS_CHIADO) {
+      return confirmations.gnosis_chiado;
+    } else if (chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI) {
+      return confirmations.polygon_zkevm_goerli;
     } else {
       return uint8(0);
     }
@@ -330,6 +358,20 @@ contract DeployJsonDecodeHelpers {
       return connections.polygon_mumbai;
     } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
       return connections.avalanche_fuji;
+    } else if (chainId == TestNetChainIds.METIS_TESTNET) {
+      return connections.metis_testnet;
+    } else if (chainId == TestNetChainIds.BNB_TESTNET) {
+      return connections.binance_testnet;
+    } else if (chainId == TestNetChainIds.BASE_SEPOLIA) {
+      return connections.base_sepolia;
+    } else if (chainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
+      return connections.arbitrum_sepolia;
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return connections.scroll_sepolia;
+    } else if (chainId == TestNetChainIds.GNOSIS_CHIADO) {
+      return connections.gnosis_chiado;
+    } else if (chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI) {
+      return connections.polygon_zkevm_goerli;
     } else {
       return new Adapters[](0);
     }
@@ -543,13 +585,27 @@ contract DeployJsonDecodeHelpers {
       } else if (networkName.eq('polygon_zkevm')) {
         confirmationsByNetwork.polygon_zkevm = confirmations;
       }
-      // TODO: add test chains
+      // test chains
       else if (networkName.eq('ethereum_sepolia')) {
         confirmationsByNetwork.ethereum_sepolia = confirmations;
       } else if (networkName.eq('polygon_mumbai')) {
         confirmationsByNetwork.polygon_mumbai = confirmations;
       } else if (networkName.eq('avalanche_fuji')) {
         confirmationsByNetwork.avalanche_fuji = confirmations;
+      } else if (networkName.eq('metis_testnet')) {
+        confirmationsByNetwork.metis_testnet = confirmations;
+      } else if (networkName.eq('binance_testnet')) {
+        confirmationsByNetwork.binance_testnet = confirmations;
+      } else if (networkName.eq('base_sepolia')) {
+        confirmationsByNetwork.base_sepolia = confirmations;
+      } else if (networkName.eq('arbitrum_sepolia')) {
+        confirmationsByNetwork.arbitrum_sepolia = confirmations;
+      } else if (networkName.eq('scroll_sepolia')) {
+        confirmationsByNetwork.scroll_sepolia = confirmations;
+      } else if (networkName.eq('gnosis_chiado')) {
+        confirmationsByNetwork.gnosis_chiado = confirmations;
+      } else if (networkName.eq('polygon_zkevm_goerli')) {
+        confirmationsByNetwork.polygon_zkevm_goerli = confirmations;
       } else {
         revert('Unrecognized network name');
       }
@@ -642,13 +698,27 @@ contract DeployJsonDecodeHelpers {
       } else if (networkName.eq('polygon_zkevm')) {
         connections.polygon_zkevm = connectedAdapters;
       }
-      // TODO: add test chains
+      // test chains
       else if (networkName.eq('ethereum_sepolia')) {
         connections.ethereum_sepolia = connectedAdapters;
       } else if (networkName.eq('polygon_mumbai')) {
         connections.polygon_mumbai = connectedAdapters;
       } else if (networkName.eq('avalanche_fuji')) {
         connections.avalanche_fuji = connectedAdapters;
+      } else if (networkName.eq('metis_testnet')) {
+        connections.metis_testnet = connectedAdapters;
+      } else if (networkName.eq('binance_testnet')) {
+        connections.binance_testnet = connectedAdapters;
+      } else if (networkName.eq('base_sepolia')) {
+        connections.base_sepolia = connectedAdapters;
+      } else if (networkName.eq('arbitrum_sepolia')) {
+        connections.arbitrum_sepolia = connectedAdapters;
+      } else if (networkName.eq('scroll_sepolia')) {
+        connections.scroll_sepolia = connectedAdapters;
+      } else if (networkName.eq('gnosis_chiado')) {
+        connections.gnosis_chiado = connectedAdapters;
+      } else if (networkName.eq('polygon_zkevm_goerli')) {
+        connections.polygon_zkevm_goerli = connectedAdapters;
       } else {
         revert('Unrecognized network name');
       }

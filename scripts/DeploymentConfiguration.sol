@@ -176,7 +176,6 @@ abstract contract DeploymentConfigurationBaseScript is DeployJsonDecodeHelpers, 
 
     // get chainId
     uint256 chainId = PathHelpers.getChainIdByName(vm.envString('CHAIN_ID'));
-    console.log('id::', chainId);
 
     // get configuration
     string memory revision = vm.envString(key);

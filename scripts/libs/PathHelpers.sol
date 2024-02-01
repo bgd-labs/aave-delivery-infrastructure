@@ -91,6 +91,20 @@ library PathHelpers {
       return TestNetChainIds.POLYGON_MUMBAI;
     } else if (networkName.eq('avalanche_fuji')) {
       return TestNetChainIds.AVALANCHE_FUJI;
+    } else if (networkName.eq('metis_testnet')) {
+      return TestNetChainIds.METIS_TESTNET;
+    } else if (networkName.eq('binance_testnet')) {
+      return TestNetChainIds.BNB_TESTNET;
+    } else if (networkName.eq('base_sepolia')) {
+      return TestNetChainIds.BASE_SEPOLIA;
+    } else if (networkName.eq('arbitrum_sepolia')) {
+      return TestNetChainIds.ARBITRUM_SEPOLIA;
+    } else if (networkName.eq('scroll_sepolia')) {
+      return TestNetChainIds.SCROLL_SEPOLIA;
+    } else if (networkName.eq('gnosis_chiado')) {
+      return TestNetChainIds.GNOSIS_CHIADO;
+    } else if (networkName.eq('polygon_zkevm_goerli')) {
+      return TestNetChainIds.POLYGON_ZK_EVM_GOERLI;
     } else {
       revert('chain not accepted');
     }
@@ -129,16 +143,16 @@ library PathHelpers {
       return 'polygon_mumbai';
     } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
       return 'avalanche_fuji';
-    } else if (chainId == TestNetChainIds.ARBITRUM_GOERLI) {
-      return 'arbitrum_goerli';
+    } else if (chainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
+      return 'arbitrum_sepolia';
     } else if (chainId == TestNetChainIds.OPTIMISM_GOERLI) {
       return 'optimism_goerli';
     } else if (chainId == TestNetChainIds.METIS_TESTNET) {
-      return 'metis_test';
+      return 'metis_testnet';
     } else if (chainId == TestNetChainIds.BNB_TESTNET) {
-      return 'binance_test';
-    } else if (chainId == TestNetChainIds.BASE_GOERLI) {
-      return 'base_goerli';
+      return 'binance_testnet';
+    } else if (chainId == TestNetChainIds.BASE_SEPOLIA) {
+      return 'base_sepolia';
     } else if (chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI) {
       return 'polygon_zkevm_goerli';
     } else if (chainId == TestNetChainIds.GNOSIS_CHIADO) {
