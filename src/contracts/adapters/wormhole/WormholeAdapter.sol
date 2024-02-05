@@ -34,6 +34,7 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param wormholeRelayer wormhole entry point address
+   * @param refundAddress address that will receive left over gas
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
