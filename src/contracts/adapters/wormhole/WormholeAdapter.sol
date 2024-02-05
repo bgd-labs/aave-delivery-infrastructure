@@ -2,12 +2,12 @@
 pragma solidity ^0.8.0;
 
 import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
-import './lib/WormholeChains.sol';
 import {IWormholeReceiver} from './interfaces/IWormholeReceiver.sol';
 import {IWormholeRelayer} from './interfaces/IWormholeRelayer.sol';
 import {IWormholeAdapter} from './IWormholeAdapter.sol';
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
+import {ChainIds} from '../../libs/ChainIds.sol';
 
 /**
  * @title WormholeAdapter
@@ -20,6 +20,9 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   /// @inheritdoc IWormholeAdapter
   address public immutable WORMHOLE_RELAYER;
 
+  /// @inheritdoc IWormholeAdapter
+  address public immutable REFUND_ADDRESS;
+
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param wormholeRelayer wormhole entry point address
@@ -28,10 +31,12 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   constructor(
     address crossChainController,
     address wormholeRelayer,
+    address refundAddress,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, trustedRemotes) {
     require(wormholeRelayer != address(0), Errors.WORMHOLE_RELAYER_CANT_BE_ADDRESS_0);
-    WORMHOLE_RELAYER = IWormholeRelayer(wormholeRelayer);
+    WORMHOLE_RELAYER = wormholeRelayer;
+    REFUND_ADDRESS = refundAddress;
   }
 
   /// @inheritdoc IBaseAdapter
@@ -41,18 +46,20 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
-    uint64 nativeChainId = SafeCast.toUint16(infraToNativeChainId(destinationChainId));
+    uint16 nativeChainId = SafeCast.toUint16(infraToNativeChainId(destinationChainId));
     require(nativeChainId != uint16(0), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    uint256 cost = WORMHOLE_RELAYER.quoteEVMDeliveryPrice(nativeChainId, 0, destinationGasLimit);
-
-    uint64 sequence = WORMHOLE_RELAYER.sendPayloadToEvm{value: cost}(
+    uint64 sequence = IWormholeRelayer(WORMHOLE_RELAYER).sendPayloadToEvm{
+      value: _getGasCost(destinationGasLimit, nativeChainId)
+    }(
       nativeChainId,
       receiver,
       message,
       0, // no receiver value needed
-      destinationGasLimit
+      destinationGasLimit,
+      nativeChainId,
+      REFUND_ADDRESS
     );
 
     return (address(WORMHOLE_RELAYER), uint256(sequence));
@@ -60,13 +67,13 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
 
   /// @inheritdoc IWormholeReceiver
   function receiveWormholeMessages(
-    bytes memory payload,
+    bytes calldata payload, // TODO: does it affect?? if in interface its as memory??
     bytes[] memory,
     bytes32 sourceAddress,
     uint16 sourceChain,
     bytes32
   ) external payable {
-    address srcAddress = address(uint160(uint256(data)));
+    address srcAddress = address(uint160(uint256(sourceAddress)));
 
     uint256 originChainId = nativeToInfraChainId(sourceChain);
 
@@ -80,23 +87,23 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
-    if (nativeChainId == CHAIN_ID_ETHEREUM) {
+    if (nativeChainId == uint16(2)) {
       return ChainIds.ETHEREUM;
-    } else if (nativeChainId == CHAIN_ID_AVALANCHE) {
+    } else if (nativeChainId == uint16(6)) {
       return ChainIds.AVALANCHE;
-    } else if (nativeChainId == CHAIN_ID_POLYGON) {
+    } else if (nativeChainId == uint16(5)) {
       return ChainIds.POLYGON;
-    } else if (nativeChainId == CHAIN_ID_ARBITRUM) {
+    } else if (nativeChainId == uint16(23)) {
       return ChainIds.ARBITRUM;
-    } else if (nativeChainId == CHAIN_ID_OPTIMISM) {
+    } else if (nativeChainId == uint16(24)) {
       return ChainIds.OPTIMISM;
-    } else if (nativeChainId == CHAIN_ID_FANTOM) {
+    } else if (nativeChainId == uint16(10)) {
       return ChainIds.FANTOM;
-    } else if (nativeChainId == CHAIN_ID_BSC) {
+    } else if (nativeChainId == uint16(4)) {
       return ChainIds.BNB;
-    } else if (nativeChainId == CHAIN_ID_GNOSIS) {
+    } else if (nativeChainId == uint16(25)) {
       return ChainIds.GNOSIS;
-    } else if (nativeChainId == CHAIN_ID_CELO) {
+    } else if (nativeChainId == uint16(14)) {
       return ChainIds.CELO;
     } else {
       return 0;
@@ -106,25 +113,38 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   /// @inheritdoc IBaseAdapter
   function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
     if (infraChainId == ChainIds.ETHEREUM) {
-      return CHAIN_ID_ETHEREUM;
+      return uint16(2);
     } else if (infraChainId == ChainIds.AVALANCHE) {
-      return CHAIN_ID_AVALANCHE;
+      return uint16(6);
     } else if (infraChainId == ChainIds.POLYGON) {
-      return CHAIN_ID_POLYGON;
+      return uint16(5);
     } else if (infraChainId == ChainIds.ARBITRUM) {
-      return CHAIN_ID_ARBITRUM;
+      return uint16(23);
     } else if (infraChainId == ChainIds.OPTIMISM) {
-      return CHAIN_ID_OPTIMISM;
+      return uint16(24);
     } else if (infraChainId == ChainIds.FANTOM) {
-      return CHAIN_ID_FANTOM;
+      return uint16(10);
     } else if (infraChainId == ChainIds.BNB) {
-      return CHAIN_ID_BSC;
+      return uint16(4);
     } else if (infraChainId == ChainIds.GNOSIS) {
-      return CHAIN_ID_GNOSIS;
+      return uint16(25);
     } else if (infraChainId == ChainIds.CELO) {
-      return CHAIN_ID_CELO;
+      return uint16(14);
     } else {
       return uint16(0);
     }
+  }
+
+  /**
+   * @notice method to get the amount to pay for destination chain delivery
+   * @return value in eth
+   */
+  function _getGasCost(uint256 gasLimit, uint16 destinationChain) internal view returns (uint256) {
+    (uint256 cost, ) = IWormholeRelayer(WORMHOLE_RELAYER).quoteEVMDeliveryPrice(
+      destinationChain,
+      0,
+      gasLimit
+    );
+    return cost;
   }
 }

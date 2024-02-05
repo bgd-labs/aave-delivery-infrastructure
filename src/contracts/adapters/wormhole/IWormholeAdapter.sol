@@ -12,4 +12,11 @@ interface IWormholeAdapter {
    * @return address of the Wormhole relayer
    */
   function WORMHOLE_RELAYER() external view returns (address);
+
+  /**
+   * @notice method to get the refund address on destination chain
+   * @return address that will receive the refunds
+   * @dev should be CrossChainController on destination chain
+   */
+  function REFUND_ADDRESS() external view returns (address);
 }
