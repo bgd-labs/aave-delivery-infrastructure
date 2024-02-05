@@ -24,6 +24,14 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   address public immutable REFUND_ADDRESS;
 
   /**
+   * @notice only calls from the set relayer are accepted.
+   */
+  modifier onlyRelayer() {
+    require(msg.sender == WORMHOLE_RELAYER, Errors.CALLER_NOT_WORMHOLE_RELAYER);
+    _;
+  }
+
+  /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param wormholeRelayer wormhole entry point address
    * @param trustedRemotes list of remote configurations to set as trusted
@@ -72,7 +80,7 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
     bytes32 sourceAddress,
     uint16 sourceChain,
     bytes32
-  ) external payable {
+  ) external payable onlyRelayer {
     address srcAddress = address(uint160(uint256(sourceAddress)));
 
     uint256 originChainId = nativeToInfraChainId(sourceChain);

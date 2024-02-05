@@ -47,4 +47,5 @@ library Errors {
   string public constant ZERO_GNOSIS_ARBITRARY_MESSAGE_BRIDGE = '38'; // The passed Gnosis AMB contract is zero
   string public constant CALLER_NOT_ZK_EVM_BRIDGE = '39'; // the caller must be the zk evm bridge
   string public constant WORMHOLE_RELAYER_CANT_BE_ADDRESS_0 = '40'; // Wormhole relayer can not be address 0
+  string public constant CALLER_NOT_WORMHOLE_RELAYER = '41'; // caller must be the Wormhole relayer
 }
