@@ -16,4 +16,5 @@ library TestNetChainIds {
   uint256 constant POLYGON_ZK_EVM_GOERLI = 1442;
   uint256 constant GNOSIS_CHIADO = 10200;
   uint256 constant SCROLL_SEPOLIA = 534351;
+  uint256 constant CELLO_ALFAJORES = 44787;
 }
