@@ -19,8 +19,8 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    if (TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA) {
-      addresses.ccipAdapter = address(
+    if (isTestNet()) {
+      addresses.wormholeAdapter = address(
         new WormholeAdapterTestnet(
           addresses.crossChainController,
           WORMHOLE_RELAYER(),
@@ -56,8 +56,7 @@ contract Ethereum is BaseWormholeAdapter {
   }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-    uint256[] memory remoteNetworks = new uint256[](1);
-    remoteNetworks[0] = ChainIds.CELO;
+    uint256[] memory remoteNetworks = new uint256[](0);
 
     return remoteNetworks;
   }
@@ -79,9 +78,12 @@ contract Ethereum_testnet is BaseWormholeAdapter {
     return destinationAddresses.crossChainController;
   }
 
+  function isTestNet() public pure override returns (bool) {
+    return true;
+  }
+
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-    uint256[] memory remoteNetworks = new uint256[](1);
-    remoteNetworks[0] = TestNetChainIds.CELO_ALFAJORES;
+    uint256[] memory remoteNetworks = new uint256[](0);
 
     return remoteNetworks;
   }
@@ -101,7 +103,8 @@ contract Celo is BaseWormholeAdapter {
   }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-    uint256[] memory remoteNetworks = new uint256[](0);
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = ChainIds.ETHEREUM;
 
     return remoteNetworks;
   }
@@ -120,8 +123,13 @@ contract Celo_testnet is BaseWormholeAdapter {
     return address(0);
   }
 
+  function isTestNet() public pure override returns (bool) {
+    return true;
+  }
+
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-    uint256[] memory remoteNetworks = new uint256[](0);
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
 
     return remoteNetworks;
   }

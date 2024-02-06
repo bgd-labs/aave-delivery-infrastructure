@@ -437,7 +437,7 @@ contract Gnosis_testnet is BaseSetCCRConfirmations {
 
 contract Celo_testnet is BaseSetCCRConfirmations {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
-    return ChainIds.SCROLL;
+    return TestNetChainIds.CELO_ALFAJORES;
   }
 
   function getConfirmationsByChainIds()

@@ -245,6 +245,24 @@ contract Scroll is BaseInitialDeployment {
   }
 }
 
+contract Celo is BaseInitialDeployment {
+  //  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+  //    return ; //MiscScroll.TRANSPARENT_PROXY_FACTORY_SCROLL;
+  //  }
+  //
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return ;
+  //  }
+
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return ;
+  //  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
+  }
+}
+
 contract Ethereum_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -308,5 +326,11 @@ contract Zkevm_testnet is BaseInitialDeployment {
 contract Scroll_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+}
+
+contract Celo_testnet is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
   }
 }

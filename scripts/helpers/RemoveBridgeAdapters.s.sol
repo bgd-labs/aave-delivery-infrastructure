@@ -84,29 +84,34 @@ contract Ethereum_testnet is BaseRemoveBridgeAdapters {
     override
     returns (ICrossChainForwarder.BridgeAdapterToDisable[] memory)
   {
-    uint256[] memory chainIdsCCIP = new uint256[](2);
-    chainIdsCCIP[0] = TestNetChainIds.AVALANCHE_FUJI;
-    chainIdsCCIP[1] = TestNetChainIds.POLYGON_MUMBAI;
+    //    uint256[] memory chainIdsCCIP = new uint256[](2);
+    //    chainIdsCCIP[0] = TestNetChainIds.AVALANCHE_FUJI;
+    //    chainIdsCCIP[1] = TestNetChainIds.POLYGON_MUMBAI;
 
-    uint256[] memory chainIds = new uint256[](3);
-    chainIds[0] = TestNetChainIds.AVALANCHE_FUJI;
-    chainIds[1] = TestNetChainIds.POLYGON_MUMBAI;
-    chainIds[2] = TestNetChainIds.BNB_TESTNET;
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = TestNetChainIds.CELO_ALFAJORES;
+    //    chainIds[0] = TestNetChainIds.AVALANCHE_FUJI;
+    //    chainIds[1] = TestNetChainIds.POLYGON_MUMBAI;
+    //    chainIds[2] = TestNetChainIds.BNB_TESTNET;
 
     ICrossChainForwarder.BridgeAdapterToDisable[]
-      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](3);
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
     bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0xE1A717B665459637A0AcFB8a536a53eBDa94581a,
-      chainIds: chainIdsCCIP
-    });
-    bridgeAdapters[1] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0x9Fb07Adb854E8954a5f4d48A660774097d332E18,
+      bridgeAdapter: 0x42D8D601cB91df86367229d04D8cf3556464c5c7,
       chainIds: chainIds
     });
-    bridgeAdapters[2] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0x20fEA454Da2bF5bcfE444eb012BeF0B44b7D5059,
-      chainIds: chainIds
-    });
+    //    bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+    //      bridgeAdapter: 0xE1A717B665459637A0AcFB8a536a53eBDa94581a,
+    //      chainIds: chainIdsCCIP
+    //    });
+    //    bridgeAdapters[1] = ICrossChainForwarder.BridgeAdapterToDisable({
+    //      bridgeAdapter: 0x9Fb07Adb854E8954a5f4d48A660774097d332E18,
+    //      chainIds: chainIds
+    //    });
+    //    bridgeAdapters[2] = ICrossChainForwarder.BridgeAdapterToDisable({
+    //      bridgeAdapter: 0x20fEA454Da2bF5bcfE444eb012BeF0B44b7D5059,
+    //      chainIds: chainIds
+    //    });
     return bridgeAdapters;
   }
 
@@ -116,32 +121,33 @@ contract Ethereum_testnet is BaseRemoveBridgeAdapters {
     override
     returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory)
   {
-    uint256[] memory chainIdsCCIP = new uint256[](2);
-    chainIdsCCIP[0] = TestNetChainIds.AVALANCHE_FUJI;
-    chainIdsCCIP[1] = TestNetChainIds.POLYGON_MUMBAI;
-
-    uint256[] memory chainIds = new uint256[](3);
-    chainIds[0] = TestNetChainIds.AVALANCHE_FUJI;
-    chainIds[1] = TestNetChainIds.POLYGON_MUMBAI;
-    chainIds[2] = TestNetChainIds.BNB_TESTNET;
-
-    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
-      memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](3);
-
-    bridgeAdapters[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
-      bridgeAdapter: 0xE1A717B665459637A0AcFB8a536a53eBDa94581a,
-      chainIds: chainIdsCCIP
-    });
-    bridgeAdapters[1] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
-      bridgeAdapter: 0x9Fb07Adb854E8954a5f4d48A660774097d332E18,
-      chainIds: chainIds
-    });
-    bridgeAdapters[2] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
-      bridgeAdapter: 0x20fEA454Da2bF5bcfE444eb012BeF0B44b7D5059,
-      chainIds: chainIds
-    });
-
-    return bridgeAdapters;
+    //    uint256[] memory chainIdsCCIP = new uint256[](2);
+    //    chainIdsCCIP[0] = TestNetChainIds.AVALANCHE_FUJI;
+    //    chainIdsCCIP[1] = TestNetChainIds.POLYGON_MUMBAI;
+    //
+    //    uint256[] memory chainIds = new uint256[](3);
+    //    chainIds[0] = TestNetChainIds.AVALANCHE_FUJI;
+    //    chainIds[1] = TestNetChainIds.POLYGON_MUMBAI;
+    //    chainIds[2] = TestNetChainIds.BNB_TESTNET;
+    //
+    //    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+    //      memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](3);
+    //
+    //    bridgeAdapters[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+    //      bridgeAdapter: 0xE1A717B665459637A0AcFB8a536a53eBDa94581a,
+    //      chainIds: chainIdsCCIP
+    //    });
+    //    bridgeAdapters[1] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+    //      bridgeAdapter: 0x9Fb07Adb854E8954a5f4d48A660774097d332E18,
+    //      chainIds: chainIds
+    //    });
+    //    bridgeAdapters[2] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+    //      bridgeAdapter: 0x20fEA454Da2bF5bcfE444eb012BeF0B44b7D5059,
+    //      chainIds: chainIds
+    //    });
+    //
+    //    return bridgeAdapters;
+    return new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0);
   }
 }
 

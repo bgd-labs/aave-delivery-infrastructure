@@ -16,7 +16,7 @@ solc = "0.8.19"
 
 [rpc_endpoints]
 ethereum="${RPC_MAINNET}"
-ethereum-testnet="${RPC_MAINNET_TESTNET}"
+ethereum-testnet="${RPC_ETHEREUM_SEPOLIA}"
 polygon="${RPC_POLYGON}"
 polygon-testnet="${RPC_POLYGON_TESTNET}"
 arbitrum="${RPC_ARBITRUM}"
