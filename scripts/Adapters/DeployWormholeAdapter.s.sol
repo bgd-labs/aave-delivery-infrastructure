@@ -12,18 +12,19 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
     return false;
   }
 
-  function getDestinationCCC() public view virtual returns (address);
+  /// @dev for now we will need to deploy one adapter for every path (one remote network)
+  function DESTINATION_CCC() public view virtual returns (address);
 
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    if (isTestNet()) {
+    if (TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA) {
       addresses.ccipAdapter = address(
         new WormholeAdapterTestnet(
           addresses.crossChainController,
           WORMHOLE_RELAYER(),
-          getDestinationCCC,
+          DESTINATION_CCC(),
           trustedRemotes
         )
       );
@@ -32,7 +33,7 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
         new WormholeAdapter(
           addresses.crossChainController,
           WORMHOLE_RELAYER(),
-          getDestinationCCC,
+          DESTINATION_CCC(),
           trustedRemotes
         )
       );
@@ -49,7 +50,10 @@ contract Ethereum is BaseWormholeAdapter {
     return ChainIds.ETHEREUM;
   }
 
-  function getDestinationCCC() public view virtual returns (address) {}
+  function DESTINATION_CCC() public view override returns (address) {
+    DeployerHelpers.Addresses memory destinationAddresses = _getAddresses(ChainIds.CELO);
+    return destinationAddresses.crossChainController;
+  }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
     uint256[] memory remoteNetworks = new uint256[](1);
@@ -65,12 +69,19 @@ contract Ethereum_testnet is BaseWormholeAdapter {
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.ETHEREUM_SEPOLIA;
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
+  }
+
+  function DESTINATION_CCC() public view override returns (address) {
+    DeployerHelpers.Addresses memory destinationAddresses = _getAddresses(
+      TestNetChainIds.CELO_ALFAJORES
+    );
+    return destinationAddresses.crossChainController;
   }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
     uint256[] memory remoteNetworks = new uint256[](1);
-    remoteNetworks[0] = ChainIds.CELO_ALFAJORES;
+    remoteNetworks[0] = TestNetChainIds.CELO_ALFAJORES;
 
     return remoteNetworks;
   }
@@ -83,6 +94,10 @@ contract Celo is BaseWormholeAdapter {
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.CELO;
+  }
+
+  function DESTINATION_CCC() public pure override returns (address) {
+    return address(0);
   }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
@@ -98,7 +113,11 @@ contract Celo_testnet is BaseWormholeAdapter {
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.CELO_ALFAJORES;
+    return TestNetChainIds.CELO_ALFAJORES;
+  }
+
+  function DESTINATION_CCC() public pure override returns (address) {
+    return address(0);
   }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {

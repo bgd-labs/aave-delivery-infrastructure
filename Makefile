@@ -99,17 +99,20 @@ deploy-zkevm-adapters:
 deploy-scroll-adapters:
 	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
 
+deploy-wormhole-adapters:
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum celo)
+
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
 	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm scroll)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm scroll celo)
 
 # Sets the required confirmations
 set-ccr-confirmations:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm scroll)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm scroll celo)
 
 # Generate Addresses Json
 write-json-addresses :; forge script scripts/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
@@ -144,11 +147,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,scroll)
+	$(call deploy_fn,InitialDeployments,celo)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,scroll)
+	$(call deploy_fn,CCC/Deploy_CCC,celo)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -172,11 +175,11 @@ set-ccf-sender-adapters-test:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,scroll)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,celo)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,scroll)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,celo)
 
 # Funds CCC
 fund-crosschain-test:

@@ -27,8 +27,6 @@ contract WormholeAdapterTestnet is WormholeAdapter {
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
     if (nativeChainId == uint16(10002)) {
       return TestNetChainIds.ETHEREUM_SEPOLIA;
-    } else if (nativeChainId == uint16()) {
-      return TestNetChainIds.CELO_ALFAJORES;
     }
     return nativeChainId;
   }
@@ -37,9 +35,8 @@ contract WormholeAdapterTestnet is WormholeAdapter {
   function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
     if (infraChainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return uint16(10002);
-    } else if (infraChainId == TestNetChainIds.CELO_ALFAJORES) {
-      return uint16(0);
     }
+
     return infraChainId;
   }
 }

@@ -95,7 +95,9 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   }
 
   /// @inheritdoc IBaseAdapter
-  function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
+  function nativeToInfraChainId(
+    uint256 nativeChainId
+  ) public pure virtual override returns (uint256) {
     if (nativeChainId == uint16(2)) {
       return ChainIds.ETHEREUM;
     } else if (nativeChainId == uint16(6)) {
@@ -120,7 +122,9 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   }
 
   /// @inheritdoc IBaseAdapter
-  function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
+  function infraToNativeChainId(
+    uint256 infraChainId
+  ) public pure virtual override returns (uint256) {
     if (infraChainId == ChainIds.ETHEREUM) {
       return uint16(2);
     } else if (infraChainId == ChainIds.AVALANCHE) {
