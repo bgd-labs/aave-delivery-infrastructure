@@ -13,7 +13,6 @@ contract WormholeAdapterTest is Test {
   address public constant CROSS_CHAIN_CONTROLLER = address(1234);
   address public constant WORMHOLE_RELAYER = address(12345);
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
-  address public constant ADDRESS_WITH_ETH = address(12301234);
 
   uint256 public constant ORIGIN_WORMHOLE_CHAIN_ID = ChainIds.ETHEREUM;
 
@@ -52,14 +51,14 @@ contract WormholeAdapterTest is Test {
     assertEq(wormholeAdapter.infraToNativeChainId(ChainIds.ETHEREUM), uint16(2));
   }
 
-  function testForwardMessage() public {
-    uint40 payloadId = uint40(0);
-    bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-    uint256 dstGasLimit = 600000;
-    uint64 sequence = uint64(1);
-    uint256 cost = 123;
-
-    hoax(ADDRESS_WITH_ETH, 10 ether);
+  function testForwardMessage(
+    address caller,
+    uint64 sequence,
+    bytes memory message,
+    uint256 dstGasLimit,
+    uint256 cost
+  ) public {
+    hoax(caller, 10 ether);
 
     vm.mockCall(
       WORMHOLE_RELAYER,
@@ -87,27 +86,20 @@ contract WormholeAdapterTest is Test {
     assertEq(returnData, abi.encode(WORMHOLE_RELAYER, sequence));
   }
 
-  function testForwardMessageWhenChainNotSupported() public {
-    uint40 payloadId = uint40(0);
-    bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-    uint256 dstGasLimit = 600000;
-
+  function testForwardMessageWhenChainNotSupported(
+    bytes memory message,
+    uint256 dstGasLimit
+  ) public {
     vm.expectRevert(bytes(Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED));
     wormholeAdapter.forwardMessage(RECEIVER_CROSS_CHAIN_CONTROLLER, dstGasLimit, 11, message);
   }
 
-  function testForwardMessageWhenWrongReceiver() public {
-    uint40 payloadId = uint40(0);
-    bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-    uint256 dstGasLimit = 600000;
-
+  function testForwardMessageWhenWrongReceiver(bytes memory message, uint256 dstGasLimit) public {
     vm.expectRevert(bytes(Errors.RECEIVER_NOT_SET));
     wormholeAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.POLYGON, message);
   }
 
-  function testReceive() public {
-    bytes memory message = abi.encode('some message');
-
+  function testReceive(bytes memory message) public {
     bytes32 sourceAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
     uint16 sourceChainId = uint16(2);
 
@@ -131,8 +123,7 @@ contract WormholeAdapterTest is Test {
     );
   }
 
-  function testReceiveWhenCallerNotRouter(uint16 sourceChainId) public {
-    bytes memory message = abi.encode('some message');
+  function testReceiveWhenCallerNotRouter(uint16 sourceChainId, bytes memory message) public {
     bytes32 sourceAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
 
     vm.expectRevert(bytes(Errors.CALLER_NOT_WORMHOLE_RELAYER));
@@ -146,8 +137,12 @@ contract WormholeAdapterTest is Test {
     );
   }
 
-  function testReceiveWhenRemoteNotTrusted(uint16 sourceChainId) public {
-    bytes memory message = abi.encode('some message');
+  function testReceiveWhenRemoteNotTrusted(
+    uint16 sourceChainId,
+    bytes memory message,
+    address remote
+  ) public {
+    vm.assume(remote != ORIGIN_FORWARDER);
 
     hoax(WORMHOLE_RELAYER);
     vm.expectRevert(bytes(Errors.REMOTE_NOT_TRUSTED));
@@ -155,7 +150,7 @@ contract WormholeAdapterTest is Test {
     wormholeAdapter.receiveWormholeMessages(
       message,
       new bytes[](0),
-      bytes32(uint256(uint160(1241151))),
+      bytes32(uint256(uint160(remote))),
       sourceChainId,
       bytes32(0)
     );
