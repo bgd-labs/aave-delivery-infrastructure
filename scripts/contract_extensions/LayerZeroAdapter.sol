@@ -30,27 +30,27 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
-    if (nativeChainId == uint16(10106)) {
+    if (nativeChainId == 10106) {
       return TestNetChainIds.AVALANCHE_FUJI;
-    } else if (nativeChainId == uint16(10132)) {
+    } else if (nativeChainId == 10132) {
       return TestNetChainIds.OPTIMISM_GOERLI;
-    } else if (nativeChainId == uint16(10109)) {
+    } else if (nativeChainId == 10109) {
       return TestNetChainIds.POLYGON_MUMBAI;
-    } else if (nativeChainId == uint16(10143)) {
+    } else if (nativeChainId == 10143) {
       return TestNetChainIds.ARBITRUM_GOERLI;
-    } else if (nativeChainId == uint16(10112)) {
+    } else if (nativeChainId == 10112) {
       return TestNetChainIds.FANTOM_TESTNET;
-    } else if (nativeChainId == uint16(10133)) {
+    } else if (nativeChainId == 10133) {
       return TestNetChainIds.HARMONY_TESTNET;
-    } else if (nativeChainId == uint16(10161)) {
+    } else if (nativeChainId == 10161) {
       return TestNetChainIds.ETHEREUM_SEPOLIA;
-    } else if (nativeChainId == uint16(10102)) {
+    } else if (nativeChainId == 10102) {
       return TestNetChainIds.BNB_TESTNET;
-    } else if (nativeChainId == uint16(10151)) {
+    } else if (nativeChainId == 10151) {
       return TestNetChainIds.METIS_TESTNET;
-    } else if (nativeChainId == uint16(10145)) {
+    } else if (nativeChainId == 10145) {
       return TestNetChainIds.GNOSIS_CHIADO;
-    } else if (nativeChainId == uint16(10125)) {
+    } else if (nativeChainId == 10125) {
       return TestNetChainIds.CELO_ALFAJORES;
     } else {
       return 0;
@@ -60,27 +60,27 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
   /// @inheritdoc IBaseAdapter
   function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
     if (infraChainId == TestNetChainIds.AVALANCHE_FUJI) {
-      return uint16(10106);
+      return 10106;
     } else if (infraChainId == TestNetChainIds.OPTIMISM_GOERLI) {
-      return uint16(10132);
+      return 10132;
     } else if (infraChainId == TestNetChainIds.POLYGON_MUMBAI) {
-      return uint16(10109);
+      return 10109;
     } else if (infraChainId == TestNetChainIds.ARBITRUM_GOERLI) {
-      return uint16(10143);
+      return 10143;
     } else if (infraChainId == TestNetChainIds.FANTOM_TESTNET) {
-      return uint16(10112);
+      return 10112;
     } else if (infraChainId == TestNetChainIds.HARMONY_TESTNET) {
-      return uint16(10133);
+      return 10133;
     } else if (infraChainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
-      return uint16(10161);
+      return 10161;
     } else if (infraChainId == TestNetChainIds.METIS_TESTNET) {
-      return uint16(10151);
+      return 10151;
     } else if (infraChainId == TestNetChainIds.BNB_TESTNET) {
-      return uint16(10102);
+      return 10102;
     } else if (infraChainId == TestNetChainIds.GNOSIS_CHIADO) {
-      return uint16(10145);
+      return 10145;
     } else if (infraChainId == TestNetChainIds.CELO_ALFAJORES) {
-      return uint16(10125);
+      return 10125;
     } else {
       return uint16(0);
     }

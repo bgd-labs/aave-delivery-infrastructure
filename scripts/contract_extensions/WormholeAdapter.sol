@@ -25,22 +25,23 @@ contract WormholeAdapterTestnet is WormholeAdapter {
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
-    if (nativeChainId == uint16(10002)) {
+    if (nativeChainId == 10002) {
       return TestNetChainIds.ETHEREUM_SEPOLIA;
-    } else if (nativeChainId == uint16(14)) {
+    } else if (nativeChainId == 14) {
       return TestNetChainIds.CELO_ALFAJORES;
+    } else {
+      return 0;
     }
-    return nativeChainId;
   }
 
   /// @inheritdoc IBaseAdapter
   function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
     if (infraChainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
-      return uint16(10002);
+      return 10002;
     } else if (infraChainId == TestNetChainIds.CELO_ALFAJORES) {
-      return uint16(14);
+      return 14;
+    } else {
+      return 0;
     }
-
-    return infraChainId;
   }
 }

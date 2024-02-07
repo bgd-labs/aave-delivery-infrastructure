@@ -106,27 +106,27 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
   function nativeToInfraChainId(
     uint256 nativeChainId
   ) public pure virtual override returns (uint256) {
-    if (nativeChainId == uint16(101)) {
+    if (nativeChainId == 101) {
       return ChainIds.ETHEREUM;
-    } else if (nativeChainId == uint16(106)) {
+    } else if (nativeChainId == 106) {
       return ChainIds.AVALANCHE;
-    } else if (nativeChainId == uint16(109)) {
+    } else if (nativeChainId == 109) {
       return ChainIds.POLYGON;
-    } else if (nativeChainId == uint16(110)) {
+    } else if (nativeChainId == 110) {
       return ChainIds.ARBITRUM;
-    } else if (nativeChainId == uint16(111)) {
+    } else if (nativeChainId == 111) {
       return ChainIds.OPTIMISM;
-    } else if (nativeChainId == uint16(112)) {
+    } else if (nativeChainId == 112) {
       return ChainIds.FANTOM;
-    } else if (nativeChainId == uint16(116)) {
+    } else if (nativeChainId == 116) {
       return ChainIds.HARMONY;
-    } else if (nativeChainId == uint16(102)) {
+    } else if (nativeChainId == 102) {
       return ChainIds.BNB;
-    } else if (nativeChainId == uint16(151)) {
+    } else if (nativeChainId == 151) {
       return ChainIds.METIS;
-    } else if (nativeChainId == uint16(145)) {
+    } else if (nativeChainId == 145) {
       return ChainIds.GNOSIS;
-    } else if (nativeChainId == uint16(125)) {
+    } else if (nativeChainId == 125) {
       return ChainIds.CELO;
     } else {
       return 0;
@@ -138,29 +138,29 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
     uint256 infraChainId
   ) public pure virtual override returns (uint256) {
     if (infraChainId == ChainIds.ETHEREUM) {
-      return uint16(101);
+      return 101;
     } else if (infraChainId == ChainIds.AVALANCHE) {
-      return uint16(106);
+      return 106;
     } else if (infraChainId == ChainIds.POLYGON) {
-      return uint16(109);
+      return 109;
     } else if (infraChainId == ChainIds.ARBITRUM) {
-      return uint16(110);
+      return 110;
     } else if (infraChainId == ChainIds.OPTIMISM) {
-      return uint16(111);
+      return 111;
     } else if (infraChainId == ChainIds.FANTOM) {
-      return uint16(112);
+      return 112;
     } else if (infraChainId == ChainIds.HARMONY) {
-      return uint16(116);
+      return 116;
     } else if (infraChainId == ChainIds.METIS) {
-      return uint16(151);
+      return 151;
     } else if (infraChainId == ChainIds.BNB) {
-      return uint16(102);
+      return 102;
     } else if (infraChainId == ChainIds.GNOSIS) {
-      return uint16(145);
+      return 145;
     } else if (infraChainId == ChainIds.CELO) {
-      return uint16(125);
+      return 125;
     } else {
-      return uint16(0);
+      return 0;
     }
   }
 }
