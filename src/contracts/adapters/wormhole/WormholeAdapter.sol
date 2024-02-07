@@ -98,23 +98,23 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
   function nativeToInfraChainId(
     uint256 nativeChainId
   ) public pure virtual override returns (uint256) {
-    if (nativeChainId == uint16(2)) {
+    if (nativeChainId == 2) {
       return ChainIds.ETHEREUM;
-    } else if (nativeChainId == uint16(6)) {
+    } else if (nativeChainId == 6) {
       return ChainIds.AVALANCHE;
-    } else if (nativeChainId == uint16(5)) {
+    } else if (nativeChainId == 5) {
       return ChainIds.POLYGON;
-    } else if (nativeChainId == uint16(23)) {
+    } else if (nativeChainId == 23) {
       return ChainIds.ARBITRUM;
-    } else if (nativeChainId == uint16(24)) {
+    } else if (nativeChainId == 24) {
       return ChainIds.OPTIMISM;
-    } else if (nativeChainId == uint16(10)) {
+    } else if (nativeChainId == 10) {
       return ChainIds.FANTOM;
-    } else if (nativeChainId == uint16(4)) {
+    } else if (nativeChainId == 4) {
       return ChainIds.BNB;
-    } else if (nativeChainId == uint16(25)) {
+    } else if (nativeChainId == 25) {
       return ChainIds.GNOSIS;
-    } else if (nativeChainId == uint16(14)) {
+    } else if (nativeChainId == 14) {
       return ChainIds.CELO;
     } else {
       return 0;
@@ -126,25 +126,25 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
     uint256 infraChainId
   ) public pure virtual override returns (uint256) {
     if (infraChainId == ChainIds.ETHEREUM) {
-      return uint16(2);
+      return 2;
     } else if (infraChainId == ChainIds.AVALANCHE) {
-      return uint16(6);
+      return 6;
     } else if (infraChainId == ChainIds.POLYGON) {
-      return uint16(5);
+      return 5;
     } else if (infraChainId == ChainIds.ARBITRUM) {
-      return uint16(23);
+      return 23;
     } else if (infraChainId == ChainIds.OPTIMISM) {
-      return uint16(24);
+      return 24;
     } else if (infraChainId == ChainIds.FANTOM) {
-      return uint16(10);
+      return 10;
     } else if (infraChainId == ChainIds.BNB) {
-      return uint16(4);
+      return 4;
     } else if (infraChainId == ChainIds.GNOSIS) {
-      return uint16(25);
+      return 25;
     } else if (infraChainId == ChainIds.CELO) {
-      return uint16(14);
+      return 14;
     } else {
-      return uint16(0);
+      return 0;
     }
   }
 
