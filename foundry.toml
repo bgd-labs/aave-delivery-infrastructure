@@ -14,6 +14,13 @@ fs_permissions = [{ access = "read-write", path = "./"}]
 
 solc = "0.8.19"
 
+[profile.zksync]
+src = 'src'
+libs = ['lib']
+fallback_oz = true
+is_system = true
+mode = "2"
+
 [rpc_endpoints]
 ethereum="${RPC_MAINNET}"
 ethereum-testnet="${RPC_ETHEREUM_SEPOLIA}"
