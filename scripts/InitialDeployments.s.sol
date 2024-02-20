@@ -246,16 +246,16 @@ contract Scroll is BaseInitialDeployment {
 }
 
 contract Celo is BaseInitialDeployment {
-  //  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-  //    return ; //MiscScroll.TRANSPARENT_PROXY_FACTORY_SCROLL;
-  //  }
-  //
-  //  function PROXY_ADMIN() public pure override returns (address) {
-  //    return ;
-  //  }
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return 0xb172a90A7C238969CE9B27cc19D13b60A91e7F00;
+  }
+
+  function PROXY_ADMIN() public pure override returns (address) {
+    return 0x01d678F1bbE148C96e7501F1Ac41661904F84F61;
+  }
 
   //  function GUARDIAN() public pure override returns (address) {
-  //    return ;
+  //    return;
   //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {

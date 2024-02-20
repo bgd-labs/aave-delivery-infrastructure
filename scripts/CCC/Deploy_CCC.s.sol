@@ -147,9 +147,9 @@ contract Scroll is BaseCCCNetworkDeployment {
 }
 
 contract Celo is BaseCCCNetworkDeployment {
-  //  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
-  //    return ;
-  //  }
+  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
+    return 0x91b21900E91CD302EBeD05E45D8f270ddAED944d;
+  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.CELO;

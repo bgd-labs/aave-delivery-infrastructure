@@ -44,7 +44,7 @@ library DeployerHelpers {
 
   function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
     if (chainId == ChainIds.ETHEREUM) {
-      return './deployments/cc/mainnet/eth.json';
+      return './deployments/cc/mainnet/pre_prod_eth.json';
     } else if (chainId == ChainIds.POLYGON) {
       return './deployments/cc/mainnet/pol.json';
     } else if (chainId == ChainIds.AVALANCHE) {

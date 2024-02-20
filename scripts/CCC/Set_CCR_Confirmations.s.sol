@@ -232,7 +232,7 @@ contract Scroll is BaseSetCCRConfirmations {
 
 contract Celo is BaseSetCCRConfirmations {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
-    return ChainIds.SCROLL;
+    return ChainIds.CELO;
   }
 
   function getConfirmationsByChainIds()
@@ -242,7 +242,7 @@ contract Celo is BaseSetCCRConfirmations {
     returns (ConfirmationsByChain[] memory)
   {
     ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
-    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 2});
+    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 3}); // TODO: change to 2 after bridge test
 
     return chainIds;
   }

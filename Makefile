@@ -17,12 +17,13 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 18000000000 # 53 gwei
+custom_ethereum := --with-gas-price 37000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 #custom_scroll := --with-gas-price 1000000000
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
+custom_celo := --with-gas-price 7000000000 # 53 gwei
 
 # params:
 #  1 - path/file_name
@@ -53,11 +54,11 @@ deploy-emergency-registry:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:
-	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
+	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm celo)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
+	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm celo)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters:
@@ -159,11 +160,11 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,polygon)
+	$(call deploy_fn,Adapters/DeployLZ,celo)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,polygon)
+	$(call deploy_fn,Adapters/DeployHL,celo)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
