@@ -17,12 +17,13 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 18000000000 # 53 gwei
+custom_ethereum := --with-gas-price 37000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 #custom_scroll := --with-gas-price 1000000000
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
+custom_celo := --with-gas-price 7000000000 # 53 gwei
 
 # params:
 #  1 - path/file_name
@@ -53,11 +54,11 @@ deploy-emergency-registry:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory:
-	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
+	$(call deploy_fn,InitialDeployments,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm celo)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm)
+	$(call deploy_fn,CCC/Deploy_CCC,ethereum avalanche polygon optimism arbitrum metis base binance gnosis zkevm celo)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters:
@@ -99,17 +100,20 @@ deploy-zkevm-adapters:
 deploy-scroll-adapters:
 	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
 
+deploy-wormhole-adapters:
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum celo)
+
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
 	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm scroll)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon avalanche binance arbitrum optimism base metis gnosis zkevm scroll celo)
 
 # Sets the required confirmations
 set-ccr-confirmations:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm scroll)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon avalanche optimism arbitrum metis base binance gnosis zkevm scroll celo)
 
 # Generate Addresses Json
 write-json-addresses :; forge script scripts/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
@@ -144,11 +148,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,scroll)
+	$(call deploy_fn,InitialDeployments,celo)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,scroll)
+	$(call deploy_fn,CCC/Deploy_CCC,celo)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -156,15 +160,18 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,polygon)
+	$(call deploy_fn,Adapters/DeployLZ,celo)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,polygon)
+	$(call deploy_fn,Adapters/DeployHL,celo)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
 	$(call deploy_fn,Adapters/DeploySameChainAdapter,ethereum)
+
+deploy-wormhole-adapters-test:
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,celo)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
@@ -172,11 +179,11 @@ set-ccf-sender-adapters-test:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,scroll)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,celo)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,scroll)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,celo)
 
 # Funds CCC
 fund-crosschain-test:
@@ -201,13 +208,13 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,scroll)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,celo)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,zkevm)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,celo)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum avalanche polygon)

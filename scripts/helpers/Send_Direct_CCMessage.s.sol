@@ -68,3 +68,13 @@ contract Polygon is BaseSendDirectMessage {
     return abi.encode(0, 1_000_000 ether, 300_000 ether);
   }
 }
+
+contract Ethereum_testnet is BaseSendDirectMessage {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
+  }
+
+  function DESTINATION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
+  }
+}

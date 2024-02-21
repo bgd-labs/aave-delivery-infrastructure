@@ -39,9 +39,9 @@ contract Ethereum is BaseLZAdapter {
   }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-    uint256[] memory remoteNetworks = new uint256[](2);
-    remoteNetworks[0] = ChainIds.POLYGON;
-    remoteNetworks[1] = ChainIds.AVALANCHE;
+    uint256[] memory remoteNetworks = new uint256[](0);
+    //    remoteNetworks[0] = ChainIds.POLYGON;
+    //    remoteNetworks[1] = ChainIds.AVALANCHE;
 
     return remoteNetworks;
   }
@@ -238,5 +238,26 @@ contract Gnosis_testnet is BaseLZAdapter {
 
   function isTestNet() public pure override returns (bool) {
     return true;
+  }
+}
+
+contract Celo is BaseLZAdapter {
+  function LZ_ENDPOINT() public pure override returns (address) {
+    return 0x3A73033C0b1407574C76BdBAc67f126f6b4a9AA9;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = ChainIds.ETHEREUM;
+
+    return remoteNetworks;
+  }
+
+  function isTestNet() public pure override returns (bool) {
+    return false;
   }
 }
