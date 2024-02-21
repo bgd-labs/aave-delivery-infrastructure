@@ -242,7 +242,7 @@ contract Celo is BaseSetCCRConfirmations {
     returns (ConfirmationsByChain[] memory)
   {
     ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
-    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 3}); // TODO: change to 2 after bridge test
+    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 2});
 
     return chainIds;
   }

@@ -39,9 +39,9 @@ contract Ethereum is BaseLZAdapter {
   }
 
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
-    uint256[] memory remoteNetworks = new uint256[](2);
-    remoteNetworks[0] = ChainIds.POLYGON;
-    remoteNetworks[1] = ChainIds.AVALANCHE;
+    uint256[] memory remoteNetworks = new uint256[](0);
+    //    remoteNetworks[0] = ChainIds.POLYGON;
+    //    remoteNetworks[1] = ChainIds.AVALANCHE;
 
     return remoteNetworks;
   }

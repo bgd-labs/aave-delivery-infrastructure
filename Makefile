@@ -17,7 +17,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 37000000000 # 53 gwei
+custom_ethereum := --with-gas-price 35000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 #custom_scroll := --with-gas-price 1000000000
@@ -160,18 +160,18 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,celo)
+	$(call deploy_fn,Adapters/DeployLZ,ethereum)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,celo)
+	$(call deploy_fn,Adapters/DeployHL,ethereum)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
 	$(call deploy_fn,Adapters/DeploySameChainAdapter,ethereum)
 
 deploy-wormhole-adapters-test:
-	$(call deploy_fn,Adapters/DeployWormholeAdapter,celo)
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
