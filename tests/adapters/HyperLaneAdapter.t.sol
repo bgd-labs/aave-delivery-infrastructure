@@ -2,10 +2,9 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {HyperLaneAdapter, IHyperLaneAdapter, IMailbox, IInterchainGasPaymaster} from '../../src/contracts/adapters/hyperLane/HyperLaneAdapter.sol';
+import {HyperLaneAdapter, IHyperLaneAdapter, IMailbox, TypeCasts, StandardHookMetadata} from '../../src/contracts/adapters/hyperLane/HyperLaneAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
-import {TypeCasts} from 'hyperlane-monorepo/libs/TypeCasts.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 
@@ -13,7 +12,6 @@ contract HyperLaneAdapterTest is Test {
   address public constant ORIGIN_FORWARDER = address(123);
   address public constant CROSS_CHAIN_CONTROLLER = address(1234);
   address public constant MAIL_BOX = address(12345);
-  address public constant IGP = address(123456);
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
   address public constant ADDRESS_WITH_ETH = address(12301234);
 
@@ -38,10 +36,17 @@ contract HyperLaneAdapterTest is Test {
     hlAdapter = new HyperLaneAdapter(
       CROSS_CHAIN_CONTROLLER,
       MAIL_BOX,
-      IGP,
       BASE_GAS_LIMIT,
       originConfigs
     );
+  }
+
+  function testWrongMailBox() public {
+    IBaseAdapter.TrustedRemotesConfig[]
+      memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
+    originConfigs[0] = originConfig;
+    vm.expectRevert(bytes(Errors.INVALID_HL_MAILBOX));
+    new HyperLaneAdapter(CROSS_CHAIN_CONTROLLER, address(0), BASE_GAS_LIMIT, originConfigs);
   }
 
   function testInitialize() public {
@@ -68,31 +73,22 @@ contract HyperLaneAdapterTest is Test {
     uint32 nativeChainId = uint32(ChainIds.POLYGON);
 
     hoax(ADDRESS_WITH_ETH, 10 ether);
+
     vm.mockCall(
       MAIL_BOX,
-      abi.encodeWithSelector(IMailbox.dispatch.selector),
-      abi.encode(messageId)
-    );
-    vm.mockCall(
-      IGP,
       abi.encodeWithSelector(
-        IInterchainGasPaymaster.quoteGasPayment.selector,
+        IMailbox.quoteDispatch.selector,
         nativeChainId,
-        dstGasLimit + BASE_GAS_LIMIT
+        TypeCasts.addressToBytes32(RECEIVER_CROSS_CHAIN_CONTROLLER),
+        message,
+        StandardHookMetadata.overrideGasLimit(dstGasLimit + BASE_GAS_LIMIT)
       ),
       abi.encode(10)
     );
     vm.mockCall(
-      IGP,
-      10,
-      abi.encodeWithSelector(
-        IInterchainGasPaymaster.payForGas.selector,
-        messageId,
-        nativeChainId,
-        dstGasLimit + BASE_GAS_LIMIT,
-        ADDRESS_WITH_ETH
-      ),
-      abi.encode()
+      MAIL_BOX,
+      abi.encodeWithSelector(IMailbox.dispatch.selector),
+      abi.encode(messageId)
     );
     (bool success, bytes memory returnData) = address(hlAdapter).delegatecall(
       abi.encodeWithSelector(

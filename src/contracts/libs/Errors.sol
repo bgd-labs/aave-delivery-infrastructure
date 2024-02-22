@@ -46,4 +46,5 @@ library Errors {
   string public constant CALLER_NOT_GNOSIS_ARBITRARY_MESSAGE_BRIDGE = '37'; // the caller must be the Gnosis AMB contract
   string public constant ZERO_GNOSIS_ARBITRARY_MESSAGE_BRIDGE = '38'; // The passed Gnosis AMB contract is zero
   string public constant CALLER_NOT_ZK_EVM_BRIDGE = '39'; // the caller must be the zk evm bridge
+  string public constant INVALID_HL_MAILBOX = '40'; // the Hyperlane mailbox address can not be 0
 }

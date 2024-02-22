@@ -7,8 +7,6 @@ import './BaseAdapterScript.sol';
 abstract contract BaseHLAdapter is BaseAdapterScript {
   function HL_MAIL_BOX() public view virtual returns (address);
 
-  function HL_IGP() public view virtual returns (address);
-
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
@@ -17,7 +15,6 @@ abstract contract BaseHLAdapter is BaseAdapterScript {
       new HyperLaneAdapter(
         addresses.crossChainController,
         HL_MAIL_BOX(),
-        HL_IGP(),
         GET_BASE_GAS_LIMIT(),
         trustedRemotes
       )
@@ -28,10 +25,6 @@ abstract contract BaseHLAdapter is BaseAdapterScript {
 contract Ethereum is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
     return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -51,10 +44,6 @@ contract Ethereum_testnet is BaseHLAdapter {
     return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
   }
 
-  function HL_IGP() public pure override returns (address) {
-    return 0xF987d7edcb5890cB321437d8145E3D51131298b6;
-  }
-
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
   }
@@ -70,10 +59,6 @@ contract Ethereum_testnet is BaseHLAdapter {
 contract Avalanche is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
     return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -92,10 +77,6 @@ contract Avalanche_testnet is BaseHLAdapter {
     return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
   }
 
-  function HL_IGP() public pure override returns (address) {
-    return 0xF90cB82a76492614D07B82a7658917f3aC811Ac1;
-  }
-
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.AVALANCHE_FUJI;
   }
@@ -110,10 +91,6 @@ contract Avalanche_testnet is BaseHLAdapter {
 contract Polygon is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
     return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -132,10 +109,6 @@ contract Polygon_testnet is BaseHLAdapter {
     return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
   }
 
-  function HL_IGP() public pure override returns (address) {
-    return 0xF90cB82a76492614D07B82a7658917f3aC811Ac1;
-  }
-
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.POLYGON_MUMBAI;
   }
@@ -150,10 +123,6 @@ contract Polygon_testnet is BaseHLAdapter {
 contract Binance is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
     return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -172,10 +141,6 @@ contract Binance_testnet is BaseHLAdapter {
     return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
   }
 
-  function HL_IGP() public pure override returns (address) {
-    return 0xF90cB82a76492614D07B82a7658917f3aC811Ac1;
-  }
-
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.BNB_TESTNET;
   }
@@ -190,10 +155,6 @@ contract Binance_testnet is BaseHLAdapter {
 contract Gnosis is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
     return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
