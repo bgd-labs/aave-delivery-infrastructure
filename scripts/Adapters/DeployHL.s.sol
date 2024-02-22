@@ -24,7 +24,7 @@ abstract contract BaseHLAdapter is BaseAdapterScript {
 
 contract Ethereum is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
+    return 0xc005dc82818d67AF737725bD4bf75435d065D239;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -41,7 +41,7 @@ contract Ethereum is BaseHLAdapter {
 
 contract Ethereum_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
+    return 0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -58,7 +58,7 @@ contract Ethereum_testnet is BaseHLAdapter {
 
 contract Avalanche is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
+    return 0xFf06aFcaABaDDd1fb08371f9ccA15D73D51FeBD6;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -74,7 +74,7 @@ contract Avalanche is BaseHLAdapter {
 
 contract Avalanche_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
+    return 0x5b6CFf85442B851A8e6eaBd2A4E4507B5135B3B0;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -90,7 +90,7 @@ contract Avalanche_testnet is BaseHLAdapter {
 
 contract Polygon is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
+    return 0x5d934f4e2f797775e53561bB72aca21ba36B96BB;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -106,7 +106,7 @@ contract Polygon is BaseHLAdapter {
 
 contract Polygon_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
+    return 0x2d1889fe5B092CD988972261434F7E5f26041115;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -122,7 +122,7 @@ contract Polygon_testnet is BaseHLAdapter {
 
 contract Binance is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
+    return 0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -138,7 +138,7 @@ contract Binance is BaseHLAdapter {
 
 contract Binance_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
+    return 0xF9F6F5646F478d5ab4e20B0F910C92F1CCC9Cc6D;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -154,7 +154,7 @@ contract Binance_testnet is BaseHLAdapter {
 
 contract Gnosis is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
+    return 0xaD09d78f4c6b9dA2Ae82b1D34107802d380Bb74f;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
