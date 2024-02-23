@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {ILayerZeroEndpointV2} from './interfaces/ILayerZeroEndpointV2.sol';
+
 /**
  * @title ILayerZeroAdapter
  * @author BGD Labs
@@ -12,4 +14,10 @@ interface ILayerZeroAdapter {
    * @return LayerZero version
    */
   function VERSION() external view returns (uint16);
+
+  /**
+   * @notice returns the layer zero endpoint address
+   * @return LayerZero endpoint address
+   */
+  function LZ_ENDPOINT() external view returns (ILayerZeroEndpointV2);
 }
