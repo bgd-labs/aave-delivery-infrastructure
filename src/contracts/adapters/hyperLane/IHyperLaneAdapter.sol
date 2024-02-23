@@ -9,11 +9,6 @@ import {IMailbox} from './interfaces/IMailbox.sol';
  * @notice interface containing the events, objects and method definitions used in the HyperLane bridge adapter
  */
 interface IHyperLaneAdapter {
-  //  struct MessageMetadata {
-  //    uint256 gasLimit;
-  //    bytes metadata;
-  //  }
-
   /**
    * @notice method to get the current Mail Box address
    * @return the address of the HyperLane Mail Box
