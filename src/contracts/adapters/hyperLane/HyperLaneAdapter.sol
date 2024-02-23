@@ -53,8 +53,10 @@ contract HyperLaneAdapter is BaseAdapter, IHyperLaneAdapter, IMessageRecipient {
     require(nativeChainId != uint32(0), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
-    bytes memory metadata = StandardHookMetadata.overrideGasLimit(totalGasLimit);
+    bytes memory metadata = StandardHookMetadata.overrideGasLimit(
+      executionGasLimit + BASE_GAS_LIMIT
+    );
+
     // Get the required payment from the MAILBOX.
     uint256 quotedPayment = HL_MAIL_BOX.quoteDispatch(
       nativeChainId,
