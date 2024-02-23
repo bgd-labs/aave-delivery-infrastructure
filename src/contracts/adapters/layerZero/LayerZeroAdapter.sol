@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-//import {ILayerZeroReceiver} from 'solidity-examples/interfaces/ILayerZeroReceiver.sol';
-//import {ILayerZeroEndpoint} from 'solidity-examples/interfaces/ILayerZeroEndpoint.sol';
-
 import {ILayerZeroReceiver} from './interfaces/ILayerZeroReceiver.sol';
-import {MessagingParams} from './interfaces/ILayerZeroEndpointV2.sol';
+import {MessagingParams, Origin, MessagingFee, MessagingReceipt} from './interfaces/ILayerZeroEndpointV2.sol';
 import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
@@ -21,9 +18,6 @@ import {Errors} from '../../libs/Errors.sol';
         is called via delegate call
  */
 contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver {
-  /// @inheritdoc ILayerZeroAdapter
-  uint16 public constant VERSION = 2;
-
   /// @inheritdoc ILayerZeroAdapter
   ILayerZeroEndpointV2 public immutable LZ_ENDPOINT;
 
@@ -47,7 +41,7 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'LayerZero adapter', trustedRemotes) {
     require(lzEndpoint != address(0), Errors.INVALID_LZ_ENDPOINT);
-    LZ_ENDPOINT = ILayerZeroEndpoint(lzEndpoint);
+    LZ_ENDPOINT = ILayerZeroEndpointV2(lzEndpoint);
   }
 
   /// @inheritdoc ILayerZeroReceiver
@@ -77,7 +71,7 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
-    uint16 nativeChainId = SafeCast.toUint32(infraToNativeChainId(destinationChainId));
+    uint32 nativeChainId = SafeCast.toUint32(infraToNativeChainId(destinationChainId));
     require(nativeChainId != uint32(0), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
@@ -85,10 +79,10 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
 
     uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
-    bytes memory options = _generateOptions(totalGasLimit);
+    bytes memory options = _generateOptions(SafeCast.toUint128(totalGasLimit));
 
     MessagingFee memory fee = LZ_ENDPOINT.quote(
-      MessagingParams(_dstEid, receiverAddress, message, options, false),
+      MessagingParams(nativeChainId, receiverAddress, message, options, false),
       address(this)
     );
 
@@ -165,13 +159,12 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
   }
 
   /**
-  * @notice method to generate LayerZero options
-    * @param gasLimit the gas limit to use on destination chain
-    * @return bytes with the packed options
-    * @dev code abstracted from libs found here:
-     - ExecutorOptions: https://www.npmjs.com/package/@layerzerolabs/lz-evm-protocol-v2?activeTab=code
-     - OptionsBuilder: https://www.npmjs.com/package/@layerzerolabs/lz-evm-oapp-v2?activeTab=code
-  */
+   * @notice method to generate LayerZero options
+   * @param gasLimit the gas limit to use on destination chain
+   * @return bytes with the packed options
+   */
+  // - ExecutorOptions: https://www.npmjs.com/package/@layerzerolabs/lz-evm-protocol-v2?activeTab=code
+  // - OptionsBuilder: https://www.npmjs.com/package/@layerzerolabs/lz-evm-oapp-v2?activeTab=code
   function _generateOptions(uint128 gasLimit) internal returns (bytes memory) {
     // type 3
     bytes memory options = abi.encodePacked(uint16(3));

@@ -10,12 +10,6 @@ import {ILayerZeroEndpointV2} from './interfaces/ILayerZeroEndpointV2.sol';
  */
 interface ILayerZeroAdapter {
   /**
-   * @notice returns the layer zero version used
-   * @return LayerZero version
-   */
-  function VERSION() external view returns (uint16);
-
-  /**
    * @notice returns the layer zero endpoint address
    * @return LayerZero endpoint address
    */

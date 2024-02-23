@@ -31,25 +31,25 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
-    if (nativeChainId == uint16(40106) {
+    if (nativeChainId == 40106) {
       return TestNetChainIds.AVALANCHE_FUJI;
-    } else if (nativeChainId == uint16(40232) {
+    } else if (nativeChainId == 40232) {
       return TestNetChainIds.OPTIMISM_SEPOLIA;
-    } else if (nativeChainId == uint16(40109) {
+    } else if (nativeChainId == 40109) {
       return TestNetChainIds.POLYGON_MUMBAI;
-    } else if (nativeChainId == uint16(40231) {
+    } else if (nativeChainId == 40231) {
       return TestNetChainIds.ARBITRUM_SEPOLIA;
-    } else if (nativeChainId == uint16(40112) {
+    } else if (nativeChainId == 40112) {
       return TestNetChainIds.FANTOM_TESTNET;
-    } else if (nativeChainId == uint16(40161) {
+    } else if (nativeChainId == 40161) {
       return TestNetChainIds.ETHEREUM_SEPOLIA;
-    } else if (nativeChainId == uint16(40102) {
+    } else if (nativeChainId == 40102) {
       return TestNetChainIds.BNB_TESTNET;
-    } else if (nativeChainId == uint16(40151) {
+    } else if (nativeChainId == 40151) {
       return TestNetChainIds.METIS_TESTNET;
-    } else if (nativeChainId == uint16(40145) {
+    } else if (nativeChainId == 40145) {
       return TestNetChainIds.GNOSIS_CHIADO;
-    } else if (nativeChainId == uint16(40125) {
+    } else if (nativeChainId == 40125) {
       return TestNetChainIds.CELO_ALFAJORES;
     } else {
       return 0;

@@ -17,4 +17,6 @@ library TestNetChainIds {
   uint256 constant GNOSIS_CHIADO = 10200;
   uint256 constant SCROLL_SEPOLIA = 534351;
   uint256 constant CELO_ALFAJORES = 44787;
+  uint256 constant OPTIMISM_SEPOLIA = 11155420;
+  uint256 constant ARBITRUM_SEPOLIA = 421614;
 }

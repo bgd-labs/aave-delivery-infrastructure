@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Origin} from './interfaces/ILayerZeroEndpointV2.sol';
+import {Origin} from './ILayerZeroEndpointV2.sol';
 
 interface ILayerZeroReceiver {
   /**
@@ -23,15 +23,5 @@ interface ILayerZeroReceiver {
     bytes calldata _message,
     address _executor,
     bytes calldata _extraData
-  ) external payable {
-    // Ensures that only the endpoint can attempt to lzReceive() messages to this OApp.
-    if (address(endpoint) != msg.sender) revert OnlyEndpoint(msg.sender);
-
-    // Ensure that the sender matches the expected peer for the source endpoint.
-    if (_getPeerOrRevert(_origin.srcEid) != _origin.sender)
-      revert OnlyPeer(_origin.srcEid, _origin.sender);
-
-    // Call the internal OApp implementation of lzReceive.
-    _lzReceive(_origin, _guid, _message, _executor, _extraData);
-  }
+  ) external payable;
 }
