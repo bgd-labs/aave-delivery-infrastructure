@@ -2,9 +2,8 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {LayerZeroAdapter} from '../../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
+import {LayerZeroAdapter, Origin, ILayerZeroEndpointV2} from '../../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ILayerZeroEndpoint} from 'solidity-examples/interfaces/ILayerZeroEndpoint.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 import {ILayerZeroAdapter} from '../../src/contracts/adapters/layerZero/ILayerZeroAdapter.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
@@ -41,15 +40,6 @@ contract LayerZeroAdapterTest is Test {
     );
   }
 
-  function testAddressToBytes() public {
-    address testAddress = 0x38090646D10B5af11D86D1Bb894CF02E98dFd33A;
-    address local = 0x7d2105868e4bA9A1C296080f5F2f17ed4e610d9D;
-    //0x38090646d10b5af11d86d1bb894cf02e98dfd33a7d2105868e4ba9a1c296080f5f2f17ed4e610d9d
-    //0x38090646d10b5af11d86d1bb894cf02e98dfd33a7d2105868e4ba9a1c296080f5f2f17ed4e610d9d
-
-    emit log_bytes(abi.encodePacked(testAddress, local));
-  }
-
   function testInit() public {
     address originForwarder = layerZeroAdapter.getTrustedRemoteByChainId(1);
     assertEq(
@@ -69,12 +59,14 @@ contract LayerZeroAdapterTest is Test {
   }
 
   function testLzReceive() public {
-    bytes memory srcAddress = abi.encodePacked(ORIGIN_FORWARDER, address(layerZeroAdapter));
+    bytes memory srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
     uint64 nonce = uint64(1);
 
     uint40 payloadId = 0;
 
     bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
+
+    Origin memory origin = Origin({srcEid: uint32(30101), sender: srcAddress, nonce: nonce});
 
     hoax(LZ_ENDPOINT);
     vm.mockCall(
@@ -91,24 +83,25 @@ contract LayerZeroAdapterTest is Test {
         ORIGIN_LZ_CHAIN_ID
       )
     );
-    layerZeroAdapter.lzReceive(101, srcAddress, nonce, payload);
+    layerZeroAdapter.lzReceive(origin, srcAddress, nonce, payload);
     vm.clearMockedCalls();
   }
 
   function testLzReceiveWhenNotEndpoint() public {
-    bytes memory srcAddress = abi.encode(ORIGIN_FORWARDER);
+    bytes memory srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
     uint64 nonce = uint64(1);
 
+    Origin memory origin = Origin({srcEid: uint32(30101), sender: srcAddress, nonce: nonce});
     uint40 payloadId = uint40(0);
 
     bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
 
     vm.expectRevert(bytes(Errors.CALLER_NOT_LZ_ENDPOINT));
-    layerZeroAdapter.lzReceive(101, srcAddress, nonce, payload);
+    layerZeroAdapter.lzReceive(origin, srcAddress, nonce, payload);
   }
 
   function testLzReceiveWhenIncorrectSource(address addr) public {
-    bytes memory srcAddress = abi.encode(addr);
+    bytes memory srcAddress = bytes32(uint256(uint160(addr)));
     uint64 nonce = uint64(1);
 
     uint40 payloadId = uint40(0);
@@ -117,7 +110,7 @@ contract LayerZeroAdapterTest is Test {
 
     hoax(LZ_ENDPOINT);
     vm.expectRevert(bytes(Errors.REMOTE_NOT_TRUSTED));
-    layerZeroAdapter.lzReceive(101, srcAddress, nonce, payload);
+    layerZeroAdapter.lzReceive(origin, srcAddress, nonce, payload);
   }
 
   function testForwardPayload() public {
