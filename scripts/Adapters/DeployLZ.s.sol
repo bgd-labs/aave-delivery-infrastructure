@@ -41,7 +41,7 @@ abstract contract BaseLZAdapter is BaseAdapterScript {
 
 contract Ethereum is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x1a44076050125825900e736c501f859c50fe728c;
+    return 0x1a44076050125825900e736c501f859c50fE728c;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -63,7 +63,7 @@ contract Ethereum is BaseLZAdapter {
 
 contract Ethereum_testnet is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x6edce65403992e310a62460808c4b910d972f10f;
+    return 0x6EDCE65403992e310A62460808c4b910D972f10f;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -85,7 +85,7 @@ contract Ethereum_testnet is BaseLZAdapter {
 
 contract Avalanche is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x1a44076050125825900e736c501f859c50fe728c;
+    return 0x1a44076050125825900e736c501f859c50fE728c;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -106,7 +106,7 @@ contract Avalanche is BaseLZAdapter {
 
 contract Avalanche_testnet is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x6edce65403992e310a62460808c4b910d972f10f;
+    return 0x6EDCE65403992e310A62460808c4b910D972f10f;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -127,7 +127,7 @@ contract Avalanche_testnet is BaseLZAdapter {
 
 contract Polygon is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x1a44076050125825900e736c501f859c50fe728c;
+    return 0x1a44076050125825900e736c501f859c50fE728c;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -148,7 +148,7 @@ contract Polygon is BaseLZAdapter {
 
 contract Polygon_testnet is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x6edce65403992e310a62460808c4b910d972f10f;
+    return 0x6EDCE65403992e310A62460808c4b910D972f10f;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -169,7 +169,7 @@ contract Polygon_testnet is BaseLZAdapter {
 
 contract Binance is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x1a44076050125825900e736c501f859c50fe728c;
+    return 0x1a44076050125825900e736c501f859c50fE728c;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -190,7 +190,7 @@ contract Binance is BaseLZAdapter {
 
 contract Binance_testnet is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x6edce65403992e310a62460808c4b910d972f10f;
+    return 0x6EDCE65403992e310A62460808c4b910D972f10f;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -211,7 +211,7 @@ contract Binance_testnet is BaseLZAdapter {
 
 contract Gnosis is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x1a44076050125825900e736c501f859c50fe728c;
+    return 0x1a44076050125825900e736c501f859c50fE728c;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -232,7 +232,7 @@ contract Gnosis is BaseLZAdapter {
 
 contract Gnosis_testnet is BaseLZAdapter {
   function LZ_ENDPOINT() public pure override returns (address) {
-    return 0x6edce65403992e310a62460808c4b910d972f10f;
+    return 0x6EDCE65403992e310A62460808c4b910D972f10f;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
