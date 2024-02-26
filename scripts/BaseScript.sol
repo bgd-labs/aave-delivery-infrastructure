@@ -67,22 +67,20 @@ library DeployerHelpers {
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
-    } else if (chainId == TestNetChainIds.ETHEREUM_GOERLI) {
-      return './deployments/cc/testnet/goerli.json';
     } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
       return './deployments/cc/testnet/mum.json';
     } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
       return './deployments/cc/testnet/fuji.json';
-    } else if (chainId == TestNetChainIds.ARBITRUM_GOERLI) {
-      return './deployments/cc/testnet/arb_go.json';
-    } else if (chainId == TestNetChainIds.OPTIMISM_GOERLI) {
-      return './deployments/cc/testnet/op_go.json';
+    } else if (chainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
+      return './deployments/cc/testnet/arb_sep.json';
+    } else if (chainId == TestNetChainIds.OPTIMISM_SEPOLIA) {
+      return './deployments/cc/testnet/op_sep.json';
     } else if (chainId == TestNetChainIds.METIS_TESTNET) {
       return './deployments/cc/testnet/met_test.json';
     } else if (chainId == TestNetChainIds.BNB_TESTNET) {
       return './deployments/cc/testnet/bnb_test.json';
-    } else if (chainId == TestNetChainIds.BASE_GOERLI) {
-      return './deployments/cc/testnet/base_go.json';
+    } else if (chainId == TestNetChainIds.BASE_SEPOLIA) {
+      return './deployments/cc/testnet/base_sep.json';
     } else if (chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI) {
       return './deployments/cc/testnet/zkevm_go.json';
     } else if (chainId == TestNetChainIds.GNOSIS_CHIADO) {

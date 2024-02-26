@@ -166,13 +166,13 @@ contract Avalanche_testnet is BaseCCCNetworkDeployment {
 
 contract Arbitrum_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ARBITRUM_GOERLI;
+    return TestNetChainIds.ARBITRUM_SEPOLIA;
   }
 }
 
 contract Optimism_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.OPTIMISM_GOERLI;
+    return TestNetChainIds.OPTIMISM_SEPOLIA;
   }
 }
 
@@ -190,7 +190,7 @@ contract Binance_testnet is BaseCCCNetworkDeployment {
 
 contract Base_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.BASE_GOERLI;
+    return TestNetChainIds.BASE_SEPOLIA;
   }
 }
 
@@ -203,5 +203,11 @@ contract Gnosis_testnet is BaseCCCNetworkDeployment {
 contract Scroll_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+}
+
+contract Celo_testnet is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
   }
 }

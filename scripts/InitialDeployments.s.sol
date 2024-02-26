@@ -292,3 +292,9 @@ contract Scroll_testnet is BaseInitialDeployment {
     return TestNetChainIds.SCROLL_SEPOLIA;
   }
 }
+
+contract Celo_testnet is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
+  }
+}

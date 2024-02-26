@@ -144,11 +144,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,scroll)
+	$(call deploy_fn,InitialDeployments,polygon avalanche binance)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,scroll)
+	$(call deploy_fn,CCC/Deploy_CCC,binance)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -156,11 +156,11 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,polygon)
+	$(call deploy_fn,Adapters/DeployLZ,ethereum polygon)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,polygon)
+	$(call deploy_fn,Adapters/DeployHL,ethereum polygon)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
@@ -175,11 +175,11 @@ set-ccf-sender-adapters-test:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,base)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,base)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon)
 
 # Funds CCC
 fund-crosschain-test:
@@ -210,10 +210,10 @@ send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,zkevm)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,polygon)
 
 set-approved-ccf-senders:
-	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum avalanche polygon)
+	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum polygon)
 
 send-message:
 	@$(call deploy_fn,helpers/Testnet_ForwardMessage,ethereum,Testnet_ForwardMessage)

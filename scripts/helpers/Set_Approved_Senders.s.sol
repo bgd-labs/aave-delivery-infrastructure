@@ -30,3 +30,21 @@ contract Polygon is BaseApproveOwnerOnCCF {
     return ChainIds.POLYGON;
   }
 }
+
+contract Ethereum_testnet is BaseApproveOwnerOnCCF {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
+  }
+}
+
+contract Avalanche_testnet is BaseApproveOwnerOnCCF {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.AVALANCHE_FUJI;
+  }
+}
+
+contract Polygon_testnet is BaseApproveOwnerOnCCF {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.POLYGON_MUMBAI;
+  }
+}
