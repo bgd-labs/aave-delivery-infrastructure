@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {LayerZeroAdapter, Origin, ILayerZeroEndpointV2} from '../../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
+import {LayerZeroAdapter, Origin, ILayerZeroEndpointV2, MessagingFee, MessagingReceipt} from '../../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 import {ILayerZeroAdapter} from '../../src/contracts/adapters/layerZero/ILayerZeroAdapter.sol';
@@ -16,7 +16,7 @@ contract LayerZeroAdapterTest is Test {
   address public constant CROSS_CHAIN_CONTROLLER = address(1234567);
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(12345678);
   address public constant ADDRESS_WITH_ETH = address(12301234);
-  uint16 public constant BRIDGE_CHAIN_ID = uint16(109);
+  uint32 public constant BRIDGE_CHAIN_ID = uint32(30109);
   uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   LayerZeroAdapter layerZeroAdapter;
@@ -59,7 +59,7 @@ contract LayerZeroAdapterTest is Test {
   }
 
   function testLzReceive() public {
-    bytes memory srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
+    bytes32 srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
     uint64 nonce = uint64(1);
 
     uint40 payloadId = 0;
@@ -83,12 +83,12 @@ contract LayerZeroAdapterTest is Test {
         ORIGIN_LZ_CHAIN_ID
       )
     );
-    layerZeroAdapter.lzReceive(origin, srcAddress, nonce, payload);
+    layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
     vm.clearMockedCalls();
   }
 
   function testLzReceiveWhenNotEndpoint() public {
-    bytes memory srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
+    bytes32 srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
     uint64 nonce = uint64(1);
 
     Origin memory origin = Origin({srcEid: uint32(30101), sender: srcAddress, nonce: nonce});
@@ -97,20 +97,22 @@ contract LayerZeroAdapterTest is Test {
     bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
 
     vm.expectRevert(bytes(Errors.CALLER_NOT_LZ_ENDPOINT));
-    layerZeroAdapter.lzReceive(origin, srcAddress, nonce, payload);
+    layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
   }
 
   function testLzReceiveWhenIncorrectSource(address addr) public {
-    bytes memory srcAddress = bytes32(uint256(uint160(addr)));
+    vm.assume(addr != ORIGIN_FORWARDER);
+    bytes32 srcAddress = bytes32(uint256(uint160(addr)));
     uint64 nonce = uint64(1);
 
+    Origin memory origin = Origin({srcEid: uint32(30101), sender: srcAddress, nonce: nonce});
     uint40 payloadId = uint40(0);
 
     bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
 
     hoax(LZ_ENDPOINT);
     vm.expectRevert(bytes(Errors.REMOTE_NOT_TRUSTED));
-    layerZeroAdapter.lzReceive(origin, srcAddress, nonce, payload);
+    layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
   }
 
   function testForwardPayload() public {
@@ -120,19 +122,21 @@ contract LayerZeroAdapterTest is Test {
     hoax(ADDRESS_WITH_ETH, 10 ether);
     vm.mockCall(
       LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.estimateFees.selector),
-      abi.encode(10, 0)
+      abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
+      abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
     );
-    vm.mockCall(
-      LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.getOutboundNonce.selector),
-      abi.encode(1)
-    );
+
     vm.mockCall(
       LZ_ENDPOINT,
       10,
-      abi.encodeWithSelector(ILayerZeroEndpoint.send.selector),
-      abi.encode()
+      abi.encodeWithSelector(ILayerZeroEndpointV2.send.selector),
+      abi.encode(
+        MessagingReceipt({
+          guid: bytes32(0),
+          nonce: 2,
+          fee: MessagingFee({nativeFee: 10, lzTokenFee: 0})
+        })
+      )
     );
     (bool success, bytes memory returnData) = address(layerZeroAdapter).delegatecall(
       abi.encodeWithSelector(
@@ -146,7 +150,7 @@ contract LayerZeroAdapterTest is Test {
     vm.clearMockedCalls();
 
     assertEq(success, true);
-    assertEq(returnData, abi.encode(LZ_ENDPOINT, 1));
+    assertEq(returnData, abi.encode(LZ_ENDPOINT, 2));
   }
 
   function testForwardPayloadWithNoValue() public {

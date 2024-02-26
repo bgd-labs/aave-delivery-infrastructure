@@ -156,7 +156,7 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,ethereum polygon)
+	$(call deploy_fn,Adapters/DeployLZ,ethereum avalanche)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
