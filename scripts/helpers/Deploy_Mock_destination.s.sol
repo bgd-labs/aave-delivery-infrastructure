@@ -70,6 +70,12 @@ contract Zkevm is BaseMockDestination {
   }
 }
 
+contract Ethereum_testnet is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
+  }
+}
+
 contract Arbitrum_testnet is BaseMockDestination {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ARBITRUM_GOERLI;
