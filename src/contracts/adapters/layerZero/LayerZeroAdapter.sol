@@ -45,6 +45,11 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
   }
 
   /// @inheritdoc ILayerZeroReceiver
+  function nextNonce(uint32 /*_srcEid*/, bytes32 /*_sender*/) public pure returns (uint64 nonce) {
+    return 0;
+  }
+
+  /// @inheritdoc ILayerZeroReceiver
   function lzReceive(
     Origin calldata _origin,
     bytes32,
@@ -165,7 +170,7 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
   // - ExecutorOptions: https://www.npmjs.com/package/@layerzerolabs/lz-evm-protocol-v2?activeTab=code
   // - OptionsBuilder: https://www.npmjs.com/package/@layerzerolabs/lz-evm-oapp-v2?activeTab=code
   function _generateOptions(uint128 gasLimit) internal pure returns (bytes memory) {
-    bytes memory options = OptionsBuilder.newOptions(); //abi.encodePacked(uint16(3));
+    bytes memory options = OptionsBuilder.newOptions();
     return OptionsBuilder.addExecutorLzReceiveOption(options, gasLimit, 0);
   }
 }

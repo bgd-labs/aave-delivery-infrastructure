@@ -24,4 +24,17 @@ interface ILayerZeroReceiver {
     address _executor,
     bytes calldata _extraData
   ) external payable;
+
+  /**
+   * @notice Retrieves the next nonce for a given source endpoint and sender address.
+   * @dev _srcEid The source endpoint ID.
+   * @dev _sender The sender address.
+   * @return nonce The next nonce.
+   *
+   * @dev The path nonce starts from 1. If 0 is returned it means that there is NO nonce ordered enforcement.
+   * @dev Is required by the off-chain executor to determine the OApp expects msg execution is ordered.
+   * @dev This is also enforced by the OApp.
+   * @dev By default this is NOT enabled. ie. nextNonce is hardcoded to return 0.
+   */
+  function nextNonce(uint32 /*_srcEid*/, bytes32 /*_sender*/) external view returns (uint64 nonce);
 }
