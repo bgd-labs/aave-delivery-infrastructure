@@ -4,7 +4,7 @@ pragma solidity ^0.8.8;
 import {ILayerZeroReceiver} from './interfaces/ILayerZeroReceiver.sol';
 import {MessagingParams, Origin, MessagingFee, MessagingReceipt} from './interfaces/ILayerZeroEndpointV2.sol';
 import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
-
+import {OptionsBuilder} from './libs/OptionsBuilder.sol';
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {ILayerZeroAdapter, ILayerZeroEndpointV2} from './ILayerZeroAdapter.sol';
 import {ChainIds} from '../../libs/ChainIds.sol';
@@ -53,7 +53,6 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
     bytes calldata
   ) external payable onlyLZEndpoint {
     uint256 originChainId = nativeToInfraChainId(_origin.srcEid);
-    address trustedRemote = _trustedRemotes[originChainId];
     address srcAddress = address(uint160(uint256(_origin.sender)));
 
     require(
@@ -165,17 +164,8 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
    */
   // - ExecutorOptions: https://www.npmjs.com/package/@layerzerolabs/lz-evm-protocol-v2?activeTab=code
   // - OptionsBuilder: https://www.npmjs.com/package/@layerzerolabs/lz-evm-oapp-v2?activeTab=code
-  function _generateOptions(uint128 gasLimit) internal returns (bytes memory) {
-    // type 3
-    bytes memory options = abi.encodePacked(uint16(3));
-    bytes memory option = abi.encodePacked(gasLimit);
-    return
-      abi.encodePacked(
-        options,
-        uint8(1),
-        uint16(option.length) + 1, // +1 for optionType
-        uint8(1),
-        option
-      );
+  function _generateOptions(uint128 gasLimit) internal pure returns (bytes memory) {
+    bytes memory options = OptionsBuilder.newOptions(); //abi.encodePacked(uint16(3));
+    return OptionsBuilder.addExecutorLzReceiveOption(options, gasLimit, 0);
   }
 }

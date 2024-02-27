@@ -156,7 +156,7 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,ethereum avalanche)
+	$(call deploy_fn,Adapters/DeployLZ,polygon)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
@@ -171,7 +171,7 @@ deploy-scroll-adapters-test:
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
-	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
+	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum polygon)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
@@ -210,10 +210,10 @@ send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,polygon)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,avalanche)
 
 set-approved-ccf-senders:
-	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum polygon)
+	$(call deploy_fn,helpers/Set_Approved_Senders,avalanche)
 
 send-message:
 	@$(call deploy_fn,helpers/Testnet_ForwardMessage,ethereum,Testnet_ForwardMessage)
