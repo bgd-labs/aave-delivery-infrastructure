@@ -306,9 +306,9 @@ contract Ethereum_testnet is Ethereum {
     DeployerHelpers.Addresses memory addresses
   ) public pure override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
-    //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
     //    receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
-    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
     //    receiverBridgeAdaptersToAllow[3] = addresses.polAdapter;
 
     return receiverBridgeAdaptersToAllow;
@@ -332,9 +332,9 @@ contract Polygon_testnet is Polygon {
   ) public pure override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
     //    receiverBridgeAdaptersToAllow[0] = addresses.polAdapter;
-    //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
     //    receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
-    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
 
     return receiverBridgeAdaptersToAllow;
   }
