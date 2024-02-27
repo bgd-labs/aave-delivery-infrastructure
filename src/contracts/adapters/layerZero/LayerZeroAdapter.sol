@@ -58,14 +58,17 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
     bytes calldata
   ) external payable onlyLZEndpoint {
     uint256 originChainId = nativeToInfraChainId(_origin.srcEid);
-    address srcAddress = address(uint160(uint256(_origin.sender)));
 
-    require(
-      _trustedRemotes[originChainId] == srcAddress && srcAddress != address(0),
-      Errors.REMOTE_NOT_TRUSTED
-    );
+    require(allowInitializePath(_origin), Errors.REMOTE_NOT_TRUSTED);
 
     _registerReceivedMessage(_message, originChainId);
+  }
+
+  /// @inheritdoc ILayerZeroReceiver
+  function allowInitializePath(Origin calldata origin) public view returns (bool) {
+    uint256 originChainId = nativeToInfraChainId(origin.srcEid);
+    address srcAddress = address(uint160(uint256(origin.sender)));
+    return _trustedRemotes[originChainId] == srcAddress && srcAddress != address(0);
   }
 
   /// @inheritdoc IBaseAdapter

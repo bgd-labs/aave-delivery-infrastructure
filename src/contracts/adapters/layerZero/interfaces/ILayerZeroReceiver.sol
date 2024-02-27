@@ -37,4 +37,15 @@ interface ILayerZeroReceiver {
    * @dev By default this is NOT enabled. ie. nextNonce is hardcoded to return 0.
    */
   function nextNonce(uint32 /*_srcEid*/, bytes32 /*_sender*/) external view returns (uint64 nonce);
+
+  /**
+   * @notice Checks if the path initialization is allowed based on the provided origin.
+   * @param origin The origin information containing the source endpoint and sender address.
+   * @return Whether the path has been initialized.
+   *
+   * @dev This indicates to the endpoint that the OApp has enabled msgs for this particular path to be received.
+   * @dev This defaults to assuming if a peer has been set, its initialized.
+   * Can be overridden by the OApp if there is other logic to determine this.
+   */
+  function allowInitializePath(Origin calldata origin) external view returns (bool);
 }
