@@ -148,7 +148,7 @@ deploy-proxy-factory-test:
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,binance)
+	$(call deploy_fn,CCC/Deploy_CCC,ethereum)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -183,7 +183,7 @@ set-ccr-confirmations-test:
 
 # Funds CCC
 fund-crosschain-test:
-	$(call deploy_fn,CCC/FundCCC,ethereum avalanche)
+	$(call deploy_fn,CCC/FundCCC,ethereum)
 
 ## Deploy and configure all contracts
 deploy-full-test:
@@ -210,10 +210,10 @@ send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,avalanche)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,ethereum)
 
 set-approved-ccf-senders:
-	$(call deploy_fn,helpers/Set_Approved_Senders,avalanche)
+	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum)
 
 send-message:
 	@$(call deploy_fn,helpers/Testnet_ForwardMessage,ethereum,Testnet_ForwardMessage)
