@@ -99,6 +99,9 @@ deploy-scroll-adapters:
 deploy-zkevm-adapters:
 	$(call deploy_fn,Adapters/DeployZkEVMAdapter,ethereum zkevm)
 
+deploy-wormhole-adapters:
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum celo)
+
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
 	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
@@ -168,6 +171,9 @@ deploy-same-chain-adapters-test:
 
 deploy-scroll-adapters-test:
 	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
+
+deploy-wormhole-adapters-test:
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum celo)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:

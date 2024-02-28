@@ -70,6 +70,12 @@ contract Zkevm is BaseMockDestination {
   }
 }
 
+contract Celo is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.CELO;
+  }
+}
+
 contract Ethereum_testnet is BaseMockDestination {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -115,5 +121,11 @@ contract Base_testnet is BaseMockDestination {
 contract Scroll_testnet is BaseMockDestination {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+}
+
+contract Celo_testnet is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
   }
 }

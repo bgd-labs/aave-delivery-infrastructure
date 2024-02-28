@@ -288,6 +288,31 @@ contract Scroll is BaseSetCCRAdapters {
   }
 }
 
+contract Celo is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.ETHEREUM;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](3);
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    receiverBridgeAdaptersToAllow[1] = addresses.hlAdapter;
+    receiverBridgeAdaptersToAllow[2] = addresses.wormholeAdapter;
+    //    receiverBridgeAdaptersToAllow[2] = addresses.ccipAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
+}
+
 contract Ethereum_testnet is Ethereum {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -457,6 +482,28 @@ contract Scroll_testnet is BaseSetCCRAdapters {
   ) public pure override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
     receiverBridgeAdaptersToAllow[0] = addresses.scrollAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
+}
+
+contract Celo_testnet is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    receiverBridgeAdaptersToAllow[0] = addresses.wormholeAdapter;
 
     return receiverBridgeAdaptersToAllow;
   }
