@@ -170,8 +170,6 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
    * @param gasLimit the gas limit to use on destination chain
    * @return bytes with the packed options
    */
-  // - ExecutorOptions: https://www.npmjs.com/package/@layerzerolabs/lz-evm-protocol-v2?activeTab=code
-  // - OptionsBuilder: https://www.npmjs.com/package/@layerzerolabs/lz-evm-oapp-v2?activeTab=code
   function _generateOptions(uint128 gasLimit) internal pure returns (bytes memory) {
     bytes memory options = OptionsBuilder.newOptions();
     return OptionsBuilder.addExecutorLzReceiveOption(options, gasLimit, 0);

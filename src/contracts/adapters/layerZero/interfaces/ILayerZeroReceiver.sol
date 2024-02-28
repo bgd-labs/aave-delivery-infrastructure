@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// Modified from commit: https://github.com/LayerZero-Labs/LayerZero-v2/commit/4b2985921af42a778d26a48c9dee7b9644812cbd
 pragma solidity ^0.8.0;
 
 import {Origin} from './ILayerZeroEndpointV2.sol';

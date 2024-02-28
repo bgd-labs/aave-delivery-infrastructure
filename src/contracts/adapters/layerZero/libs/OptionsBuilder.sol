@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// Modified from commit: https://github.com/LayerZero-Labs/LayerZero-v2/commit/bf4318b5e88e46400931bb4c1f6aa0343c035a79
 pragma solidity ^0.8.0;
 
 import {BytesLib} from './BytesLib.sol';
