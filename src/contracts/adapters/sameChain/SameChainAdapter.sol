@@ -15,12 +15,12 @@ import {Transaction, Envelope, TransactionUtils} from '../../libs/EncodingUtils.
  */
 contract SameChainAdapter is IBaseAdapter {
   /// @inheritdoc IBaseAdapter
-  function CROSS_CHAIN_CONTROLLER() external returns (IBaseCrossChainController) {
+  function CROSS_CHAIN_CONTROLLER() external pure returns (IBaseCrossChainController) {
     return IBaseCrossChainController(address(0));
   }
 
   /// @inheritdoc IBaseAdapter
-  function BASE_GAS_LIMIT() external returns (uint256) {
+  function BASE_GAS_LIMIT() external pure returns (uint256) {
     return 0;
   }
 

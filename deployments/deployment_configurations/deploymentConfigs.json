@@ -1,0 +1,48 @@
+{
+  "chains": ["avalanche_fuji"],
+  "avalanche_fuji":{
+    "adapters": {
+      "ccip": {
+        "ccipRouter": "0x554472a2720E5E7D5D3C817529aBA05EEd5F82D8",
+        "linkToken":"0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
+        "providerGasLimit": 150000,
+        "remoteNetworks":["ethereum_sepolia"]
+      }
+    },
+    "ccc": {
+      "sendersToRemove": [],
+      "approvedSenders": [],
+      "clEmergencyOracle": "0x0000000000000000000000000000000000000000",
+      "confirmations": {
+        "chains": ["polygon_mumbai"],
+        "polygon_mumbai": 1
+      },
+      "ethFunds": 200000,
+      "guardian": "0x0000000000000000000000000000000000000000",
+      "owner": "0x0000000000000000000000000000000000000000",
+      "onlyImpl": true,
+      "salt": "CrossChainController salt"
+    },
+    "emergencyRegistry": {
+      "owner": "0x0000000000000000000000000000000000000000"
+    },
+    "forwarderConnections": {
+      "chains": ["polygon_mumbai"],
+      "polygon_mumbai": ["ccip"]
+    },
+    "proxies": {
+      "proxyAdmin": {
+        "owner": "0x0000000000000000000000000000000000000000",
+        "deployedAddress": "0x0000000000000000000000000000000000000003",
+        "salt": "Proxy Admin salt"
+      },
+      "transparentProxyFactory": {
+        "salt": "Some salt here"
+      }
+    },
+    "receiverConnections": {
+      "chains": ["polygon_mumbai"],
+      "polygon_mumbai": ["ccip"]
+    }
+  }
+}
