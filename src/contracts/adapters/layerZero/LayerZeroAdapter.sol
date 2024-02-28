@@ -45,7 +45,7 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
   }
 
   /// @inheritdoc ILayerZeroReceiver
-  function nextNonce(uint32 /*_srcEid*/, bytes32 /*_sender*/) public pure returns (uint64 nonce) {
+  function nextNonce(uint32 /*_srcEid*/, bytes32 /*_sender*/) public pure returns (uint64) {
     return 0;
   }
 
