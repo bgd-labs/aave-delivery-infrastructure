@@ -4,11 +4,11 @@ pragma solidity ^0.8.0;
 import 'forge-std/Test.sol';
 import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
 import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
-import {ILayerZeroEndpoint} from 'solidity-examples/interfaces/ILayerZeroEndpoint.sol';
+import {ILayerZeroEndpointV2} from '../src/contracts/adapters/layerZero/interfaces/ILayerZeroEndpointV2.sol';
 
 import {CrossChainForwarder, ICrossChainForwarder} from '../src/contracts/CrossChainForwarder.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
-import {LayerZeroAdapter, ILayerZeroAdapter} from '../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
+import {LayerZeroAdapter, ILayerZeroAdapter, MessagingFee, MessagingReceipt} from '../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
 import {ChainIds} from '../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {Transaction, EncodedTransaction, Envelope} from '../src/contracts/libs/EncodingUtils.sol';
@@ -415,19 +415,20 @@ contract CrossChainForwarderTest is BaseTest {
     deal(address(crossChainForwarder), 10 ether);
     vm.mockCall(
       LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.estimateFees.selector),
-      abi.encode(10, 0)
-    );
-    vm.mockCall(
-      LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.getOutboundNonce.selector),
-      abi.encode(1)
+      abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
+      abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
     );
     vm.mockCall(
       LZ_ENDPOINT,
       10,
-      abi.encodeWithSelector(ILayerZeroEndpoint.send.selector),
-      abi.encode()
+      abi.encodeWithSelector(ILayerZeroEndpointV2.send.selector),
+      abi.encode(
+        MessagingReceipt({
+          guid: bytes32(0),
+          nonce: 2,
+          fee: MessagingFee({nativeFee: 10, lzTokenFee: 0})
+        })
+      )
     );
     vm.expectCall(
       address(lzAdapter),
@@ -545,19 +546,20 @@ contract CrossChainForwarderTest is BaseTest {
     hoax(SENDER);
     vm.mockCall(
       LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.estimateFees.selector),
-      abi.encode(10, 0)
-    );
-    vm.mockCall(
-      LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.getOutboundNonce.selector),
-      abi.encode(1)
+      abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
+      abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
     );
     vm.mockCall(
       LZ_ENDPOINT,
       10,
-      abi.encodeWithSelector(ILayerZeroEndpoint.send.selector),
-      abi.encode()
+      abi.encodeWithSelector(ILayerZeroEndpointV2.send.selector),
+      abi.encode(
+        MessagingReceipt({
+          guid: bytes32(0),
+          nonce: 2,
+          fee: MessagingFee({nativeFee: 10, lzTokenFee: 0})
+        })
+      )
     );
     vm.expectCall(
       address(lzAdapter),
@@ -633,19 +635,20 @@ contract CrossChainForwarderTest is BaseTest {
     hoax(extendedTx.envelope.origin);
     vm.mockCall(
       LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.estimateFees.selector),
-      abi.encode(10, 0)
-    );
-    vm.mockCall(
-      LZ_ENDPOINT,
-      abi.encodeWithSelector(ILayerZeroEndpoint.getOutboundNonce.selector),
-      abi.encode(1)
+      abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
+      abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
     );
     vm.mockCall(
       LZ_ENDPOINT,
       10,
-      abi.encodeWithSelector(ILayerZeroEndpoint.send.selector),
-      abi.encode()
+      abi.encodeWithSelector(ILayerZeroEndpointV2.send.selector),
+      abi.encode(
+        MessagingReceipt({
+          guid: bytes32(0),
+          nonce: 2,
+          fee: MessagingFee({nativeFee: 10, lzTokenFee: 0})
+        })
+      )
     );
     vm.expectEmit(true, true, false, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
