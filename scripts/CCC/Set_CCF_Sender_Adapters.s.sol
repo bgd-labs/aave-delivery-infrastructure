@@ -26,7 +26,7 @@ contract Ethereum is BaseCCFSenderAdapters {
   ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        19
+        23
       );
 
     // polygon path
@@ -159,6 +159,24 @@ contract Ethereum is BaseCCFSenderAdapters {
       destinationChainId: addressesScroll.chainId
     });
 
+    // Celo
+    DeployerHelpers.Addresses memory addressesCelo = _getAddresses(ChainIds.CELO);
+    bridgeAdaptersToEnable[20] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.wormholeAdapter,
+      destinationBridgeAdapter: addressesCelo.wormholeAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
+    bridgeAdaptersToEnable[21] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.lzAdapter,
+      destinationBridgeAdapter: addressesCelo.lzAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
+    bridgeAdaptersToEnable[22] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.hlAdapter,
+      destinationBridgeAdapter: addressesCelo.hlAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
+
     return bridgeAdaptersToEnable;
   }
 }
@@ -253,9 +271,9 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
       );
 
     // polygon path
-    DeployerHelpers.Addresses memory addressesPolygon = _getAddresses(
-      TestNetChainIds.POLYGON_MUMBAI
-    );
+    //    DeployerHelpers.Addresses memory addressesPolygon = _getAddresses(
+    //      TestNetChainIds.POLYGON_MUMBAI
+    //    );
 
     //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
     //      currentChainBridgeAdapter: addresses.ccipAdapter,
@@ -267,14 +285,14 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
     //      destinationBridgeAdapter: addressesPolygon.lzAdapter,
     //      destinationChainId: addressesPolygon.chainId
     //    });
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: addressesPolygon.hlAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
+    //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //      currentChainBridgeAdapter: addresses.hlAdapter,
+    //      destinationBridgeAdapter: addressesPolygon.hlAdapter,
+    //      destinationChainId: addressesPolygon.chainId
+    //    });
 
     //     avalanche path
-    DeployerHelpers.Addresses memory addressesAvax = _getAddresses(TestNetChainIds.AVALANCHE_FUJI);
+    //    DeployerHelpers.Addresses memory addressesAvax = _getAddresses(TestNetChainIds.AVALANCHE_FUJI);
 
     //    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
     //      currentChainBridgeAdapter: addresses.ccipAdapter,
@@ -360,6 +378,13 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
     //      destinationChainId: addressesScrollSepolia.chainId
     //    });
 
+    // Celo
+    DeployerHelpers.Addresses memory addressesCelo = _getAddresses(TestNetChainIds.CELO_ALFAJORES);
+    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.wormholeAdapter,
+      destinationBridgeAdapter: addressesCelo.wormholeAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
     return bridgeAdaptersToEnable;
   }
 }
