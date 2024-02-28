@@ -97,7 +97,7 @@ contract Avalanche is BaseSetCCRAdapters {
 
   function getReceiverBridgeAdaptersToAllow(
     DeployerHelpers.Addresses memory addresses
-  ) public pure override returns (address[] memory) {
+  ) public pure virtual override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](3);
     receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
     receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
@@ -321,7 +321,7 @@ contract Ethereum_testnet is Ethereum {
   function getChainIds() public pure override returns (uint256[] memory) {
     uint256[] memory chainIds = new uint256[](1);
     chainIds[0] = TestNetChainIds.POLYGON_MUMBAI;
-    //    chainIds[1] = TestNetChainIds.AVALANCHE_FUJI;
+    //    chainIds[0] = TestNetChainIds.AVALANCHE_FUJI;
     //    chainIds[2] = TestNetChainIds.BNB_TESTNET;
 
     return chainIds;
@@ -332,8 +332,8 @@ contract Ethereum_testnet is Ethereum {
   ) public pure override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
     //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
-    //    receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
-    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
     //    receiverBridgeAdaptersToAllow[3] = addresses.polAdapter;
 
     return receiverBridgeAdaptersToAllow;
@@ -358,8 +358,8 @@ contract Polygon_testnet is Polygon {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
     //    receiverBridgeAdaptersToAllow[0] = addresses.polAdapter;
     //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
-    //    receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
-    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
 
     return receiverBridgeAdaptersToAllow;
   }
@@ -375,6 +375,18 @@ contract Avalanche_testnet is Avalanche {
     chainIds[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
 
     return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    //    receiverBridgeAdaptersToAllow[0] = addresses.polAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+
+    return receiverBridgeAdaptersToAllow;
   }
 }
 

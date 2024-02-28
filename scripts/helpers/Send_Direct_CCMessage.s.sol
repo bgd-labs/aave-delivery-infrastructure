@@ -71,6 +71,16 @@ contract Ethereum_testnet is BaseSendDirectMessage {
   }
 }
 
+contract Avalanche_testnet is BaseSendDirectMessage {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.AVALANCHE_FUJI;
+  }
+
+  function DESTINATION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
+  }
+}
+
 contract Polygon_testnet is BaseSendDirectMessage {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.POLYGON_MUMBAI;

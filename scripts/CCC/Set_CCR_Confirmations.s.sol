@@ -261,7 +261,7 @@ contract Ethereum_testnet is Ethereum {
   {
     ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
     chainIds[0] = ConfirmationsByChain({chainId: TestNetChainIds.POLYGON_MUMBAI, confirmations: 1});
-    //    chainIds[1] = ConfirmationsByChain({chainId: TestNetChainIds.AVALANCHE_FUJI, confirmations: 3});
+    //    chainIds[0] = ConfirmationsByChain({chainId: TestNetChainIds.AVALANCHE_FUJI, confirmations: 1});
 
     return chainIds;
   }
@@ -302,7 +302,7 @@ contract Avalanche_testnet is Avalanche {
     ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
     chainIds[0] = ConfirmationsByChain({
       chainId: TestNetChainIds.ETHEREUM_SEPOLIA,
-      confirmations: 3
+      confirmations: 1
     });
 
     return chainIds;

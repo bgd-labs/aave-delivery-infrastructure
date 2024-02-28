@@ -88,6 +88,12 @@ contract Arbitrum_testnet is BaseMockDestination {
   }
 }
 
+contract Avalanche_testnet is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.AVALANCHE_FUJI;
+  }
+}
+
 contract Optimism_testnet is BaseMockDestination {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.OPTIMISM_GOERLI;

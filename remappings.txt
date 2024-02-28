@@ -10,4 +10,3 @@ forge-std/=lib/forge-std/src/
 fx-portal/=lib/fx-portal/contracts/
 nitro-contracts/=lib/nitro-contracts/src/
 openzeppelin-contracts/=lib/openzeppelin-contracts/
-solidity-examples/=lib/solidity-examples/contracts/
