@@ -10,15 +10,6 @@ import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 
 contract LayerZeroAdapterTest is Test {
-  //  uint256 public constant ORIGIN_LZ_CHAIN_ID = 1;
-  //  address public constant ORIGIN_FORWARDER = address(1234);
-  //  address public constant LZ_ENDPOINT = address(12345);
-  //  address public constant CROSS_CHAIN_CONTROLLER = address(1234567);
-  //  address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(12345678);
-  address public constant ADDRESS_WITH_ETH = address(12301234);
-  uint32 public constant BRIDGE_CHAIN_ID = uint32(30109);
-  //  uint256 public constant BASE_GAS_LIMIT = 10_000;
-
   LayerZeroAdapter layerZeroAdapter;
 
   modifier setLZAdapter(
@@ -205,15 +196,17 @@ contract LayerZeroAdapterTest is Test {
     address originForwarder,
     uint256 baseGasLimit,
     uint256 dstGasLimit,
-    address receiver
+    address receiver,
+    address caller
   )
     public
     setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
   {
     vm.assume(dstGasLimit < 1 ether);
     vm.assume(receiver != address(0));
+    vm.assume(caller != address(0));
 
-    _testForwardMessage(lzEndpoint, receiver);
+    _testForwardMessage(lzEndpoint, receiver, dstGasLimit, caller);
   }
 
   function testForwardPayloadWithNoValue(
@@ -283,10 +276,15 @@ contract LayerZeroAdapterTest is Test {
     layerZeroAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.POLYGON, message);
   }
 
-  function _testForwardMessage(address lzEndpoint, address receiver) internal {
+  function _testForwardMessage(
+    address lzEndpoint,
+    address receiver,
+    uint256 dstGasLimit,
+    address caller
+  ) internal {
     bytes memory payload = abi.encode('test message');
 
-    hoax(ADDRESS_WITH_ETH, 10 ether);
+    hoax(caller, 10 ether);
     vm.mockCall(
       lzEndpoint,
       abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
@@ -308,7 +306,7 @@ contract LayerZeroAdapterTest is Test {
       abi.encodeWithSelector(
         IBaseAdapter.forwardMessage.selector,
         receiver,
-        0,
+        dstGasLimit,
         ChainIds.POLYGON,
         payload
       )
