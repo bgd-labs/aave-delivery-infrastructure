@@ -10,124 +10,290 @@ import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 
 contract LayerZeroAdapterTest is Test {
-  uint256 public constant ORIGIN_LZ_CHAIN_ID = 1;
-  address public constant ORIGIN_FORWARDER = address(1234);
-  address public constant LZ_ENDPOINT = address(12345);
-  address public constant CROSS_CHAIN_CONTROLLER = address(1234567);
-  address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(12345678);
+  //  uint256 public constant ORIGIN_LZ_CHAIN_ID = 1;
+  //  address public constant ORIGIN_FORWARDER = address(1234);
+  //  address public constant LZ_ENDPOINT = address(12345);
+  //  address public constant CROSS_CHAIN_CONTROLLER = address(1234567);
+  //  address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(12345678);
   address public constant ADDRESS_WITH_ETH = address(12301234);
   uint32 public constant BRIDGE_CHAIN_ID = uint32(30109);
-  uint256 public constant BASE_GAS_LIMIT = 10_000;
+  //  uint256 public constant BASE_GAS_LIMIT = 10_000;
 
   LayerZeroAdapter layerZeroAdapter;
 
-  IBaseAdapter.TrustedRemotesConfig originConfig =
-    IBaseAdapter.TrustedRemotesConfig({
-      originForwarder: ORIGIN_FORWARDER,
-      originChainId: ORIGIN_LZ_CHAIN_ID
-    });
+  modifier setLZAdapter(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  ) {
+    vm.assume(baseGasLimit < 1 ether);
+    vm.assume(crossChainController != address(0));
+    vm.assume(lzEndpoint != address(0));
+    vm.assume(originForwarder != address(0));
+    vm.assume(originChainId > 0);
 
-  function setUp() public {
+    IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
+      originForwarder: originForwarder,
+      originChainId: originChainId
+    });
     IBaseAdapter.TrustedRemotesConfig[]
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
     layerZeroAdapter = new LayerZeroAdapter(
-      LZ_ENDPOINT,
-      CROSS_CHAIN_CONTROLLER,
-      BASE_GAS_LIMIT,
+      lzEndpoint,
+      crossChainController,
+      baseGasLimit,
       originConfigs
     );
+    _;
   }
 
-  function testInit() public {
-    address originForwarder = layerZeroAdapter.getTrustedRemoteByChainId(1);
+  function setUp() public {}
+
+  function testWrongLZEndpoint(
+    address crossChainController,
+    uint256 baseGasLimit,
+    address originForwarder,
+    uint256 originChainId
+  ) public {
+    vm.assume(crossChainController != address(0));
+    vm.assume(originForwarder != address(0));
+    vm.assume(originChainId > 0);
+
+    IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
+      originForwarder: originForwarder,
+      originChainId: originChainId
+    });
+    IBaseAdapter.TrustedRemotesConfig[]
+      memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
+    originConfigs[0] = originConfig;
+
+    vm.expectRevert(bytes(Errors.INVALID_LZ_ENDPOINT));
+    new LayerZeroAdapter(address(0), crossChainController, baseGasLimit, originConfigs);
+  }
+
+  function testInit(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, originChainId)
+  {
     assertEq(
       keccak256(abi.encode(layerZeroAdapter.adapterName())),
       keccak256(abi.encode('LayerZero adapter'))
     );
-    assertEq(originForwarder, ORIGIN_FORWARDER);
-    assertEq(address(layerZeroAdapter.LZ_ENDPOINT()), LZ_ENDPOINT);
+    assertEq(originForwarder, layerZeroAdapter.getTrustedRemoteByChainId(originChainId));
+    assertEq(address(layerZeroAdapter.LZ_ENDPOINT()), lzEndpoint);
   }
 
-  function testGetInfraChainFromBridgeChain() public {
-    assertEq(layerZeroAdapter.nativeToInfraChainId(BRIDGE_CHAIN_ID), ChainIds.POLYGON);
+  function testGetInfraChainFromBridgeChain(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, originChainId)
+  {
+    assertEq(layerZeroAdapter.nativeToInfraChainId(30109), ChainIds.POLYGON);
   }
 
-  function testGetBridgeChainFromInfraChain() public {
-    assertEq(layerZeroAdapter.infraToNativeChainId(ChainIds.POLYGON), BRIDGE_CHAIN_ID);
+  function testGetBridgeChainFromInfraChain(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, originChainId)
+  {
+    assertEq(layerZeroAdapter.infraToNativeChainId(ChainIds.POLYGON), 30109);
   }
 
-  function testLzReceive() public {
-    bytes32 srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
-    uint64 nonce = uint64(1);
+  function testLzReceive(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    bytes memory payload = abi.encode('test message');
 
-    uint40 payloadId = 0;
+    Origin memory origin = Origin({
+      srcEid: uint32(30101),
+      sender: bytes32(uint256(uint160(originForwarder))),
+      nonce: uint64(1)
+    });
 
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-
-    Origin memory origin = Origin({srcEid: uint32(30101), sender: srcAddress, nonce: nonce});
-
-    hoax(LZ_ENDPOINT);
+    hoax(lzEndpoint);
     vm.mockCall(
-      CROSS_CHAIN_CONTROLLER,
+      crossChainController,
       abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
       abi.encode()
     );
     vm.expectCall(
-      CROSS_CHAIN_CONTROLLER,
+      crossChainController,
       0,
       abi.encodeWithSelector(
         ICrossChainReceiver.receiveCrossChainMessage.selector,
         payload,
-        ORIGIN_LZ_CHAIN_ID
+        ChainIds.ETHEREUM
       )
     );
     layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
     vm.clearMockedCalls();
   }
 
-  function testLzReceiveWhenNotEndpoint() public {
-    bytes32 srcAddress = bytes32(uint256(uint160(ORIGIN_FORWARDER)));
-    uint64 nonce = uint64(1);
-
-    Origin memory origin = Origin({srcEid: uint32(30101), sender: srcAddress, nonce: nonce});
-    uint40 payloadId = uint40(0);
-
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
+  function testLzReceiveWhenNotEndpoint(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    Origin memory origin = Origin({
+      srcEid: uint32(30101),
+      sender: bytes32(uint256(uint160(originForwarder))),
+      nonce: uint64(1)
+    });
+    bytes memory payload = abi.encode('test message');
 
     vm.expectRevert(bytes(Errors.CALLER_NOT_LZ_ENDPOINT));
     layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
   }
 
-  function testLzReceiveWhenIncorrectSource(address addr) public {
-    vm.assume(addr != ORIGIN_FORWARDER);
-    bytes32 srcAddress = bytes32(uint256(uint160(addr)));
-    uint64 nonce = uint64(1);
+  function testLzReceiveWhenIncorrectSource(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    address srcAddress
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(srcAddress != originForwarder);
 
-    Origin memory origin = Origin({srcEid: uint32(30101), sender: srcAddress, nonce: nonce});
-    uint40 payloadId = uint40(0);
+    Origin memory origin = Origin({
+      srcEid: uint32(30101),
+      sender: bytes32(uint256(uint160(srcAddress))),
+      nonce: uint64(1)
+    });
+    bytes memory payload = abi.encode('test message');
 
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-
-    hoax(LZ_ENDPOINT);
+    hoax(lzEndpoint);
     vm.expectRevert(bytes(Errors.REMOTE_NOT_TRUSTED));
     layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
   }
 
-  function testForwardPayload() public {
-    uint40 payloadId = uint40(0);
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
+  function testForwardPayload(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(dstGasLimit < 1 ether);
+    vm.assume(receiver != address(0));
+
+    _testForwardMessage(lzEndpoint, receiver);
+  }
+
+  function testForwardPayloadWithNoValue(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
+    vm.assume(receiver != address(0));
+
+    bytes memory payload = abi.encode('test message');
+
+    vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
+    (bool success, ) = address(layerZeroAdapter).delegatecall(
+      abi.encodeWithSelector(
+        IBaseAdapter.forwardMessage.selector,
+        receiver,
+        dstGasLimit,
+        ChainIds.POLYGON,
+        payload
+      )
+    );
+    assertEq(success, false);
+  }
+
+  function testForwardPayloadWhenNoChainSet(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(receiver != address(0));
+    vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
+
+    bytes memory message = abi.encode('test message');
+
+    vm.expectRevert(bytes(Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED));
+    layerZeroAdapter.forwardMessage(receiver, dstGasLimit, 102345, message);
+  }
+
+  function testForwardPayloadWhenNoReceiverSet(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
+
+    bytes memory message = abi.encode('test message');
+
+    vm.expectRevert(bytes(Errors.RECEIVER_NOT_SET));
+    layerZeroAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.POLYGON, message);
+  }
+
+  function _testForwardMessage(address lzEndpoint, address receiver) internal {
+    bytes memory payload = abi.encode('test message');
 
     hoax(ADDRESS_WITH_ETH, 10 ether);
     vm.mockCall(
-      LZ_ENDPOINT,
+      lzEndpoint,
       abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
       abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
     );
-
     vm.mockCall(
-      LZ_ENDPOINT,
+      lzEndpoint,
       10,
       abi.encodeWithSelector(ILayerZeroEndpointV2.send.selector),
       abi.encode(
@@ -141,7 +307,7 @@ contract LayerZeroAdapterTest is Test {
     (bool success, bytes memory returnData) = address(layerZeroAdapter).delegatecall(
       abi.encodeWithSelector(
         IBaseAdapter.forwardMessage.selector,
-        RECEIVER_CROSS_CHAIN_CONTROLLER,
+        receiver,
         0,
         ChainIds.POLYGON,
         payload
@@ -150,38 +316,6 @@ contract LayerZeroAdapterTest is Test {
     vm.clearMockedCalls();
 
     assertEq(success, true);
-    assertEq(returnData, abi.encode(LZ_ENDPOINT, 2));
-  }
-
-  function testForwardPayloadWithNoValue() public {
-    uint40 payloadId = uint40(0);
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-
-    vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
-    (bool success, ) = address(layerZeroAdapter).delegatecall(
-      abi.encodeWithSelector(
-        IBaseAdapter.forwardMessage.selector,
-        RECEIVER_CROSS_CHAIN_CONTROLLER,
-        0,
-        ChainIds.POLYGON,
-        payload
-      )
-    );
-    assertEq(success, false);
-  }
-
-  function testForwardPayloadWhenNoChainSet() public {
-    uint40 payloadId = uint40(0);
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-
-    vm.expectRevert(bytes(Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED));
-    layerZeroAdapter.forwardMessage(RECEIVER_CROSS_CHAIN_CONTROLLER, 0, 102345, payload);
-  }
-
-  function testForwardPayloadWhenNoReceiverSet() public {
-    uint40 payloadId = uint40(0);
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-    vm.expectRevert(bytes(Errors.RECEIVER_NOT_SET));
-    layerZeroAdapter.forwardMessage(address(0), 0, ChainIds.POLYGON, payload);
+    assertEq(returnData, abi.encode(lzEndpoint, 2));
   }
 }
