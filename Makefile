@@ -155,7 +155,7 @@ deploy-cross-chain-infra-test:
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployCCIP,polygon)
+	$(call deploy_fn,Adapters/DeployCCIP,ethereum polygon)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:

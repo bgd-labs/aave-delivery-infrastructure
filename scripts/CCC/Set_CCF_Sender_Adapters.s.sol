@@ -285,11 +285,6 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
     //      destinationBridgeAdapter: addressesPolygon.lzAdapter,
     //      destinationChainId: addressesPolygon.chainId
     //    });
-    //    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.lzAdapter,
-    //      destinationBridgeAdapter: addressesPolygon.lzAdapter,
-    //      destinationChainId: addressesPolygon.chainId
-    //    });
     //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
     //      currentChainBridgeAdapter: addresses.hlAdapter,
     //      destinationBridgeAdapter: addressesPolygon.hlAdapter,

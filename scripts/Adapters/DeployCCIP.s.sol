@@ -5,6 +5,7 @@ import {CCIPAdapter, ICCIPAdapter, IBaseAdapter} from '../../src/contracts/adapt
 import './BaseAdapterScript.sol';
 import {CCIPAdapterTestnet} from '../contract_extensions/CCIPAdapter.sol';
 
+// configs can be found here: https://docs.chain.link/ccip/supported-networks/v1_2_0/mainnet#bnb-mainnet
 abstract contract BaseCCIPAdapter is BaseAdapterScript {
   function CCIP_ROUTER() public view virtual returns (address);
 
@@ -44,7 +45,7 @@ abstract contract BaseCCIPAdapter is BaseAdapterScript {
 
 contract Ethereum is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0xE561d5E02207fb5eB32cca20a699E0d8919a1476;
+    return 0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
@@ -66,7 +67,7 @@ contract Ethereum is BaseCCIPAdapter {
 
 contract Ethereum_testnet is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0xD0daae2231E9CB96b94C8512223533293C3693Bf;
+    return 0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
@@ -92,7 +93,7 @@ contract Ethereum_testnet is BaseCCIPAdapter {
 
 contract Avalanche is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0x27F39D0af3303703750D4001fCc1844c6491563c;
+    return 0xF4c7E640EdA248ef95972845a62bdC74237805dB;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
@@ -113,7 +114,7 @@ contract Avalanche is BaseCCIPAdapter {
 
 contract Avalanche_testnet is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0x554472a2720E5E7D5D3C817529aBA05EEd5F82D8;
+    return 0xF694E193200268f9a4868e4Aa017A0118C9a8177;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
@@ -138,7 +139,7 @@ contract Avalanche_testnet is BaseCCIPAdapter {
 
 contract Polygon is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0x3C3D92629A02a8D95D5CB9650fe49C3544f69B43;
+    return 0x849c5ED5a80F5B408Dd4969b78c2C8fdf0565Bfe;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
@@ -159,7 +160,7 @@ contract Polygon is BaseCCIPAdapter {
 
 contract Polygon_testnet is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0x70499c328e1E2a3c41108bd3730F6670a44595D1;
+    return 0x1035CabC275068e0F4b745A29CEDf38E13aF41b1;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
@@ -184,7 +185,7 @@ contract Polygon_testnet is BaseCCIPAdapter {
 
 contract Binance is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0x536d7E53D0aDeB1F20E7c81fea45d02eC9dBD698;
+    return 0x34B03Cb9086d7D758AC55af71584F81A598759FE;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
@@ -205,7 +206,7 @@ contract Binance is BaseCCIPAdapter {
 
 contract Binance_testnet is BaseCCIPAdapter {
   function CCIP_ROUTER() public pure override returns (address) {
-    return 0x9527E2d01A3064ef6b50c1Da1C0cC523803BCFF2;
+    return 0xE1053aE1857476f36A3C62580FF9b016E8EE8F6f;
   }
 
   function LINK_TOKEN() public pure override returns (address) {
