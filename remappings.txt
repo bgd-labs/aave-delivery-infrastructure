@@ -1,5 +1,4 @@
 solidity-utils/=lib/solidity-utils/src/
-hyperlane-monorepo/=lib/hyperlane-monorepo/solidity/contracts/
 @openzeppelin/=lib/openzeppelin-contracts/
 @aave/core-v3/=lib/aave-address-book/lib/aave-v3-core/
 @aave/periphery-v3/=lib/aave-address-book/lib/aave-v3-periphery/
@@ -11,4 +10,3 @@ forge-std/=lib/forge-std/src/
 fx-portal/=lib/fx-portal/contracts/
 nitro-contracts/=lib/nitro-contracts/src/
 openzeppelin-contracts/=lib/openzeppelin-contracts/
-solidity-examples/=lib/solidity-examples/contracts/

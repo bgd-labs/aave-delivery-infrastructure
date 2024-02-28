@@ -230,6 +230,24 @@ contract Scroll is BaseSetCCRConfirmations {
   }
 }
 
+contract Celo is BaseSetCCRConfirmations {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function getConfirmationsByChainIds()
+    public
+    virtual
+    override
+    returns (ConfirmationsByChain[] memory)
+  {
+    ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
+    chainIds[0] = ConfirmationsByChain({chainId: ChainIds.ETHEREUM, confirmations: 2});
+
+    return chainIds;
+  }
+}
+
 contract Ethereum_testnet is Ethereum {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -243,7 +261,7 @@ contract Ethereum_testnet is Ethereum {
   {
     ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
     chainIds[0] = ConfirmationsByChain({chainId: TestNetChainIds.POLYGON_MUMBAI, confirmations: 1});
-    //    chainIds[1] = ConfirmationsByChain({chainId: TestNetChainIds.AVALANCHE_FUJI, confirmations: 3});
+    //    chainIds[0] = ConfirmationsByChain({chainId: TestNetChainIds.AVALANCHE_FUJI, confirmations: 1});
 
     return chainIds;
   }
@@ -284,7 +302,7 @@ contract Avalanche_testnet is Avalanche {
     ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
     chainIds[0] = ConfirmationsByChain({
       chainId: TestNetChainIds.ETHEREUM_SEPOLIA,
-      confirmations: 3
+      confirmations: 1
     });
 
     return chainIds;
@@ -420,6 +438,27 @@ contract Gnosis_testnet is BaseSetCCRConfirmations {
 contract Scroll_testnet is BaseSetCCRConfirmations {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+
+  function getConfirmationsByChainIds()
+    public
+    virtual
+    override
+    returns (ConfirmationsByChain[] memory)
+  {
+    ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
+    chainIds[0] = ConfirmationsByChain({
+      chainId: TestNetChainIds.ETHEREUM_SEPOLIA,
+      confirmations: 1
+    });
+
+    return chainIds;
+  }
+}
+
+contract Celo_testnet is BaseSetCCRConfirmations {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
   }
 
   function getConfirmationsByChainIds()

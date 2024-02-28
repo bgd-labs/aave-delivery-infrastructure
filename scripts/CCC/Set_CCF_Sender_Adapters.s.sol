@@ -26,7 +26,7 @@ contract Ethereum is BaseCCFSenderAdapters {
   ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        19
+        23
       );
 
     // polygon path
@@ -159,6 +159,24 @@ contract Ethereum is BaseCCFSenderAdapters {
       destinationChainId: addressesScroll.chainId
     });
 
+    // Celo
+    DeployerHelpers.Addresses memory addressesCelo = _getAddresses(ChainIds.CELO);
+    bridgeAdaptersToEnable[20] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.wormholeAdapter,
+      destinationBridgeAdapter: addressesCelo.wormholeAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
+    bridgeAdaptersToEnable[21] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.lzAdapter,
+      destinationBridgeAdapter: addressesCelo.lzAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
+    bridgeAdaptersToEnable[22] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.hlAdapter,
+      destinationBridgeAdapter: addressesCelo.hlAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
+
     return bridgeAdaptersToEnable;
   }
 }
@@ -253,16 +271,16 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
       );
 
     // polygon path
-    DeployerHelpers.Addresses memory addressesPolygon = _getAddresses(
-      TestNetChainIds.POLYGON_MUMBAI
-    );
+    //    DeployerHelpers.Addresses memory addressesPolygon = _getAddresses(
+    //      TestNetChainIds.POLYGON_MUMBAI
+    //    );
 
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: addressesPolygon.ccipAdapter,
-      destinationChainId: addressesPolygon.chainId
-    });
-    //    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //      currentChainBridgeAdapter: addresses.ccipAdapter,
+    //      destinationBridgeAdapter: addressesPolygon.ccipAdapter,
+    //      destinationChainId: addressesPolygon.chainId
+    //    });
+    //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
     //      currentChainBridgeAdapter: addresses.lzAdapter,
     //      destinationBridgeAdapter: addressesPolygon.lzAdapter,
     //      destinationChainId: addressesPolygon.chainId
@@ -281,7 +299,7 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
     //      destinationBridgeAdapter: addressesAvax.ccipAdapter,
     //      destinationChainId: addressesAvax.chainId
     //    });
-    //    bridgeAdaptersToEnable[4] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
     //      currentChainBridgeAdapter: addresses.lzAdapter,
     //      destinationBridgeAdapter: addressesAvax.lzAdapter,
     //      destinationChainId: addressesAvax.chainId
@@ -360,6 +378,13 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
     //      destinationChainId: addressesScrollSepolia.chainId
     //    });
 
+    // Celo
+    DeployerHelpers.Addresses memory addressesCelo = _getAddresses(TestNetChainIds.CELO_ALFAJORES);
+    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.wormholeAdapter,
+      destinationBridgeAdapter: addressesCelo.wormholeAdapter,
+      destinationChainId: addressesCelo.chainId
+    });
     return bridgeAdaptersToEnable;
   }
 }
@@ -382,16 +407,16 @@ contract Polygon_testnet is BaseCCFSenderAdapters {
       TestNetChainIds.ETHEREUM_SEPOLIA
     );
 
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    //    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-    //      currentChainBridgeAdapter: addresses.lzAdapter,
-    //      destinationBridgeAdapter: ethereumAddresses.lzAdapter,
+    //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //      currentChainBridgeAdapter: addresses.ccipAdapter,
+    //      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
     //      destinationChainId: ethereumAddresses.chainId
     //    });
+    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: addresses.lzAdapter,
+      destinationBridgeAdapter: ethereumAddresses.lzAdapter,
+      destinationChainId: ethereumAddresses.chainId
+    });
     //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
     //      currentChainBridgeAdapter: addresses.hlAdapter,
     //      destinationBridgeAdapter: ethereumAddresses.hlAdapter,
@@ -412,7 +437,7 @@ contract Avalanche_testnet is BaseCCFSenderAdapters {
   ) public view override returns (ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory) {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory bridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        3
+        1
       );
 
     // ethereum path
@@ -420,21 +445,21 @@ contract Avalanche_testnet is BaseCCFSenderAdapters {
       TestNetChainIds.ETHEREUM_SEPOLIA
     );
 
+    //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //      currentChainBridgeAdapter: addresses.ccipAdapter,
+    //      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
+    //      destinationChainId: ethereumAddresses.chainId
+    //    });
     bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.ccipAdapter,
-      destinationBridgeAdapter: ethereumAddresses.ccipAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.lzAdapter,
       destinationBridgeAdapter: ethereumAddresses.lzAdapter,
       destinationChainId: ethereumAddresses.chainId
     });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.hlAdapter,
-      destinationBridgeAdapter: ethereumAddresses.hlAdapter,
-      destinationChainId: ethereumAddresses.chainId
-    });
+    //    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //      currentChainBridgeAdapter: addresses.hlAdapter,
+    //      destinationBridgeAdapter: ethereumAddresses.hlAdapter,
+    //      destinationChainId: ethereumAddresses.chainId
+    //    });
 
     return bridgeAdaptersToEnable;
   }
