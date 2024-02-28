@@ -9,15 +9,6 @@ import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 
 contract HyperLaneAdapterTest is Test {
-  //  address public constant ORIGIN_FORWARDER = address(123);
-  //  address public constant CROSS_CHAIN_CONTROLLER = address(1234);
-  //  address public constant MAIL_BOX = address(12345);
-  //  address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
-  address public constant ADDRESS_WITH_ETH = address(12301234);
-
-  //  uint256 public constant ORIGIN_HL_CHAIN_ID = ChainIds.ETHEREUM;
-  //  uint256 public constant BASE_GAS_LIMIT = 10_000;
-
   HyperLaneAdapter public hlAdapter;
 
   event SetTrustedRemote(uint256 indexed originChainId, address indexed originForwarder);
@@ -119,15 +110,17 @@ contract HyperLaneAdapterTest is Test {
     address originForwarder,
     uint256 baseGasLimit,
     uint256 dstGasLimit,
-    address receiver
+    address receiver,
+    address caller
   )
     public
     setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.POLYGON)
   {
+    vm.assume(caller != address(0));
     vm.assume(dstGasLimit < 1 ether);
     vm.assume(receiver != address(0));
 
-    _testForwardMessage(mailBox, receiver, dstGasLimit, baseGasLimit);
+    _testForwardMessage(mailBox, receiver, dstGasLimit, baseGasLimit, caller);
   }
 
   function testForwardMessageWithNoValue(
@@ -259,12 +252,13 @@ contract HyperLaneAdapterTest is Test {
     address mailBox,
     address receiver,
     uint256 dstGasLimit,
-    uint256 baseGasLimit
+    uint256 baseGasLimit,
+    address caller
   ) internal {
     bytes memory message = abi.encode('test message');
     bytes32 messageId = keccak256(abi.encode(1));
 
-    hoax(ADDRESS_WITH_ETH, 10 ether);
+    hoax(caller, 10 ether);
 
     vm.mockCall(
       mailBox,
