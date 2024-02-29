@@ -44,29 +44,29 @@ library DeployerHelpers {
 
   function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
     if (chainId == ChainIds.ETHEREUM) {
-      return './deployments/cc/mainnet/eth.json';
+      return './deployments/cc/mainnet/pre_prod_eth.json';
     } else if (chainId == ChainIds.POLYGON) {
-      return './deployments/cc/mainnet/pol.json';
+      return './deployments/cc/mainnet/pre_prod_pol.json';
     } else if (chainId == ChainIds.AVALANCHE) {
-      return './deployments/cc/mainnet/avax.json';
+      return './deployments/cc/mainnet/pre_prod_avax.json';
     } else if (chainId == ChainIds.ARBITRUM) {
-      return './deployments/cc/mainnet/arb.json';
+      return './deployments/cc/mainnet/pre_prod_arb.json';
     } else if (chainId == ChainIds.OPTIMISM) {
-      return './deployments/cc/mainnet/op.json';
+      return './deployments/cc/mainnet/pre_prod_op.json';
     } else if (chainId == ChainIds.METIS) {
-      return './deployments/cc/mainnet/metis.json';
+      return './deployments/cc/mainnet/pre_prod_metis.json';
     } else if (chainId == ChainIds.BNB) {
-      return './deployments/cc/mainnet/bnb.json';
+      return './deployments/cc/mainnet/pre_prod_bnb.json';
     } else if (chainId == ChainIds.BASE) {
-      return './deployments/cc/mainnet/base.json';
+      return './deployments/cc/mainnet/pre_prod_base.json';
     } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
       return './deployments/cc/mainnet/zkevm.json';
     } else if (chainId == ChainIds.GNOSIS) {
-      return './deployments/cc/mainnet/gnosis.json';
+      return './deployments/cc/mainnet/pre_prod_gnosis.json';
     } else if (chainId == ChainIds.SCROLL) {
-      return './deployments/cc/mainnet/scroll.json';
+      return './deployments/cc/mainnet/pre_prod_scroll.json';
     } else if (chainId == ChainIds.CELO) {
-      return './deployments/cc/mainnet/celo.json';
+      return './deployments/cc/mainnet/pre_prod_celo.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
@@ -165,7 +165,7 @@ library DeployerHelpers {
 
 library Constants {
   address public constant OWNER = 0xf71fc92e2949ccF6A5Fd369a0b402ba80Bc61E02;
-  bytes32 public constant ADMIN_SALT = keccak256(bytes('Proxy Admin'));
+  bytes32 public constant ADMIN_SALT = keccak256(bytes('Aave Pre Prod Proxy Admin'));
   bytes32 public constant CCC_SALT = keccak256(bytes('a.DI Cross Chain Controller'));
   bytes32 public constant CREATE3_FACTORY_SALT = keccak256(bytes('Create3 Factory'));
 }

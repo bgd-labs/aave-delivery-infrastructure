@@ -167,3 +167,35 @@ contract Gnosis is BaseHLAdapter {
     return remoteNetworks;
   }
 }
+
+contract Celo is BaseHLAdapter {
+  function HL_MAIL_BOX() public pure override returns (address) {
+    return 0x50da3B3907A08a24fe4999F4Dcf337E8dC7954bb;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = ChainIds.ETHEREUM;
+    return remoteNetworks;
+  }
+}
+
+contract Celo_testnet is BaseHLAdapter {
+  function HL_MAIL_BOX() public pure override returns (address) {
+    return 0xEf9F292fcEBC3848bF4bB92a96a04F9ECBb78E59;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
+    return remoteNetworks;
+  }
+}

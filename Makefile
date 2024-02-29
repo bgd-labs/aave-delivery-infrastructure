@@ -18,7 +18,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 custom_ethereum := --with-gas-price 10000000000 # 53 gwei
-custom_polygon :=  --with-gas-price 100000000000 # 560 gwei
+custom_polygon :=  --with-gas-price 130000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
@@ -147,23 +147,23 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,polygon avalanche binance)
+	$(call deploy_fn,InitialDeployments,celo)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum)
+	$(call deploy_fn,CCC/Deploy_CCC,celo)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployCCIP,ethereum polygon)
+	$(call deploy_fn,Adapters/DeployCCIP,binance)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,ethereum polygon)
+	$(call deploy_fn,Adapters/DeployLZ,celo)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,ethereum polygon)
+	$(call deploy_fn,Adapters/DeployHL,celo)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
@@ -173,7 +173,10 @@ deploy-scroll-adapters-test:
 	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum scroll)
 
 deploy-wormhole-adapters-test:
-	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum celo)
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,celo)
+
+deploy-polygon-adapters-test:
+	$(call deploy_fn,Adapters/DeployPolygon,polygon)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
