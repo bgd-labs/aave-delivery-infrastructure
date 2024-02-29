@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import 'forge-std/Test.sol';
+import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 import {HyperLaneAdapter, IHyperLaneAdapter, IMailbox, TypeCasts, StandardHookMetadata} from '../../src/contracts/adapters/hyperLane/HyperLaneAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
+import {BaseAdapterTest} from './BaseAdapterTest.sol';
 
-contract HyperLaneAdapterTest is Test {
+contract HyperLaneAdapterTest is BaseAdapterTest {
   HyperLaneAdapter public hlAdapter;
 
   event SetTrustedRemote(uint256 indexed originChainId, address indexed originForwarder);
@@ -20,9 +21,9 @@ contract HyperLaneAdapterTest is Test {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
-    vm.assume(baseGasLimit < 1 ether);
-    vm.assume(crossChainController != address(0));
-    vm.assume(mailBox != address(0));
+    vm.assume(baseGasLimit < 1e7);
+    _assumeSafeAddress(crossChainController);
+    _assumeSafeAddress(mailBox);
     vm.assume(originForwarder != address(0));
     vm.assume(originChainId > 0);
 
@@ -137,8 +138,9 @@ contract HyperLaneAdapterTest is Test {
     vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
     vm.assume(receiver != address(0));
 
-    bytes memory payload = abi.encode('test message');
+    bytes memory message = abi.encode('test message');
 
+    vm.mockCall(mailBox, abi.encodeWithSelector(IMailbox.quoteDispatch.selector), abi.encode(1e4));
     vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
     (bool success, ) = address(hlAdapter).delegatecall(
       abi.encodeWithSelector(
@@ -146,7 +148,7 @@ contract HyperLaneAdapterTest is Test {
         receiver,
         dstGasLimit,
         ChainIds.POLYGON,
-        payload
+        message
       )
     );
     assertEq(success, false);
@@ -211,13 +213,16 @@ contract HyperLaneAdapterTest is Test {
     address crossChainController,
     address mailBox,
     address originForwarder,
-    uint256 baseGasLimit
+    uint256 baseGasLimit,
+    address caller
   )
     public
     setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
   {
     bytes memory message = abi.encode('some message');
 
+    vm.assume(caller != mailBox);
+    hoax(caller);
     vm.expectRevert(bytes(Errors.CALLER_NOT_HL_MAILBOX));
     HyperLaneAdapter(address(hlAdapter)).handle(
       uint32(ChainIds.ETHEREUM),
@@ -259,7 +264,6 @@ contract HyperLaneAdapterTest is Test {
     bytes32 messageId = keccak256(abi.encode(1));
 
     hoax(caller, 10 ether);
-
     vm.mockCall(
       mailBox,
       abi.encodeWithSelector(

@@ -63,9 +63,10 @@ contract WormholeAdapter is BaseAdapter, IWormholeAdapter, IWormholeReceiver {
 
     uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
-    uint64 sequence = IWormholeRelayer(WORMHOLE_RELAYER).sendPayloadToEvm{
-      value: _getGasCost(totalGasLimit, nativeChainId)
-    }(
+    uint256 cost = _getGasCost(totalGasLimit, nativeChainId);
+    require(cost <= address(this).balance, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
+
+    uint64 sequence = IWormholeRelayer(WORMHOLE_RELAYER).sendPayloadToEvm{value: cost}(
       nativeChainId,
       receiver,
       message,

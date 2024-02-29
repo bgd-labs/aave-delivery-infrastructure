@@ -1,21 +1,14 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import 'forge-std/Test.sol';
 import {WormholeAdapter, IBaseAdapter, IWormholeRelayer} from '../../src/contracts/adapters/wormhole/WormholeAdapter.sol';
 import {IWormholeAdapter} from '../../src/contracts/adapters/wormhole/IWormholeAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
+import {BaseAdapterTest} from './BaseAdapterTest.sol';
 
-contract WormholeAdapterTest is Test {
-  //  address public constant ORIGIN_FORWARDER = address(123);
-  //  address public constant CROSS_CHAIN_CONTROLLER = address(1234);
-  //  address public constant WORMHOLE_RELAYER = address(12345);
-  //  address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
-  //
-  //  uint256 public constant ORIGIN_WORMHOLE_CHAIN_ID = ChainIds.ETHEREUM;
-
+contract WormholeAdapterTest is BaseAdapterTest {
   WormholeAdapter internal wormholeAdapter;
 
   event SetTrustedRemote(uint256 indexed originChainId, address indexed originForwarder);
@@ -29,8 +22,8 @@ contract WormholeAdapterTest is Test {
     uint256 originChainId
   ) {
     vm.assume(baseGasLimit < 1 ether);
-    vm.assume(crossChainController != address(0));
-    vm.assume(wormholeRelayer != address(0));
+    _assumeSafeAddress(crossChainController);
+    _assumeSafeAddress(wormholeRelayer);
     vm.assume(originForwarder != address(0));
     vm.assume(originChainId > 0);
 
@@ -170,6 +163,61 @@ contract WormholeAdapterTest is Test {
     _testForwardMessage(wormholeRelayer, receiver, dstGasLimit, caller);
   }
 
+  function testForwardMessageWhenNoValue(
+    address crossChainController,
+    address wormholeRelayer,
+    address originForwarder,
+    address refundAddress,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver
+  )
+    public
+    setHLAdapter(
+      crossChainController,
+      wormholeRelayer,
+      originForwarder,
+      refundAddress,
+      baseGasLimit,
+      ChainIds.ETHEREUM
+    )
+  {
+    vm.assume(dstGasLimit < 1 ether);
+    vm.assume(receiver != address(0));
+    _testForwardMessageWhenNoValue(wormholeRelayer, receiver, dstGasLimit);
+  }
+
+  function _testForwardMessageWhenNoValue(
+    address wormholeRelayer,
+    address receiver,
+    uint256 dstGasLimit
+  ) internal {
+    bytes memory message = abi.encode('test message');
+
+    vm.mockCall(
+      wormholeRelayer,
+      abi.encodeWithSelector(IWormholeRelayer.quoteEVMDeliveryPrice.selector),
+      abi.encode(10, 0)
+    );
+    vm.mockCall(
+      wormholeRelayer,
+      10,
+      abi.encodeWithSelector(IWormholeRelayer.sendPayloadToEvm.selector),
+      abi.encode(uint64(1))
+    );
+    vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
+    (bool success, ) = address(wormholeAdapter).delegatecall(
+      abi.encodeWithSelector(
+        IBaseAdapter.forwardMessage.selector,
+        receiver,
+        dstGasLimit,
+        ChainIds.POLYGON,
+        message
+      )
+    );
+    assertEq(success, false);
+  }
+
   function testForwardMessageWhenChainNotSupported(
     address crossChainController,
     address wormholeRelayer,
@@ -266,7 +314,7 @@ contract WormholeAdapterTest is Test {
     address originForwarder,
     address refundAddress,
     uint256 baseGasLimit,
-    uint16 sourceChainId
+    address caller
   )
     public
     setHLAdapter(
@@ -278,13 +326,14 @@ contract WormholeAdapterTest is Test {
       ChainIds.ETHEREUM
     )
   {
+    vm.assume(caller != wormholeRelayer);
+    hoax(caller);
     vm.expectRevert(bytes(Errors.CALLER_NOT_WORMHOLE_RELAYER));
-
     wormholeAdapter.receiveWormholeMessages(
       abi.encode('test message'),
       new bytes[](0),
       bytes32(uint256(uint160(originForwarder))),
-      sourceChainId,
+      uint16(2),
       bytes32(0)
     );
   }
