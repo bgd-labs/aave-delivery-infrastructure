@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import 'forge-std/Test.sol';
 import {LayerZeroAdapter, Origin, ILayerZeroEndpointV2, MessagingFee, MessagingReceipt} from '../../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 import {ILayerZeroAdapter} from '../../src/contracts/adapters/layerZero/ILayerZeroAdapter.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
+import {BaseAdapterTest} from './BaseAdapterTest.sol';
 
-contract LayerZeroAdapterTest is Test {
+contract LayerZeroAdapterTest is BaseAdapterTest {
   LayerZeroAdapter layerZeroAdapter;
 
   modifier setLZAdapter(
@@ -20,8 +20,8 @@ contract LayerZeroAdapterTest is Test {
     uint256 originChainId
   ) {
     vm.assume(baseGasLimit < 1 ether);
-    vm.assume(crossChainController != address(0));
-    vm.assume(lzEndpoint != address(0));
+    _assumeSafeAddress(crossChainController);
+    _assumeSafeAddress(lzEndpoint);
     vm.assume(originForwarder != address(0));
     vm.assume(originChainId > 0);
 
@@ -150,7 +150,8 @@ contract LayerZeroAdapterTest is Test {
     address crossChainController,
     address lzEndpoint,
     address originForwarder,
-    uint256 baseGasLimit
+    uint256 baseGasLimit,
+    address caller
   )
     public
     setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
@@ -162,6 +163,8 @@ contract LayerZeroAdapterTest is Test {
     });
     bytes memory payload = abi.encode('test message');
 
+    vm.assume(caller != lzEndpoint);
+    hoax(caller);
     vm.expectRevert(bytes(Errors.CALLER_NOT_LZ_ENDPOINT));
     layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
   }
@@ -225,6 +228,11 @@ contract LayerZeroAdapterTest is Test {
 
     bytes memory payload = abi.encode('test message');
 
+    vm.mockCall(
+      lzEndpoint,
+      abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
+      abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
+    );
     vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
     (bool success, ) = address(layerZeroAdapter).delegatecall(
       abi.encodeWithSelector(
