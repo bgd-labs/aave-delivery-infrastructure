@@ -47,7 +47,7 @@ contract Ethereum is BaseSetCCRAdapters {
 
   function getReceiverBridgeAdaptersToAllow(
     DeployerHelpers.Addresses memory addresses
-  ) public pure override returns (address[] memory) {
+  ) public pure virtual override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](4);
     receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
     receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
@@ -97,7 +97,7 @@ contract Avalanche is BaseSetCCRAdapters {
 
   function getReceiverBridgeAdaptersToAllow(
     DeployerHelpers.Addresses memory addresses
-  ) public pure override returns (address[] memory) {
+  ) public pure virtual override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](3);
     receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
     receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
@@ -288,18 +288,55 @@ contract Scroll is BaseSetCCRAdapters {
   }
 }
 
+contract Celo is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.ETHEREUM;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](3);
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    receiverBridgeAdaptersToAllow[1] = addresses.hlAdapter;
+    receiverBridgeAdaptersToAllow[2] = addresses.wormholeAdapter;
+    //    receiverBridgeAdaptersToAllow[2] = addresses.ccipAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
+}
+
 contract Ethereum_testnet is Ethereum {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
   }
 
   function getChainIds() public pure override returns (uint256[] memory) {
-    uint256[] memory chainIds = new uint256[](3);
+    uint256[] memory chainIds = new uint256[](1);
     chainIds[0] = TestNetChainIds.POLYGON_MUMBAI;
-    chainIds[1] = TestNetChainIds.AVALANCHE_FUJI;
-    chainIds[2] = TestNetChainIds.BNB_TESTNET;
+    //    chainIds[0] = TestNetChainIds.AVALANCHE_FUJI;
+    //    chainIds[2] = TestNetChainIds.BNB_TESTNET;
 
     return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+    //    receiverBridgeAdaptersToAllow[3] = addresses.polAdapter;
+
+    return receiverBridgeAdaptersToAllow;
   }
 }
 
@@ -315,17 +352,17 @@ contract Polygon_testnet is Polygon {
     return chainIds;
   }
 
-  //  function getReceiverBridgeAdaptersToAllow(
-  //    DeployerHelpers.Addresses memory addresses
-  //  ) public pure override returns (address[] memory) {
-  //    address[] memory receiverBridgeAdaptersToAllow = new address[](3);
-  //    //    receiverBridgeAdaptersToAllow[0] = addresses.polAdapter;
-  //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
-  //    receiverBridgeAdaptersToAllow[1] = addresses.lzAdapter;
-  //    receiverBridgeAdaptersToAllow[2] = addresses.hlAdapter;
-  //
-  //    return receiverBridgeAdaptersToAllow;
-  //  }
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    //    receiverBridgeAdaptersToAllow[0] = addresses.polAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
 }
 
 contract Avalanche_testnet is Avalanche {
@@ -338,6 +375,18 @@ contract Avalanche_testnet is Avalanche {
     chainIds[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
 
     return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    //    receiverBridgeAdaptersToAllow[0] = addresses.polAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.ccipAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.lzAdapter;
+    //    receiverBridgeAdaptersToAllow[0] = addresses.hlAdapter;
+
+    return receiverBridgeAdaptersToAllow;
   }
 }
 
@@ -445,6 +494,28 @@ contract Scroll_testnet is BaseSetCCRAdapters {
   ) public pure override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
     receiverBridgeAdaptersToAllow[0] = addresses.scrollAdapter;
+
+    return receiverBridgeAdaptersToAllow;
+  }
+}
+
+contract Celo_testnet is BaseSetCCRAdapters {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
+  }
+
+  function getChainIds() public pure virtual override returns (uint256[] memory) {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
+
+    return chainIds;
+  }
+
+  function getReceiverBridgeAdaptersToAllow(
+    DeployerHelpers.Addresses memory addresses
+  ) public pure override returns (address[] memory) {
+    address[] memory receiverBridgeAdaptersToAllow = new address[](1);
+    receiverBridgeAdaptersToAllow[0] = addresses.wormholeAdapter;
 
     return receiverBridgeAdaptersToAllow;
   }

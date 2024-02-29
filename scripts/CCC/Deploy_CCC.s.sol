@@ -146,6 +146,16 @@ contract Scroll is BaseCCCNetworkDeployment {
   }
 }
 
+contract Celo is BaseCCCNetworkDeployment {
+  function CL_EMERGENCY_ORACLE() public pure override returns (address) {
+    return 0x91b21900E91CD302EBeD05E45D8f270ddAED944d;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
+  }
+}
+
 contract Ethereum_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
@@ -166,13 +176,13 @@ contract Avalanche_testnet is BaseCCCNetworkDeployment {
 
 contract Arbitrum_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ARBITRUM_GOERLI;
+    return TestNetChainIds.ARBITRUM_SEPOLIA;
   }
 }
 
 contract Optimism_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.OPTIMISM_GOERLI;
+    return TestNetChainIds.OPTIMISM_SEPOLIA;
   }
 }
 
@@ -190,7 +200,7 @@ contract Binance_testnet is BaseCCCNetworkDeployment {
 
 contract Base_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.BASE_GOERLI;
+    return TestNetChainIds.BASE_SEPOLIA;
   }
 }
 
@@ -203,5 +213,11 @@ contract Gnosis_testnet is BaseCCCNetworkDeployment {
 contract Scroll_testnet is BaseCCCNetworkDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+}
+
+contract Celo_testnet is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
   }
 }

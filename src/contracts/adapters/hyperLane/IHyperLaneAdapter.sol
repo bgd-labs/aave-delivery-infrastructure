@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IMailbox} from 'hyperlane-monorepo/interfaces/IMailbox.sol';
-import {IInterchainGasPaymaster} from 'hyperlane-monorepo/interfaces/IInterchainGasPaymaster.sol';
+import {IMailbox} from './interfaces/IMailbox.sol';
 
 /**
  * @title IHyperLaneAdapter
@@ -15,10 +14,4 @@ interface IHyperLaneAdapter {
    * @return the address of the HyperLane Mail Box
    */
   function HL_MAIL_BOX() external view returns (IMailbox);
-
-  /**
-   * @notice method to get the current IGP address
-   * @return the address of the HyperLane IGP
-   */
-  function IGP() external view returns (IInterchainGasPaymaster);
 }
