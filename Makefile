@@ -147,7 +147,7 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,gnosis)
+	$(call deploy_fn,InitialDeployments,arbitrum)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
