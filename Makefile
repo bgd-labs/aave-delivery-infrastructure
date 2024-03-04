@@ -147,11 +147,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,celo)
+	$(call deploy_fn,InitialDeployments,gnosis)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,celo)
+	$(call deploy_fn,CCC/Deploy_CCC,gnosis)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -159,11 +159,11 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,celo)
+	$(call deploy_fn,Adapters/DeployLZ,gnosis)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,celo)
+	$(call deploy_fn,Adapters/DeployHL,gnosis)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
@@ -177,6 +177,9 @@ deploy-wormhole-adapters-test:
 
 deploy-polygon-adapters-test:
 	$(call deploy_fn,Adapters/DeployPolygon,polygon)
+
+deploy-gnosis-adapters:
+	$(call deploy_fn,Adapters/DeployGnosisChain,gnosis)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
