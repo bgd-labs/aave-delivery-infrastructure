@@ -18,7 +18,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 custom_ethereum := --with-gas-price 10000000000 # 53 gwei
-custom_polygon :=  --with-gas-price 130000000000 # 560 gwei
+custom_polygon :=  --with-gas-price 260000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
@@ -42,7 +42,7 @@ endef
 
 # catapulta
 #define deploy_single_fn
-#npx catapulta@0.3.8 script \
+#npx catapulta@0.3.11 script \
 # scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
 # --network $(2) --slow --skip-git \
 # $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
@@ -209,11 +209,11 @@ set-ccf-sender-adapters-test:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum polygon)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,metis)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum polygon)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,polygon avalanche binance arbitrum optimism base gnosis scroll celo metis)
 
 # Funds CCC
 fund-crosschain-test:
@@ -244,7 +244,7 @@ send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,ethereum)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,polygon)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum)

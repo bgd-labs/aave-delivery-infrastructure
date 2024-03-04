@@ -76,6 +76,12 @@ contract Celo is BaseMockDestination {
   }
 }
 
+contract Scroll is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return ChainIds.SCROLL;
+  }
+}
+
 contract Ethereum_testnet is BaseMockDestination {
   function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
