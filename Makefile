@@ -17,7 +17,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 10000000000 # 53 gwei
+custom_ethereum := --with-gas-price 72000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 260000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
@@ -165,7 +165,7 @@ deploy-cross-chain-infra-test:
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployCCIP,binance)
+	$(call deploy_fn,Adapters/DeployCCIP,ethereum)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
@@ -238,7 +238,7 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum polygon)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
@@ -257,3 +257,6 @@ deploy_mock_ccc:
 
 send-message-via-adapter:
 	$(call deploy_fn,helpers/Send_Message_Via_Adapter,ethereum)
+
+send-message-via-adapter:
+	$(call deploy_fn,CCC/UpdateCCC,ethereum)

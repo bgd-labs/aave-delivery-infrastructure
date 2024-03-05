@@ -28,4 +28,7 @@ contract CrossChainController is ICrossChainController, BaseCrossChainController
       sendersToApprove
     );
   }
+
+  /// @inheritdoc ICrossChainController
+  function initializeRevision() external reinitializer(2) {}
 }

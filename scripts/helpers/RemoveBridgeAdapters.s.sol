@@ -22,9 +22,9 @@ abstract contract BaseRemoveBridgeAdapters is BaseScript {
     ICrossChainForwarder(addresses.crossChainController).disableBridgeAdapters(
       getBridgeAdaptersToDisable()
     );
-    ICrossChainReceiver(addresses.crossChainController).disallowReceiverBridgeAdapters(
-      getReceiverBridgeAdaptersToDisallow()
-    );
+    //    ICrossChainReceiver(addresses.crossChainController).disallowReceiverBridgeAdapters(
+    //      getReceiverBridgeAdaptersToDisallow()
+    //    );
   }
 }
 
@@ -43,19 +43,19 @@ contract Ethereum is BaseRemoveBridgeAdapters {
     chainIds[0] = ChainIds.CELO;
 
     ICrossChainForwarder.BridgeAdapterToDisable[]
-      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](3);
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
     bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
       bridgeAdapter: 0xFf8C72bE9bE0Fe889e04BBFdA7D83f78dE7A5E64,
       chainIds: chainIds
     });
-    bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0x4d47404219Ec63dc2e8100D8D09aD918f063E66B,
-      chainIds: chainIds
-    });
-    bridgeAdapters[2] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0x4CC5C07a079A7E67298D498459Fc88Dbb39f2297,
-      chainIds: chainIds
-    });
+    //    bridgeAdapters[1] = ICrossChainForwarder.BridgeAdapterToDisable({
+    //      bridgeAdapter: 0x4d47404219Ec63dc2e8100D8D09aD918f063E66B,
+    //      chainIds: chainIds
+    //    });
+    //    bridgeAdapters[2] = ICrossChainForwarder.BridgeAdapterToDisable({
+    //      bridgeAdapter: 0x4CC5C07a079A7E67298D498459Fc88Dbb39f2297,
+    //      chainIds: chainIds
+    //    });
     return bridgeAdapters;
   }
 
