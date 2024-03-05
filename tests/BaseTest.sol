@@ -2,7 +2,14 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
+import {ChainIds} from '../src/contracts/libs/ChainIds.sol';
 import {Transaction, EncodedTransaction, Envelope, EncodedEnvelope} from '../src/contracts/libs/EncodingUtils.sol';
+import {ICrossChainForwarder} from '../src/contracts/interfaces/ICrossChainForwarder.sol';
+import {ICrossChainReceiver} from '../src/contracts/interfaces/ICrossChainReceiver.sol';
+import {CrossChainController, ICrossChainController} from '../src/contracts/CrossChainController.sol';
+import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../src/contracts/CrossChainControllerWithEmergencyMode.sol';
+import {IEmergencyConsumer} from '../src/contracts/emergency/interfaces/IEmergencyConsumer.sol';
+import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmergencyOracle.sol';
 
 contract BaseTest is Test {
   bytes internal constant MESSAGE = bytes('this is the message to send');
@@ -40,6 +47,47 @@ contract BaseTest is Test {
     uint256 destinationChainId;
     uint256 transactionNonce;
     uint256 envelopeNonce;
+  }
+
+  modifier generateEmergencyState(address ccc) {
+    address clEmergencyOracle = IEmergencyConsumer(ccc).getChainlinkEmergencyOracle();
+    (, int256 answer, , , ) = ICLEmergencyOracle(clEmergencyOracle).latestRoundData();
+    vm.mockCall(
+      clEmergencyOracle,
+      abi.encodeWithSelector(ICLEmergencyOracle.latestRoundData.selector),
+      abi.encode(uint80(2), int256(answer + 1), block.timestamp - 5, block.timestamp - 5, uint80(2))
+    );
+    _;
+  }
+
+  modifier validateEmergencySolved(address ccc) {
+    _;
+    address clEmergencyOracle = IEmergencyConsumer(ccc).getChainlinkEmergencyOracle();
+    (, int256 answer, , , ) = ICLEmergencyOracle(clEmergencyOracle).latestRoundData();
+
+    uint256 emergencyCount = IEmergencyConsumer(ccc).getEmergencyCount();
+
+    assertEq(emergencyCount, uint256(answer));
+  }
+
+  modifier generateRetryTxState(
+    address cccOwner,
+    address ccc,
+    uint256 destinationChainId,
+    address destination,
+    uint256 gasLimit
+  ) {
+    // set caller as an approved sender
+    address[] memory senders = new address[](1);
+    senders[0] = address(this);
+
+    vm.startPrank(cccOwner);
+    ICrossChainForwarder(ccc).approveSenders(senders);
+    vm.stopPrank();
+
+    // call forward message
+    ICrossChainForwarder(ccc).forwardMessage(destinationChainId, destination, gasLimit, MESSAGE);
+    _;
   }
 
   function _generateExtendedTransaction(
