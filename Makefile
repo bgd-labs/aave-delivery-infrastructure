@@ -214,9 +214,12 @@ deploy-lido-emergency-registry-test:
 deploy-lido-proxy-factory-test:
 	$(call deploy_fn,Lido/InitialDeployments,ethereum polygon binance)
 
+write-lido-json-addresses :; forge script scripts/Lido/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
+
 deploy-lido-testnet:
 	make deploy-lido-emergency-registry-test
 	make deploy-lido-proxy-factory-test
+	make write-lido-json-addresses
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------

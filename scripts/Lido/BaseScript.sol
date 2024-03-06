@@ -25,6 +25,7 @@ library DeployerHelpers {
     address crossChainControllerImpl;
     address emergencyRegistry;
     address guardian;
+    address hlAdapter;
     address lzAdapter;
     address mockDestination;
     address owner;
@@ -71,6 +72,7 @@ library DeployerHelpers {
       ccipAdapter: abi.decode(persistedJson.parseRaw('.ccipAdapter'), (address)),
       chainId: abi.decode(persistedJson.parseRaw('.chainId'), (uint256)),
       emergencyRegistry: abi.decode(persistedJson.parseRaw('.emergencyRegistry'), (address)),
+      hlAdapter : abi.decode(persistedJson.parseRaw('.hlAdapter'), (address)),
       lzAdapter: abi.decode(persistedJson.parseRaw('.lzAdapter'), (address)),
       polAdapter: abi.decode(persistedJson.parseRaw('.polAdapter'), (address)),
       mockDestination: abi.decode(persistedJson.parseRaw('.mockDestination'), (address))
@@ -89,6 +91,7 @@ library DeployerHelpers {
     json.serialize('crossChainControllerImpl', addresses.crossChainControllerImpl);
     json.serialize('emergencyRegistry', addresses.emergencyRegistry);
     json.serialize('guardian', addresses.guardian);
+    json.serialize('hlAdapter', addresses.hlAdapter);
     json.serialize('lzAdapter', addresses.lzAdapter);
     json.serialize('mockDestination', addresses.mockDestination);
     json.serialize('owner', addresses.owner);
