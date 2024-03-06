@@ -211,8 +211,12 @@ deploy-full-test:
 deploy-lido-emergency-registry-test:
 	$(call deploy_fn,Lido/Deploy_EmergencyRegistry,ethereum)
 
+deploy-lido-proxy-factory-test:
+	$(call deploy_fn,Lido/InitialDeployments,ethereum polygon binance)
+
 deploy-lido-testnet:
 	make deploy-lido-emergency-registry-test
+	make deploy-lido-proxy-factory-test
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------

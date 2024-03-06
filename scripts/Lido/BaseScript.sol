@@ -4,8 +4,9 @@ pragma solidity ^0.8.0;
 import 'forge-std/Script.sol';
 import 'forge-std/Vm.sol';
 import 'forge-std/StdJson.sol';
-import {TestNetChainIds} from './contract_extensions/TestNetChainIds.sol';
-import {ChainIds} from '../src/contracts/libs/ChainIds.sol';
+
+import {TestNetChainIds} from '../contract_extensions/TestNetChainIds.sol';
+import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 
 struct Network {
   string path;
@@ -72,7 +73,7 @@ library DeployerHelpers {
       emergencyRegistry: abi.decode(persistedJson.parseRaw('.emergencyRegistry'), (address)),
       lzAdapter: abi.decode(persistedJson.parseRaw('.lzAdapter'), (address)),
       polAdapter: abi.decode(persistedJson.parseRaw('.polAdapter'), (address)),
-      mockDestination: abi.decode(persistedJson.parseRaw('.mockDestination'), (address)),
+      mockDestination: abi.decode(persistedJson.parseRaw('.mockDestination'), (address))
     });
 
     return addresses;
@@ -93,7 +94,7 @@ library DeployerHelpers {
     json.serialize('owner', addresses.owner);
     json.serialize('polAdapter', addresses.polAdapter);
     json.serialize('proxyAdmin', addresses.proxyAdmin);
-    json.serialize('proxyFactory', addresses.proxyFactory);
+    json = json.serialize('proxyFactory', addresses.proxyFactory);
     vm.writeJson(json, path);
   }
 }
