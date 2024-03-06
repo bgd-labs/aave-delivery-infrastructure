@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
 
 import {EmergencyRegistry} from '../../src/contracts/emergency/EmergencyRegistry.sol';
-import '../BaseScript.sol';
+import './BaseScript.sol';
 
 abstract contract BaseDeployEmergencyMode is BaseScript {
   function getOwner() public view virtual returns (address) {
