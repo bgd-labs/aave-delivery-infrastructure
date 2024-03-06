@@ -205,7 +205,14 @@ deploy-full-test:
 		make fund-crosschain-test
 		make write-json-addresses
 
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------- LIDO TESTNET DEPLOYMENT SCRIPTS ---------------------------------------------
 
+deploy-lido-emergency-registry-test:
+	$(call deploy_fn,Lido/Deploy_EmergencyRegistry,ethereum)
+
+deploy-lido-testnet:
+	make deploy-lido-emergency-registry-test
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
@@ -229,3 +236,4 @@ deploy_mock_ccc:
 
 send-message-via-adapter:
 	$(call deploy_fn,helpers/Send_Message_Via_Adapter,ethereum)
+
