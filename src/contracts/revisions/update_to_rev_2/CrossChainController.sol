@@ -5,11 +5,12 @@ import {CrossChainController} from '../../CrossChainController.sol';
 import {IReinitialize} from './IReinitialize.sol';
 
 /**
- * @title CrossChainControllerRev2
+ * @title CrossChainControllerUpgradeRev2
  * @author BGD Labs
  * @notice CrossChainController Revision 2. Contract inheriting from CrossChainController with the addition of re initialization method
+ * @dev reinitializer is not used on parent CrossChainController, so this contract is needed to be able to initialize CCC with a new implementation
  */
-contract CrossChainControllerRev2 is CrossChainController, IReinitialize {
+contract CrossChainControllerUpgradeRev2 is CrossChainController, IReinitialize {
   /// @inheritdoc IReinitialize
   function initializeRevision() external reinitializer(2) {}
 }

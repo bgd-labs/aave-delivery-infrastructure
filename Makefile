@@ -205,7 +205,7 @@ deploy-base-adapters-test:
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
-	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
+	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,avalanche)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
