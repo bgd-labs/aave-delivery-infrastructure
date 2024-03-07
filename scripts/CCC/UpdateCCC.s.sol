@@ -2,8 +2,8 @@
 pragma solidity ^0.8.0;
 
 import '../BaseScript.sol';
-import {CrossChainController, ICrossChainController} from '../../src/contracts/CrossChainController.sol';
-import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../../src/contracts/CrossChainControllerWithEmergencyMode.sol';
+import {CrossChainControllerRev2, ICrossChainControllerRev2} from '../../src/contracts/revisions/CrossChainController_Revision_2.sol';
+import {CrossChainControllerWithEmergencyModeRev2} from '../../src/contracts/revisions/CrossChainControllerWithEmergencyMode_Revision_2.sol';
 import {TransparentUpgradeableProxy} from 'solidity-utils/contracts/transparent-proxy/TransparentUpgradeableProxy.sol';
 import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
 import {ProxyAdmin} from 'solidity-utils/contracts/transparent-proxy/ProxyAdmin.sol';
@@ -18,10 +18,10 @@ abstract contract BaseCCCUpdate is BaseScript {
 
     // if address is 0 means that ccc will not be emergency consumer
     if (CL_EMERGENCY_ORACLE() == address(0)) {
-      crossChainControllerImpl = address(new CrossChainController());
+      crossChainControllerImpl = address(new CrossChainControllerRev2());
     } else {
       crossChainControllerImpl = address(
-        new CrossChainControllerWithEmergencyMode(CL_EMERGENCY_ORACLE())
+        new CrossChainControllerWithEmergencyModeRev2(CL_EMERGENCY_ORACLE())
       );
 
       addresses.clEmergencyOracle = CL_EMERGENCY_ORACLE();
@@ -30,7 +30,7 @@ abstract contract BaseCCCUpdate is BaseScript {
     ProxyAdmin(addresses.proxyAdmin).upgradeAndCall(
       TransparentUpgradeableProxy(payable(addresses.crossChainController)),
       crossChainControllerImpl,
-      abi.encodeWithSelector(ICrossChainController.initializeRevision.selector)
+      abi.encodeWithSelector(ICrossChainControllerRev2.initializeRevision.selector)
     );
 
     addresses.crossChainControllerImpl = crossChainControllerImpl;

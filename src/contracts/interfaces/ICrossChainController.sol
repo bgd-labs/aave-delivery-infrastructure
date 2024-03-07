@@ -26,9 +26,4 @@ interface ICrossChainController is IBaseCrossChainController {
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     address[] memory sendersToApprove
   ) external;
-
-  /**
-   * @notice method called to re initialize the proxy
-   */
-  function initializeRevision() external;
 }

@@ -17,7 +17,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 72000000000 # 53 gwei
+custom_ethereum := --with-gas-price 48000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 260000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
@@ -161,7 +161,7 @@ deploy-proxy-factory-test:
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,scroll)
+	$(call deploy_fn,CCC/Deploy_CCC,ethereum)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -169,39 +169,39 @@ deploy-ccip-bridge-adapters-test:
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,gnosis)
+	$(call deploy_fn,Adapters/DeployLZ,ethereum)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,gnosis)
+	$(call deploy_fn,Adapters/DeployHL,ethereum)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
 	$(call deploy_fn,Adapters/DeploySameChainAdapter,ethereum)
 
 deploy-scroll-adapters-test:
-	$(call deploy_fn,Adapters/DeployScrollAdapter,scroll)
+	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum)
 
 deploy-wormhole-adapters-test:
-	$(call deploy_fn,Adapters/DeployWormholeAdapter,celo)
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum)
 
 deploy-polygon-adapters-test:
-	$(call deploy_fn,Adapters/DeployPolygon,polygon)
+	$(call deploy_fn,Adapters/DeployPolygon,ethereum)
 
 deploy-gnosis-adapters-test:
-	$(call deploy_fn,Adapters/DeployGnosisChain,gnosis)
+	$(call deploy_fn,Adapters/DeployGnosisChain,ethereum)
 
 deploy-arbitrum-adapters-test:
-	$(call deploy_fn,Adapters/DeployArbAdapter,arbitrum)
+	$(call deploy_fn,Adapters/DeployArbAdapter,ethereum)
 
 deploy-optimism-adapters-test:
-	$(call deploy_fn,Adapters/DeployOpAdapter,optimism)
+	$(call deploy_fn,Adapters/DeployOpAdapter,ethereum)
 
 deploy-metis-adapters-test:
-	$(call deploy_fn,Adapters/DeployMetisAdapter,metis)
+	$(call deploy_fn,Adapters/DeployMetisAdapter,ethereum)
 
 deploy-base-adapters-test:
-	$(call deploy_fn,Adapters/DeployCBaseAdapter,base)
+	$(call deploy_fn,Adapters/DeployCBaseAdapter,ethereum)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
