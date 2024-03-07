@@ -2,11 +2,11 @@
 pragma solidity ^0.8.0;
 
 /**
- * @title ICrossChainControllerRev2
+ * @title IReinitialize
  * @author BGD Labs
  * @notice interface containing re initialization method
  */
-interface ICrossChainControllerRev2 {
+interface IReinitialize {
   /**
    * @notice method called to re initialize the proxy
    */

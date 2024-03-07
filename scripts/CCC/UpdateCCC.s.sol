@@ -2,8 +2,8 @@
 pragma solidity ^0.8.0;
 
 import '../BaseScript.sol';
-import {CrossChainControllerRev2, ICrossChainControllerRev2} from '../../src/contracts/revisions/CrossChainController_Revision_2.sol';
-import {CrossChainControllerWithEmergencyModeRev2} from '../../src/contracts/revisions/CrossChainControllerWithEmergencyMode_Revision_2.sol';
+import {CrossChainControllerRev2, IReinitialize} from '../../src/contracts/revisions/update_to_rev_2/CrossChainController.sol';
+import {CrossChainControllerWithEmergencyModeRev2} from '../../src/contracts/revisions/update_to_rev_2/CrossChainControllerWithEmergencyMode.sol';
 import {TransparentUpgradeableProxy} from 'solidity-utils/contracts/transparent-proxy/TransparentUpgradeableProxy.sol';
 import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
 import {ProxyAdmin} from 'solidity-utils/contracts/transparent-proxy/ProxyAdmin.sol';
@@ -30,7 +30,7 @@ abstract contract BaseCCCUpdate is BaseScript {
     ProxyAdmin(addresses.proxyAdmin).upgradeAndCall(
       TransparentUpgradeableProxy(payable(addresses.crossChainController)),
       crossChainControllerImpl,
-      abi.encodeWithSelector(ICrossChainControllerRev2.initializeRevision.selector)
+      abi.encodeWithSelector(IReinitialize.initializeRevision.selector)
     );
 
     addresses.crossChainControllerImpl = crossChainControllerImpl;

@@ -17,7 +17,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 48000000000 # 53 gwei
+custom_ethereum := --with-gas-price 45000000000 # 53 gwei
 custom_polygon :=  --with-gas-price 260000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
@@ -205,15 +205,15 @@ deploy-base-adapters-test:
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
-	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum polygon)
+	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,metis)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,polygon avalanche binance arbitrum optimism base gnosis scroll celo metis)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum)
 
 # Funds CCC
 fund-crosschain-test:
@@ -258,5 +258,5 @@ deploy_mock_ccc:
 send-message-via-adapter:
 	$(call deploy_fn,helpers/Send_Message_Via_Adapter,ethereum)
 
-send-message-via-adapter:
+deploy-ccc-revision-and-update:
 	$(call deploy_fn,CCC/UpdateCCC,ethereum)

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {CrossChainControllerWithEmergencyMode} from '../CrossChainControllerWithEmergencyMode.sol';
-import {ICrossChainControllerRev2} from './ICrossChainController_Revision_2.sol';
+import {CrossChainControllerWithEmergencyMode} from '../../CrossChainControllerWithEmergencyMode.sol';
+import {IReinitialize} from './IReinitialize.sol';
 
 /**
  * @title CrossChainControllerWithEmergencyModeRev2
@@ -11,10 +11,10 @@ import {ICrossChainControllerRev2} from './ICrossChainController_Revision_2.sol'
  */
 contract CrossChainControllerWithEmergencyModeRev2 is
   CrossChainControllerWithEmergencyMode,
-  ICrossChainControllerRev2
+  IReinitialize
 {
   constructor(address clEmergencyOracle) CrossChainControllerWithEmergencyMode(clEmergencyOracle) {}
 
-  /// @inheritdoc ICrossChainControllerRev2
+  /// @inheritdoc IReinitialize
   function initializeRevision() external reinitializer(2) {}
 }
