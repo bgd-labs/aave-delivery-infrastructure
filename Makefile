@@ -266,6 +266,12 @@ deploy-lido-testnet:
 	make write-lido-json-addresses
 
 # ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------- LIDO HELPER SCRIPTS --------------------------------------------------------
+
+deploy-lido-mock-destination:
+	$(call deploy_fn,Lido/helpers/Deploy_Mock_destination,ethereum polygon binance)
+
+# ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
 	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum polygon)
