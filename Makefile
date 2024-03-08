@@ -217,12 +217,16 @@ deploy-lido-proxy-factory-test:
 deploy-lido-cross-chain-infra-test:
 	$(call deploy_fn,Lido/CCC/Deploy_CCC,ethereum polygon binance)
 
+deploy-lido-ccip-bridge-adapters-test:
+	$(call deploy_fn,Lido/Adapters/DeployCCIP,binance)
+
 write-lido-json-addresses :; forge script scripts/Lido/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
 
 deploy-lido-testnet:
 	make deploy-lido-emergency-registry-test
 	make deploy-lido-proxy-factory-test
 	make deploy-lido-cross-chain-infra-test
+	make deploy-lido-ccip-bridge-adapters-test
 	make write-lido-json-addresses
 
 # ----------------------------------------------------------------------------------------------------------------------
