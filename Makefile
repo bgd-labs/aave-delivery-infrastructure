@@ -18,7 +18,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 custom_ethereum := --with-gas-price 55000000000 # 53 gwei
-custom_polygon :=  --with-gas-price 130000000000 # 560 gwei
+custom_polygon :=  --with-gas-price 170000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
@@ -31,24 +31,24 @@ custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 #  to define custom params per network add vars custom_network-name
 #  to use ledger, set LEDGER=true to env
 #  default to testnet deployment, to run production, set PROD=true to env
-define deploy_single_fn
-forge script \
- scripts/$(1).s.sol:$(if $(3),$(if $(PROD),$(3),$(3)_testnet),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
- --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify -vvvv \
- $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
- $(custom_$(if $(PROD),$(2),$(2)-testnet))
-
-endef
-
-# catapulta
 #define deploy_single_fn
-#npx catapulta@0.3.11 script \
-# scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
-# --network $(2) --slow --skip-git \
+#forge script \
+# scripts/$(1).s.sol:$(if $(3),$(if $(PROD),$(3),$(3)_testnet),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
+# --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify -vvvv \
 # $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
 # $(custom_$(if $(PROD),$(2),$(2)-testnet))
 #
 #endef
+
+# catapulta
+define deploy_single_fn
+npx catapulta@0.3.14 script \
+ scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
+ --network $(2) --slow --skip-git \
+ $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
+ $(custom_$(if $(PROD),$(2),$(2)-testnet))
+
+endef
 
 define deploy_fn
  $(foreach network,$(2),$(call deploy_single_fn,$(1),$(network),$(3)))
@@ -165,43 +165,43 @@ deploy-cross-chain-infra-test:
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployCCIP,ethereum)
+	$(call deploy_fn,Adapters/DeployCCIP,binance)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployLZ,ethereum)
+	$(call deploy_fn,Adapters/DeployLZ,celo avalanche gnosis)
 
 ## Deploy HyperLane bridge adapters on all networks
 deploy-hl-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployHL,ethereum)
+	$(call deploy_fn,Adapters/DeployHL,celo)
 
 ## Deploy SameChain adapters on ethereum
 deploy-same-chain-adapters-test:
 	$(call deploy_fn,Adapters/DeploySameChainAdapter,ethereum)
 
 deploy-scroll-adapters-test:
-	$(call deploy_fn,Adapters/DeployScrollAdapter,ethereum)
+	$(call deploy_fn,Adapters/DeployScrollAdapter,scroll)
 
 deploy-wormhole-adapters-test:
-	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum)
+	$(call deploy_fn,Adapters/DeployWormholeAdapter,celo)
 
 deploy-polygon-adapters-test:
-	$(call deploy_fn,Adapters/DeployPolygon,ethereum)
+	$(call deploy_fn,Adapters/DeployPolygon,polygon)
 
 deploy-gnosis-adapters-test:
-	$(call deploy_fn,Adapters/DeployGnosisChain,ethereum)
+	$(call deploy_fn,Adapters/DeployGnosisChain,gnosis)
 
 deploy-arbitrum-adapters-test:
-	$(call deploy_fn,Adapters/DeployArbAdapter,ethereum)
+	$(call deploy_fn,Adapters/DeployArbAdapter,arbitrum)
 
 deploy-optimism-adapters-test:
-	$(call deploy_fn,Adapters/DeployOpAdapter,ethereum)
+	$(call deploy_fn,Adapters/DeployOpAdapter,optimism)
 
 deploy-metis-adapters-test:
-	$(call deploy_fn,Adapters/DeployMetisAdapter,ethereum)
+	$(call deploy_fn,Adapters/DeployMetisAdapter,metis)
 
 deploy-base-adapters-test:
-	$(call deploy_fn,Adapters/DeployCBaseAdapter,ethereum)
+	$(call deploy_fn,Adapters/DeployCBaseAdapter,base)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
