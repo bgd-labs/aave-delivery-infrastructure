@@ -227,7 +227,13 @@ deploy-lido-hl-bridge-adapters:
 	$(call deploy_fn,Lido/Adapters/DeployHL,ethereum polygon binance)
 
 deploy-lido-polygon-adapters:
-	$(call deploy_fn,Lido/Adapters/DeployPolygon,ethereum)
+	$(call deploy_fn,Lido/Adapters/DeployPolygon,ethereum poplygon)
+
+deploy-lido-wormhole-adapters:
+	$(call deploy_fn,Lido/Adapters/DeployWormholeAdapter,ethereum polygon binance)
+
+set-lido-ccf-approved-senders:
+	$(call deploy_fn,Lido/CCC/Set_CCF_Sender_Adapters,ethereum)
 
 write-lido-json-addresses :; forge script scripts/Lido/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
 
@@ -239,6 +245,8 @@ deploy-lido-testnet:
 	make deploy-lido-lz-bridge-adapters-test
 	make deploy-lido-hl-bridge-adapters
 	# make deploy-lido-polygon-adapters
+	# make deploy-lido-wormhole-adapters
+	make set-lido-ccf-approved-senders
 	make write-lido-json-addresses
 
 # ----------------------------------------------------------------------------------------------------------------------

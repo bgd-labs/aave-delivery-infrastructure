@@ -38,6 +38,8 @@ contract WormholeAdapterTestnet is WormholeAdapter {
       return TestNetChainIds.ETHEREUM_SEPOLIA;
     } else if (nativeChainId == 14) {
       return TestNetChainIds.CELO_ALFAJORES;
+    } else if (nativeChainId == 4) {
+      return TestNetChainIds.BNB_TESTNET;
     } else {
       return 0;
     }
@@ -49,6 +51,8 @@ contract WormholeAdapterTestnet is WormholeAdapter {
       return 10002;
     } else if (infraChainId == TestNetChainIds.CELO_ALFAJORES) {
       return 14;
+    } else if (infraChainId == TestNetChainIds.BNB_TESTNET) {
+      return 4;
     } else {
       return 0;
     }

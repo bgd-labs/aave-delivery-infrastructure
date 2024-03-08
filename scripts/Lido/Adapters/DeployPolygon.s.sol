@@ -73,6 +73,8 @@ contract Polygon is BasePolygonAdapter {
 
 // careful as this is deployed on goerli
 contract Ethereum_testnet is BasePolygonAdapter {
+  function FX_TUNNEL() public pure override returns (address) {}
+
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_GOERLI;
   }
@@ -100,6 +102,8 @@ contract Ethereum_testnet is BasePolygonAdapter {
 
 // careful as the path is with goerli
 contract Polygon_testnet is BasePolygonAdapter {
+  function FX_TUNNEL() public pure override returns (address) {}
+
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.POLYGON_MUMBAI;
   }
