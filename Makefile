@@ -233,6 +233,9 @@ deploy-lido-wormhole-adapters:
 	$(call deploy_fn,Lido/Adapters/DeployWormholeAdapter,ethereum polygon binance)
 
 set-lido-ccf-approved-senders:
+	$(call deploy_fn,Lido/CCC/Set_CCF_Approved_Senders,ethereum)
+
+set-lido-ccf-sender-adapters:
 	$(call deploy_fn,Lido/CCC/Set_CCF_Sender_Adapters,ethereum)
 
 write-lido-json-addresses :; forge script scripts/Lido/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
@@ -247,6 +250,7 @@ deploy-lido-testnet:
 	# make deploy-lido-polygon-adapters
 	# make deploy-lido-wormhole-adapters
 	make set-lido-ccf-approved-senders
+	make set-lido-ccf-sender-adapters
 	make write-lido-json-addresses
 
 # ----------------------------------------------------------------------------------------------------------------------
