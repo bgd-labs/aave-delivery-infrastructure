@@ -28,6 +28,42 @@ abstract contract BaseRemoveBridgeAdapters is BaseScript {
   }
 }
 
+contract Scroll is BaseRemoveBridgeAdapters {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.ETHEREUM;
+  }
+
+  function getBridgeAdaptersToDisable()
+    public
+    pure
+    override
+    returns (ICrossChainForwarder.BridgeAdapterToDisable[] memory)
+  {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.CELO;
+
+    ICrossChainForwarder.BridgeAdapterToDisable[]
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
+    bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+      bridgeAdapter: 0xFf8C72bE9bE0Fe889e04BBFdA7D83f78dE7A5E64,
+      chainIds: chainIds
+    });
+    return bridgeAdapters;
+  }
+
+  function getReceiverBridgeAdaptersToDisallow()
+    public
+    pure
+    override
+    returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory)
+  {
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+      memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0);
+
+    return bridgeAdapters;
+  }
+}
+
 contract Ethereum is BaseRemoveBridgeAdapters {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.ETHEREUM;

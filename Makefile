@@ -17,8 +17,8 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 45000000000 # 53 gwei
-custom_polygon :=  --with-gas-price 260000000000 # 560 gwei
+custom_ethereum := --with-gas-price 55000000000 # 53 gwei
+custom_polygon :=  --with-gas-price 130000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
@@ -241,10 +241,10 @@ remove-bridge-adapters:
 	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum)
 
 send-direct-message:
-	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
+	$(call deploy_fn,helpers/Send_Direct_CCMessage,avalanche)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,polygon)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,ethereum)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum)
