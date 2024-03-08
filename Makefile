@@ -271,6 +271,9 @@ deploy-lido-testnet:
 deploy-lido-mock-destination:
 	$(call deploy_fn,Lido/helpers/Deploy_Mock_destination,ethereum polygon binance)
 
+test-lido-send-message:
+	$(call deploy_fn,Lido/e2e/Send_Message,ethereum)
+
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
