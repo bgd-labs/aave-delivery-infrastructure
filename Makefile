@@ -226,6 +226,9 @@ deploy-lido-lz-bridge-adapters-test:
 deploy-lido-hl-bridge-adapters:
 	$(call deploy_fn,Lido/Adapters/DeployHL,ethereum polygon binance)
 
+deploy-lido-polygon-adapters:
+	$(call deploy_fn,Lido/Adapters/DeployPolygon,ethereum)
+
 write-lido-json-addresses :; forge script scripts/Lido/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
 
 deploy-lido-testnet:
@@ -235,6 +238,7 @@ deploy-lido-testnet:
 	make deploy-lido-ccip-bridge-adapters-test
 	make deploy-lido-lz-bridge-adapters-test
 	make deploy-lido-hl-bridge-adapters
+	# make deploy-lido-polygon-adapters
 	make write-lido-json-addresses
 
 # ----------------------------------------------------------------------------------------------------------------------
