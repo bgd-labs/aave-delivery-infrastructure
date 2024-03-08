@@ -241,6 +241,9 @@ set-lido-ccf-sender-adapters:
 set-lido-ccr-receiver-adapters:
 	$(call deploy_fn,Lido/CCC/Set_CCR_Receivers_Adapters,ethereum polygon binance)
 
+set-lido-ccr-confirmations:
+	$(call deploy_fn,Lido/CCC/Set_CCR_Confirmations,ethereum polygon binance)
+
 write-lido-json-addresses :; forge script scripts/Lido/WriteAddresses.s.sol:WriteDeployedAddresses -vvvv
 
 deploy-lido-testnet:
@@ -255,6 +258,7 @@ deploy-lido-testnet:
 	make set-lido-ccf-approved-senders
 	make set-lido-ccf-sender-adapters
 	make set-lido-ccr-receiver-adapters
+	make set-lido-ccr-confirmations
 	make write-lido-json-addresses
 
 # ----------------------------------------------------------------------------------------------------------------------
