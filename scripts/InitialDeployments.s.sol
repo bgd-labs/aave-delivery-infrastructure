@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
 import {Create3Factory} from 'solidity-utils/contracts/create3/Create3Factory.sol';
-import {AaveMisc} from 'aave-address-book/AaveMisc.sol';
+import {MiscArbitrum, MiscAvalanche, MiscBase, MiscEthereum, MiscOptimism, MiscPolygon, MiscMetis, MiscGnosis, MiscBNB, MiscScroll, MiscPolygonZkEvm} from 'aave-address-book/AaveAddressBook.sol';
 
 import './BaseScript.sol';
 
@@ -29,9 +29,9 @@ abstract contract BaseInitialDeployment is BaseScript {
   }
 
   function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    addresses.create3Factory = CREATE3_FACTORY() == address(0)
-      ? address(new Create3Factory{salt: Constants.CREATE3_FACTORY_SALT}())
-      : CREATE3_FACTORY();
+    //    addresses.create3Factory = CREATE3_FACTORY() == address(0)
+    //      ? address(new Create3Factory{salt: Constants.CREATE3_FACTORY_SALT}())
+    //      : CREATE3_FACTORY();
     addresses.proxyFactory = TRANSPARENT_PROXY_FACTORY() == address(0)
       ? address(new TransparentProxyFactory())
       : TRANSPARENT_PROXY_FACTORY();
@@ -49,16 +49,16 @@ abstract contract BaseInitialDeployment is BaseScript {
 
 contract Ethereum is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_ETHEREUM;
+    return MiscEthereum.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_ETHEREUM;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0xCA76Ebd8617a03126B6FB84F9b1c1A0fB71C2633;
-  }
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_ETHEREUM;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0xCA76Ebd8617a03126B6FB84F9b1c1A0fB71C2633;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.ETHEREUM;
@@ -67,16 +67,16 @@ contract Ethereum is BaseInitialDeployment {
 
 contract Polygon is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_POLYGON;
+    return MiscPolygon.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_POLYGON;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0x1450F2898D6bA2710C98BE9CAF3041330eD5ae58;
-  }
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_POLYGON;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0x1450F2898D6bA2710C98BE9CAF3041330eD5ae58;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.POLYGON;
@@ -85,16 +85,16 @@ contract Polygon is BaseInitialDeployment {
 
 contract Avalanche is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_AVALANCHE;
+    return MiscAvalanche.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_AVALANCHE;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0xa35b76E4935449E33C56aB24b23fcd3246f13470;
-  }
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_AVALANCHE;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0xa35b76E4935449E33C56aB24b23fcd3246f13470;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.AVALANCHE;
@@ -103,16 +103,16 @@ contract Avalanche is BaseInitialDeployment {
 
 contract Optimism is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_OPTIMISM;
+    return MiscOptimism.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_OPTIMISM;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0xE50c8C619d05ff98b22Adf991F17602C774F785c;
-  }
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_OPTIMISM;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0xE50c8C619d05ff98b22Adf991F17602C774F785c;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.OPTIMISM;
@@ -121,16 +121,16 @@ contract Optimism is BaseInitialDeployment {
 
 contract Arbitrum is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_ARBITRUM;
+    return MiscArbitrum.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_ARBITRUM;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0xbbd9f90699c1FA0D7A65870D241DD1f1217c96Eb;
-  }
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_ARBITRUM;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0xbbd9f90699c1FA0D7A65870D241DD1f1217c96Eb;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.ARBITRUM;
@@ -139,16 +139,17 @@ contract Arbitrum is BaseInitialDeployment {
 
 contract Metis is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_METIS;
+    return MiscMetis.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_METIS;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0xF6Db48C5968A9eBCB935786435530f28e32Cc501;
-  }
+  //
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_METIS;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0xF6Db48C5968A9eBCB935786435530f28e32Cc501;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.METIS;
@@ -157,16 +158,16 @@ contract Metis is BaseInitialDeployment {
 
 contract Binance is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_BINANCE;
+    return MiscBNB.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_BINANCE;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0xF6Db48C5968A9eBCB935786435530f28e32Cc501;
-  }
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_BINANCE;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0xF6Db48C5968A9eBCB935786435530f28e32Cc501;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.BNB;
@@ -174,17 +175,17 @@ contract Binance is BaseInitialDeployment {
 }
 
 contract Gnosis is BaseInitialDeployment {
-  //  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-  //    return AaveMisc.TRANSPARENT_PROXY_FACTORY_GNOSIS;
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return MiscGnosis.TRANSPARENT_PROXY_FACTORY;
+  }
+
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return MiscGnosis.PROXY_ADMIN_GNOSIS;
   //  }
-
-  function PROXY_ADMIN() public pure override returns (address) {
-    return 0xe892E40C92c2E4D281Be59b2E6300F271d824E75; //AaveMisc.PROXY_ADMIN_GNOSIS;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0xF163b8698821cefbD33Cf449764d69Ea445cE23D;
-  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0xF163b8698821cefbD33Cf449764d69Ea445cE23D;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.GNOSIS;
@@ -193,26 +194,46 @@ contract Gnosis is BaseInitialDeployment {
 
 contract Base is BaseInitialDeployment {
   function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-    return AaveMisc.TRANSPARENT_PROXY_FACTORY_BASE;
+    return MiscBase.TRANSPARENT_PROXY_FACTORY;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return AaveMisc.PROXY_ADMIN_BASE;
-  }
-
-  function GUARDIAN() public pure override returns (address) {
-    return 0x9e10C0A1Eb8FF6a0AaA53a62C7a338f35D7D9a2A;
-  }
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return MiscBase.PROXY_ADMIN_BASE;
+  //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return 0x9e10C0A1Eb8FF6a0AaA53a62C7a338f35D7D9a2A;
+  //  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.BASE;
   }
 }
 
-contract Zkevm is BaseInitialDeployment {
-  //  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-  //    return AaveMisc.TRANSPARENT_PROXY_FACTORY_ZKEVM;
+contract Scroll is BaseInitialDeployment {
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return MiscScroll.TRANSPARENT_PROXY_FACTORY;
+  }
+
+  //
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return AaveMisc.PROXY_ADMIN_ZKEVM;
   //  }
+  //
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return ;
+  //  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.SCROLL;
+  }
+}
+
+contract Zkevm is BaseInitialDeployment {
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return MiscPolygonZkEvm.TRANSPARENT_PROXY_FACTORY;
+  }
+
   //
   //  function PROXY_ADMIN() public pure override returns (address) {
   //    return AaveMisc.PROXY_ADMIN_ZKEVM;
@@ -232,9 +253,10 @@ contract Celo is BaseInitialDeployment {
     return 0xb172a90A7C238969CE9B27cc19D13b60A91e7F00;
   }
 
-  function PROXY_ADMIN() public pure override returns (address) {
-    return 0x01d678F1bbE148C96e7501F1Ac41661904F84F61;
-  }
+  //
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return 0x01d678F1bbE148C96e7501F1Ac41661904F84F61;
+  //  }
 
   //  function GUARDIAN() public pure override returns (address) {
   //    return;

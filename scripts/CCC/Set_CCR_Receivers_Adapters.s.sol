@@ -282,7 +282,7 @@ contract Scroll is BaseSetCCRAdapters {
     DeployerHelpers.Addresses memory addresses
   ) public pure override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
-    receiverBridgeAdaptersToAllow[0] = addresses.zkevmAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.scrollAdapter;
 
     return receiverBridgeAdaptersToAllow;
   }
