@@ -55,6 +55,7 @@ contract WriteDeployedAddresses is Script {
       json.serialize('owner', addresses.owner);
       json.serialize('polAdapter', addresses.polAdapter);
       json.serialize('proxyAdmin', addresses.proxyAdmin);
+      json.serialize('executor', addresses.executor);
       json = json.serialize('proxyFactory', addresses.proxyFactory);
 
       if (i == networks.length - 1) {

@@ -271,8 +271,14 @@ deploy-lido-testnet:
 deploy-lido-mock-destination:
 	$(call deploy_fn,Lido/helpers/Deploy_Mock_destination,ethereum polygon binance)
 
+deploy-lido-executor:
+	$(call deploy_fn,Lido/helpers/Deploy_Executor,polygon binance)
+
 test-lido-send-message:
 	$(call deploy_fn,Lido/e2e/Send_Message,ethereum)
+
+test-lido-send-message-to-executor:
+	$(call deploy_fn,Lido/e2e/Send_Message_To_Executor,ethereum)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
