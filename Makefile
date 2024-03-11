@@ -17,8 +17,8 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 
-custom_ethereum := --with-gas-price 55000000000 # 53 gwei
-custom_polygon :=  --with-gas-price 170000000000 # 560 gwei
+custom_ethereum := --with-gas-price 45000000000 # 53 gwei
+custom_polygon :=  --with-gas-price 190000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
@@ -31,24 +31,24 @@ custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 #  to define custom params per network add vars custom_network-name
 #  to use ledger, set LEDGER=true to env
 #  default to testnet deployment, to run production, set PROD=true to env
-#define deploy_single_fn
-#forge script \
-# scripts/$(1).s.sol:$(if $(3),$(if $(PROD),$(3),$(3)_testnet),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
-# --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify -vvvv \
-# $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
-# $(custom_$(if $(PROD),$(2),$(2)-testnet))
-#
-#endef
-
-# catapulta
 define deploy_single_fn
-npx catapulta@0.3.14 script \
- scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
- --network $(2) --slow --skip-git \
+forge script \
+ scripts/$(1).s.sol:$(if $(3),$(if $(PROD),$(3),$(3)_testnet),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
+ --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify -vvvv \
  $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
  $(custom_$(if $(PROD),$(2),$(2)-testnet))
 
 endef
+
+# catapulta
+#define deploy_single_fn
+#npx catapulta@0.3.14 script \
+# scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
+# --network $(2) --slow --skip-git \
+# $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
+# $(custom_$(if $(PROD),$(2),$(2)-testnet))
+#
+#endef
 
 define deploy_fn
  $(foreach network,$(2),$(call deploy_single_fn,$(1),$(network),$(3)))
@@ -165,7 +165,7 @@ deploy-cross-chain-infra-test:
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
-	$(call deploy_fn,Adapters/DeployCCIP,binance)
+	$(call deploy_fn,Adapters/DeployCCIP,ethereum)
 
 ## Deploy LayerZero bridge adapters on all networks
 deploy-lz-bridge-adapters-test:
@@ -209,7 +209,7 @@ set-ccf-sender-adapters-test:
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,ethereum)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,celo)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
@@ -238,7 +238,7 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,celo)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,avalanche)
@@ -260,3 +260,6 @@ send-message-via-adapter:
 
 deploy-ccc-revision-and-update:
 	$(call deploy_fn,CCC/UpdateCCC,ethereum)
+
+deploy-ccc-update-payload:
+	$(call deploy_fn,helpers/UpdateCCCImpl_Payload,celo)
