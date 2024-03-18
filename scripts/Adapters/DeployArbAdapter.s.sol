@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import {GovV3Helpers} from 'aave-helpers/GovV3Helpers.sol';
 import {ArbAdapter, IArbAdapter, IBaseAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
 import './BaseAdapterScript.sol';
 import {ArbitrumAdapterTestnet} from '../contract_extensions/ArbitrumAdapter.sol';
