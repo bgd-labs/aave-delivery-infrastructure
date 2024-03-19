@@ -18,8 +18,7 @@ solc = "0.8.19"
 src = 'src'
 libs = ['lib']
 fallback_oz = true
-is_system = true
-mode = "2"
+mode = "3"
 
 [rpc_endpoints]
 ethereum="${RPC_MAINNET}"

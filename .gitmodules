@@ -11,3 +11,6 @@
 [submodule "lib/aave-helpers"]
 	path = lib/aave-helpers
 	url = https://github.com/bgd-labs/aave-helpers
+[submodule "lib/era-contracts"]
+	path = lib/era-contracts
+	url = https://github.com/matter-labs/era-contracts

@@ -16,4 +16,5 @@ library ChainIds {
   uint256 constant GNOSIS = 100;
   uint256 constant SCROLL = 534352;
   uint256 constant CELO = 42220;
+  uint256 constant ZK_SYNC = 324;
 }
