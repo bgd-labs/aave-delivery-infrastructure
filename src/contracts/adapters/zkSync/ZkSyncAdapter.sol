@@ -5,9 +5,7 @@ import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {AddressAliasHelper} from './libs/AddressAliasHelper.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {ChainIds} from '../../libs/ChainIds.sol';
-import {IZkSyncAdapter} from './IZkSyncAdapter.sol';
-import {IMailbox} from './interfaces/IMailbox.sol';
-import {IClOracle} from './interfaces/IClOracle.sol';
+import {IZkSyncAdapter, IMailbox, IClOracle} from './IZkSyncAdapter.sol';
 
 /**
  * @title ZkSyncAdapter
@@ -19,9 +17,16 @@ import {IClOracle} from './interfaces/IClOracle.sol';
  * @dev uses Chainlink oracle to get gas price information: https://data.chain.link/feeds/ethereum/mainnet/fast-gas-gwei
  */
 contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
+  /// @inheritdoc IZkSyncAdapter
   IMailbox public immutable MAILBOX;
+
+  /// @inheritdoc IZkSyncAdapter
   IClOracle public immutable CL_GAS_PRICE_ORACLE;
+
+  /// @inheritdoc IZkSyncAdapter
   uint256 public constant REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT = 800;
+
+  /// @inheritdoc IZkSyncAdapter
   address public immutable REFUND_ADDRESS_L2;
 
   /**
@@ -37,6 +42,9 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'ZkSync native adapter', trustedRemotes) {
+    require(mailBox != address(0), Errors.ZK_SYNC_MAILBOX_CANT_BE_ADDRESS_0);
+    require(clGasPriceOracle != address(0), Errors.CL_GAS_PRICE_ORACLE_CANT_BE_ADDRESS_0);
+    CL_GAS_PRICE_ORACLE = IClOracle(clGasPriceOracle);
     MAILBOX = IMailbox(mailBox);
     REFUND_ADDRESS_L2 = refundAddress;
   }
@@ -56,17 +64,17 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
 
     uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
-    IClOracle memory gasPriceRoundData = CL_GAS_PRICE_ORACLE.latestRoundData();
+    (, int256 answer, , , ) = CL_GAS_PRICE_ORACLE.latestRoundData();
 
     uint256 cost = MAILBOX.l2TransactionBaseCost(
-      gasPriceRoundData.answer,
+      uint256(answer),
       totalGasLimit,
       REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT
     );
 
     require(address(this).balance >= cost, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
 
-    bytes memory destinationCalldata = abi.encodeWithSignature(
+    bytes memory destinationCalldata = abi.encodeWithSelector(
       IZkSyncAdapter.receiveMessage.selector,
       message
     );
@@ -81,9 +89,10 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
       REFUND_ADDRESS_L2 // TODO: is it correct to pass l2 address? Should it be aliased?
     );
 
-    return (MAILBOX, uint256(canonicalTxHash));
+    return (address(MAILBOX), uint256(canonicalTxHash));
   }
 
+  /// @inheritdoc IZkSyncAdapter
   function receiveMessage(bytes calldata message) external {
     uint256 originChainId = getOriginChainId();
     address srcAddress = AddressAliasHelper.undoL1ToL2Alias(msg.sender);

@@ -25,10 +25,8 @@ interface IClOracle {
    * @dev Note that answer and updatedAt may change between queries.
    */
   function latestRoundData()
-    public
+    external
     view
-    virtual
-    override
     returns (
       uint80 roundId,
       int256 answer,
