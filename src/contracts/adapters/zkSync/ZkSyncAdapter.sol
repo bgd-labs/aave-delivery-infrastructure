@@ -2,11 +2,11 @@
 pragma solidity ^0.8.0;
 
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
-import {AddressAliasHelper} from 'nitro-contracts/libraries/AddressAliasHelper.sol';
+import {AddressAliasHelper} from './libs/AddressAliasHelper.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {ChainIds} from '../../libs/ChainIds.sol';
 import {IZkSyncAdapter} from './IZkSyncAdapter.sol';
-import {IMailbox} from 'era-contracts/interfaces/IMailbox.sol';
+import {IMailbox} from './interfaces/IMailbox.sol';
 import {IClOracle} from './interfaces/IClOracle.sol';
 
 /**
@@ -22,6 +22,7 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
   IMailbox public immutable MAILBOX;
   IClOracle public immutable CL_GAS_PRICE_ORACLE;
   uint256 public constant REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT = 800;
+  address public immutable REFUND_ADDRESS_L2;
 
   /**
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
@@ -32,10 +33,66 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
     address crossChainController,
     address mailBox,
     address clGasPriceOracle,
+    address refundAddress,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'ZkSync native adapter', trustedRemotes) {
     MAILBOX = IMailbox(mailBox);
+    REFUND_ADDRESS_L2 = refundAddress;
+  }
+
+  /// @inheritdoc IBaseAdapter
+  function forwardMessage(
+    address receiver,
+    uint256 executionGasLimit,
+    uint256 destinationChainId,
+    bytes calldata message
+  ) external returns (address, uint256) {
+    require(
+      isDestinationChainIdSupported(destinationChainId),
+      Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED
+    );
+    require(receiver != address(0), Errors.RECEIVER_NOT_SET);
+
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
+
+    IClOracle memory gasPriceRoundData = CL_GAS_PRICE_ORACLE.latestRoundData();
+
+    uint256 cost = MAILBOX.l2TransactionBaseCost(
+      gasPriceRoundData.answer,
+      totalGasLimit,
+      REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT
+    );
+
+    require(address(this).balance >= cost, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
+
+    bytes memory destinationCalldata = abi.encodeWithSignature(
+      IZkSyncAdapter.receiveMessage.selector,
+      message
+    );
+
+    bytes32 canonicalTxHash = MAILBOX.requestL2Transaction{value: cost}(
+      receiver,
+      0,
+      destinationCalldata,
+      totalGasLimit,
+      REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT,
+      new bytes[](0),
+      REFUND_ADDRESS_L2 // TODO: is it correct to pass l2 address? Should it be aliased?
+    );
+
+    return (MAILBOX, uint256(canonicalTxHash));
+  }
+
+  function receiveMessage(bytes calldata message) external {
+    uint256 originChainId = getOriginChainId();
+    address srcAddress = AddressAliasHelper.undoL1ToL2Alias(msg.sender);
+    require(
+      _trustedRemotes[originChainId] == srcAddress && srcAddress != address(0),
+      Errors.REMOTE_NOT_TRUSTED
+    );
+
+    _registerReceivedMessage(message, originChainId);
   }
 
   /// @inheritdoc IZkSyncAdapter
@@ -56,45 +113,5 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
   /// @inheritdoc IBaseAdapter
   function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
     return infraChainId;
-  }
-
-  /// @inheritdoc IBaseAdapter
-  function forwardMessage(
-    address receiver,
-    uint256 executionGasLimit,
-    uint256 destinationChainId,
-    bytes calldata message
-  ) external returns (address, uint256) {
-    require(
-      isDestinationChainIdSupported(destinationChainId),
-      Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED
-    );
-    require(receiver != address(0), Errors.RECEIVER_NOT_SET);
-
-    //    AddressAliasHelper.applyL1ToL2Alias(address(this));
-
-    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
-
-    IClOracle memory gasPriceRoundData = CL_GAS_PRICE_ORACLE.latestRoundData();
-
-    uint256 cost = l2TransactionBaseCost(
-      gasPriceRoundData.answer,
-      totalGasLimit,
-      REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT
-    );
-
-    require(address(this).balance >= cost, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
-
-    bytes32 canonicalTxHash = requestL2Transaction{value: cost}(
-      receiver,
-      0,
-      message,
-      totalGasLimit,
-      REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT,
-      new bytes[](0),
-      _refundRecipient
-    );
-
-    return (MAILBOX, ticketID);
   }
 }
