@@ -6,3 +6,4 @@ nitro-contracts/=lib/nitro-contracts/src/
 openzeppelin-contracts/=lib/openzeppelin-contracts/
 aave-helpers/=lib/aave-helpers/src/
 aave-address-book/=lib/aave-helpers/lib/aave-address-book/src/
+era-contracts/=lib/era-contracts/l1-contracts/contracts/zksync/

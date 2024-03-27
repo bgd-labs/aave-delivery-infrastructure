@@ -20,4 +20,5 @@ library TestNetChainIds {
   uint256 constant CELO_ALFAJORES = 44787;
   uint256 constant OPTIMISM_SEPOLIA = 11155420;
   uint256 constant ARBITRUM_SEPOLIA = 421614;
+  uint256 constant ZK_SYNC_SEPOLIA = 300;
 }

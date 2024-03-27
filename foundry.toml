@@ -14,6 +14,12 @@ fs_permissions = [{ access = "read-write", path = "./"}]
 
 solc = "0.8.19"
 
+[profile.zksync]
+src = 'src'
+libs = ['lib']
+fallback_oz = true
+mode = "3"
+
 [rpc_endpoints]
 ethereum="${RPC_MAINNET}"
 ethereum-testnet="${RPC_ETHEREUM_SEPOLIA}"
@@ -41,6 +47,8 @@ scroll="${RPC_SCROLL}"
 scroll-testnet="${RPC_SCROLL_TESTNET}"
 celo="${RPC_CELO}"
 celo-testnet="${RPC_CELO_ALFAJORES}"
+zksync="${RPC_ZK_SYNC}"
+zksync-testnet="${RPC_ZK_SYNC_TESTNET}"
 
 [etherscan]
 ethereum={key="${ETHERSCAN_API_KEY_MAINNET}", chain=1 }
