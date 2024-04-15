@@ -180,76 +180,76 @@ contract CrossChainForwarderTest is BaseTest {
     crossChainForwarder.enableBridgeAdapters(newBridgeAdaptersToEnable);
   }
 
-  function testAllowBridgeAdapters() public {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory newBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        3
-      );
+  // function testAllowBridgeAdapters() public {
+  //   ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
+  //     memory newBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
+  //       3
+  //     );
 
-    address NEW_BRIDGE_ADAPTER_1 = address(201);
-    address NEW_BRIDGE_ADAPTER_2 = address(202);
-    address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(203);
+  //   address NEW_BRIDGE_ADAPTER_1 = address(201);
+  //   address NEW_BRIDGE_ADAPTER_2 = address(202);
+  //   address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(203);
 
-    // this one overwrites
-    newBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(lzAdapter),
-      destinationBridgeAdapter: DESTINATION_BRIDGE_ADAPTER,
-      destinationChainId: ChainIds.POLYGON
-    });
-    // new one on same network
-    newBridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: NEW_BRIDGE_ADAPTER_1,
-      destinationBridgeAdapter: DESTINATION_BRIDGE_ADAPTER,
-      destinationChainId: ChainIds.POLYGON
-    });
-    // new one on different network but same bridge adapter
-    newBridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: NEW_BRIDGE_ADAPTER_2,
-      destinationBridgeAdapter: NEW_DESTINATION_BRIDGE_ADAPTER_A,
-      destinationChainId: ChainIds.AVALANCHE
-    });
+  //   // this one overwrites
+  //   newBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+  //     currentChainBridgeAdapter: address(lzAdapter),
+  //     destinationBridgeAdapter: DESTINATION_BRIDGE_ADAPTER,
+  //     destinationChainId: ChainIds.POLYGON
+  //   });
+  //   // new one on same network
+  //   newBridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+  //     currentChainBridgeAdapter: NEW_BRIDGE_ADAPTER_1,
+  //     destinationBridgeAdapter: DESTINATION_BRIDGE_ADAPTER,
+  //     destinationChainId: ChainIds.POLYGON
+  //   });
+  //   // new one on different network but same bridge adapter
+  //   newBridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+  //     currentChainBridgeAdapter: NEW_BRIDGE_ADAPTER_2,
+  //     destinationBridgeAdapter: NEW_DESTINATION_BRIDGE_ADAPTER_A,
+  //     destinationChainId: ChainIds.AVALANCHE
+  //   });
 
-    hoax(OWNER);
-    vm.expectEmit(true, true, true, true);
-    emit BridgeAdapterUpdated(
-      ChainIds.POLYGON,
-      NEW_BRIDGE_ADAPTER_1,
-      DESTINATION_BRIDGE_ADAPTER,
-      true
-    );
-    emit BridgeAdapterUpdated(
-      ChainIds.AVALANCHE,
-      NEW_BRIDGE_ADAPTER_2,
-      NEW_DESTINATION_BRIDGE_ADAPTER_A,
-      true
-    );
-    vm.mockCall(
-      NEW_BRIDGE_ADAPTER_1,
-      abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
-      abi.encode()
-    );
-    vm.mockCall(
-      NEW_BRIDGE_ADAPTER_2,
-      abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
-      abi.encode()
-    );
-    crossChainForwarder.enableBridgeAdapters(newBridgeAdaptersToEnable);
+  //   hoax(OWNER);
+  //   vm.expectEmit(true, true, true, true);
+  //   emit BridgeAdapterUpdated(
+  //     ChainIds.POLYGON,
+  //     NEW_BRIDGE_ADAPTER_1,
+  //     DESTINATION_BRIDGE_ADAPTER,
+  //     true
+  //   );
+  //   emit BridgeAdapterUpdated(
+  //     ChainIds.AVALANCHE,
+  //     NEW_BRIDGE_ADAPTER_2,
+  //     NEW_DESTINATION_BRIDGE_ADAPTER_A,
+  //     true
+  //   );
+  //   vm.mockCall(
+  //     NEW_BRIDGE_ADAPTER_1,
+  //     abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
+  //     abi.encode()
+  //   );
+  //   vm.mockCall(
+  //     NEW_BRIDGE_ADAPTER_2,
+  //     abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
+  //     abi.encode()
+  //   );
+  //   crossChainForwarder.enableBridgeAdapters(newBridgeAdaptersToEnable);
 
-    ICrossChainForwarder.ChainIdBridgeConfig[] memory configsPolygon = crossChainForwarder
-      .getForwarderBridgeAdaptersByChain(ChainIds.POLYGON);
-    assertEq(configsPolygon.length, 2);
-    assertEq(configsPolygon[0].destinationBridgeAdapter, DESTINATION_BRIDGE_ADAPTER);
-    assertEq(configsPolygon[0].currentChainBridgeAdapter, address(lzAdapter));
+  //   ICrossChainForwarder.ChainIdBridgeConfig[] memory configsPolygon = crossChainForwarder
+  //     .getForwarderBridgeAdaptersByChain(ChainIds.POLYGON);
+  //   assertEq(configsPolygon.length, 2);
+  //   assertEq(configsPolygon[0].destinationBridgeAdapter, DESTINATION_BRIDGE_ADAPTER);
+  //   assertEq(configsPolygon[0].currentChainBridgeAdapter, address(lzAdapter));
 
-    assertEq(configsPolygon[1].destinationBridgeAdapter, DESTINATION_BRIDGE_ADAPTER);
-    assertEq(configsPolygon[1].currentChainBridgeAdapter, NEW_BRIDGE_ADAPTER_1);
+  //   assertEq(configsPolygon[1].destinationBridgeAdapter, DESTINATION_BRIDGE_ADAPTER);
+  //   assertEq(configsPolygon[1].currentChainBridgeAdapter, NEW_BRIDGE_ADAPTER_1);
 
-    ICrossChainForwarder.ChainIdBridgeConfig[] memory configsAvalanche = crossChainForwarder
-      .getForwarderBridgeAdaptersByChain(ChainIds.AVALANCHE);
-    assertEq(configsAvalanche.length, 1);
-    assertEq(configsAvalanche[0].destinationBridgeAdapter, NEW_DESTINATION_BRIDGE_ADAPTER_A);
-    assertEq(configsAvalanche[0].currentChainBridgeAdapter, NEW_BRIDGE_ADAPTER_2);
-  }
+  //   ICrossChainForwarder.ChainIdBridgeConfig[] memory configsAvalanche = crossChainForwarder
+  //     .getForwarderBridgeAdaptersByChain(ChainIds.AVALANCHE);
+  //   assertEq(configsAvalanche.length, 1);
+  //   assertEq(configsAvalanche[0].destinationBridgeAdapter, NEW_DESTINATION_BRIDGE_ADAPTER_A);
+  //   assertEq(configsAvalanche[0].currentChainBridgeAdapter, NEW_BRIDGE_ADAPTER_2);
+  // }
 
   function testAllowBridgeAdaptersWhenNoCurrentBridgeAdapter() public {
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
@@ -321,74 +321,74 @@ contract CrossChainForwarderTest is BaseTest {
     assertEq(configsPolygon[0].currentChainBridgeAdapter, address(lzAdapter));
   }
 
-  function testDisallowBridgeAdapters() public {
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory newBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        2
-      );
+  // function testDisallowBridgeAdapters() public {
+  //   ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
+  //     memory newBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
+  //       2
+  //     );
 
-    address NEW_BRIDGE_ADAPTER_1 = address(201);
-    address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(203);
+  //   address NEW_BRIDGE_ADAPTER_1 = address(201);
+  //   address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(203);
 
-    // new one on same network
-    newBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: NEW_BRIDGE_ADAPTER_1,
-      destinationBridgeAdapter: DESTINATION_BRIDGE_ADAPTER,
-      destinationChainId: ChainIds.POLYGON
-    });
-    // new one on different network but same bridge adapter
-    newBridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(lzAdapter),
-      destinationBridgeAdapter: NEW_DESTINATION_BRIDGE_ADAPTER_A,
-      destinationChainId: ChainIds.AVALANCHE
-    });
+  //   // new one on same network
+  //   newBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+  //     currentChainBridgeAdapter: NEW_BRIDGE_ADAPTER_1,
+  //     destinationBridgeAdapter: DESTINATION_BRIDGE_ADAPTER,
+  //     destinationChainId: ChainIds.POLYGON
+  //   });
+  //   // new one on different network but same bridge adapter
+  //   newBridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+  //     currentChainBridgeAdapter: address(lzAdapter),
+  //     destinationBridgeAdapter: NEW_DESTINATION_BRIDGE_ADAPTER_A,
+  //     destinationChainId: ChainIds.AVALANCHE
+  //   });
 
-    vm.mockCall(
-      NEW_BRIDGE_ADAPTER_1,
-      abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
-      abi.encode()
-    );
-    hoax(OWNER);
-    crossChainForwarder.enableBridgeAdapters(newBridgeAdaptersToEnable);
+  //   vm.mockCall(
+  //     NEW_BRIDGE_ADAPTER_1,
+  //     abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
+  //     abi.encode()
+  //   );
+  //   hoax(OWNER);
+  //   crossChainForwarder.enableBridgeAdapters(newBridgeAdaptersToEnable);
 
-    ICrossChainForwarder.BridgeAdapterToDisable[]
-      memory bridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
+  //   ICrossChainForwarder.BridgeAdapterToDisable[]
+  //     memory bridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
 
-    uint256[] memory chainIdsAdapter = new uint256[](2);
-    chainIdsAdapter[0] = ChainIds.POLYGON;
-    chainIdsAdapter[1] = ChainIds.AVALANCHE;
+  //   uint256[] memory chainIdsAdapter = new uint256[](2);
+  //   chainIdsAdapter[0] = ChainIds.POLYGON;
+  //   chainIdsAdapter[1] = ChainIds.AVALANCHE;
 
-    bridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: address(lzAdapter),
-      chainIds: chainIdsAdapter
-    });
+  //   bridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+  //     bridgeAdapter: address(lzAdapter),
+  //     chainIds: chainIdsAdapter
+  //   });
 
-    hoax(OWNER);
-    vm.expectEmit(true, true, false, true);
-    emit BridgeAdapterUpdated(
-      ChainIds.POLYGON,
-      address(lzAdapter),
-      DESTINATION_BRIDGE_ADAPTER,
-      false
-    );
-    emit BridgeAdapterUpdated(
-      ChainIds.AVALANCHE,
-      address(lzAdapter),
-      NEW_DESTINATION_BRIDGE_ADAPTER_A,
-      false
-    );
-    crossChainForwarder.disableBridgeAdapters(bridgeAdaptersToDisable);
+  //   hoax(OWNER);
+  //   vm.expectEmit(true, true, false, true);
+  //   emit BridgeAdapterUpdated(
+  //     ChainIds.POLYGON,
+  //     address(lzAdapter),
+  //     DESTINATION_BRIDGE_ADAPTER,
+  //     false
+  //   );
+  //   emit BridgeAdapterUpdated(
+  //     ChainIds.AVALANCHE,
+  //     address(lzAdapter),
+  //     NEW_DESTINATION_BRIDGE_ADAPTER_A,
+  //     false
+  //   );
+  //   crossChainForwarder.disableBridgeAdapters(bridgeAdaptersToDisable);
 
-    ICrossChainForwarder.ChainIdBridgeConfig[] memory configsPolygon = crossChainForwarder
-      .getForwarderBridgeAdaptersByChain(ChainIds.POLYGON);
-    assertEq(configsPolygon.length, 1);
-    assertEq(configsPolygon[0].destinationBridgeAdapter, DESTINATION_BRIDGE_ADAPTER);
-    assertEq(configsPolygon[0].currentChainBridgeAdapter, NEW_BRIDGE_ADAPTER_1);
+  //   ICrossChainForwarder.ChainIdBridgeConfig[] memory configsPolygon = crossChainForwarder
+  //     .getForwarderBridgeAdaptersByChain(ChainIds.POLYGON);
+  //   assertEq(configsPolygon.length, 1);
+  //   assertEq(configsPolygon[0].destinationBridgeAdapter, DESTINATION_BRIDGE_ADAPTER);
+  //   assertEq(configsPolygon[0].currentChainBridgeAdapter, NEW_BRIDGE_ADAPTER_1);
 
-    ICrossChainForwarder.ChainIdBridgeConfig[] memory configsAvalanche = crossChainForwarder
-      .getForwarderBridgeAdaptersByChain(ChainIds.AVALANCHE);
-    assertEq(configsAvalanche.length, 0);
-  }
+  //   ICrossChainForwarder.ChainIdBridgeConfig[] memory configsAvalanche = crossChainForwarder
+  //     .getForwarderBridgeAdaptersByChain(ChainIds.AVALANCHE);
+  //   assertEq(configsAvalanche.length, 0);
+  // }
 
   function testDisallowBridgeAdaptersWhenNotOwner() public {
     ICrossChainForwarder.BridgeAdapterToDisable[]

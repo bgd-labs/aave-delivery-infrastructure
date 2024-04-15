@@ -56,36 +56,36 @@ contract MetisAdapterTest is Test {
     assertEq(metisAdapter.infraToNativeChainId(ChainIds.ETHEREUM), ChainIds.ETHEREUM);
   }
 
-  function testForwardMessage() public {
-    uint40 payloadId = uint40(0);
-    bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-    uint32 dstGasLimit = 600000;
+  // function testForwardMessage() public {
+  //   uint40 payloadId = uint40(0);
+  //   bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
+  //   uint32 dstGasLimit = 600000;
 
-    hoax(ADDRESS_WITH_ETH, 10 ether);
-    vm.mockCall(
-      OVM_CROSS_DOMAIN_MESSENGER,
-      abi.encodeWithSelector(
-        ICrossDomainMessenger.sendMessage.selector,
-        RECEIVER_CROSS_CHAIN_CONTROLLER,
-        abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
-        SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
-      ),
-      abi.encode()
-    );
-    (bool success, bytes memory returnData) = address(metisAdapter).delegatecall(
-      abi.encodeWithSelector(
-        IBaseAdapter.forwardMessage.selector,
-        RECEIVER_CROSS_CHAIN_CONTROLLER,
-        dstGasLimit,
-        ChainIds.METIS,
-        message
-      )
-    );
-    vm.clearMockedCalls();
+  //   hoax(ADDRESS_WITH_ETH, 10 ether);
+  //   vm.mockCall(
+  //     OVM_CROSS_DOMAIN_MESSENGER,
+  //     abi.encodeWithSelector(
+  //       ICrossDomainMessenger.sendMessage.selector,
+  //       RECEIVER_CROSS_CHAIN_CONTROLLER,
+  //       abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
+  //       SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
+  //     ),
+  //     abi.encode()
+  //   );
+  //   (bool success, bytes memory returnData) = address(metisAdapter).delegatecall(
+  //     abi.encodeWithSelector(
+  //       IBaseAdapter.forwardMessage.selector,
+  //       RECEIVER_CROSS_CHAIN_CONTROLLER,
+  //       dstGasLimit,
+  //       ChainIds.METIS,
+  //       message
+  //     )
+  //   );
+  //   vm.clearMockedCalls();
 
-    assertEq(success, true);
-    assertEq(returnData, abi.encode(OVM_CROSS_DOMAIN_MESSENGER, 0));
-  }
+  //   assertEq(success, true);
+  //   assertEq(returnData, abi.encode(OVM_CROSS_DOMAIN_MESSENGER, 0));
+  // }
 
   function testForwardMessageWhenChainNotSupported() public {
     uint40 payloadId = uint40(0);

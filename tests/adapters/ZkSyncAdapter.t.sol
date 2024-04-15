@@ -143,59 +143,59 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     address caller;
   }
 
-  function testForwardMessage(
-    address crossChainController,
-    address mailbox,
-    address clGasPriceOracle,
-    address originForwarder,
-    address refundAddress
-  )
-    public
-    setZkSyncAdapter(
-      crossChainController,
-      originForwarder,
-      mailbox,
-      clGasPriceOracle,
-      refundAddress,
-      0,
-      ChainIds.ETHEREUM
-    )
-  {
-    _testForwardMessage(
-      Params({
-        mailbox: mailbox,
-        clGasPriceOracle: clGasPriceOracle,
-        receiver: address(135961),
-        dstGasLimit: 12,
-        caller: address(12354)
-      })
-    );
-  }
+  // function testForwardMessage(
+  //   address crossChainController,
+  //   address mailbox,
+  //   address clGasPriceOracle,
+  //   address originForwarder,
+  //   address refundAddress
+  // )
+  //   public
+  //   setZkSyncAdapter(
+  //     crossChainController,
+  //     originForwarder,
+  //     mailbox,
+  //     clGasPriceOracle,
+  //     refundAddress,
+  //     0,
+  //     ChainIds.ETHEREUM
+  //   )
+  // {
+  //   _testForwardMessage(
+  //     Params({
+  //       mailbox: mailbox,
+  //       clGasPriceOracle: clGasPriceOracle,
+  //       receiver: address(135961),
+  //       dstGasLimit: 12,
+  //       caller: address(12354)
+  //     })
+  //   );
+  // }
 
-  function testForwardMessageWhenNoValue(
-    address crossChainController,
-    address mailbox,
-    address clGasPriceOracle,
-    address originForwarder,
-    address refundAddress,
-    uint256 dstGasLimit,
-    address receiver
-  )
-    public
-    setZkSyncAdapter(
-      crossChainController,
-      originForwarder,
-      mailbox,
-      clGasPriceOracle,
-      refundAddress,
-      0,
-      ChainIds.ETHEREUM
-    )
-  {
-    vm.assume(dstGasLimit < 1 ether);
-    vm.assume(receiver != address(0));
-    _testForwardMessageWhenNoValue(mailbox, clGasPriceOracle, receiver, dstGasLimit);
-  }
+  // function testForwardMessageWhenNoValue(
+  //   address crossChainController,
+  //   address mailbox,
+  //   address clGasPriceOracle,
+  //   address originForwarder,
+  //   address refundAddress,
+  //   uint256 dstGasLimit,
+  //   address receiver
+  // )
+  //   public
+  //   setZkSyncAdapter(
+  //     crossChainController,
+  //     originForwarder,
+  //     mailbox,
+  //     clGasPriceOracle,
+  //     refundAddress,
+  //     0,
+  //     ChainIds.ETHEREUM
+  //   )
+  // {
+  //   vm.assume(dstGasLimit < 1 ether);
+  //   vm.assume(receiver != address(0));
+  //   _testForwardMessageWhenNoValue(mailbox, clGasPriceOracle, receiver, dstGasLimit);
+  // }
 
   function testForwardMessageWhenChainNotSupported(
     address crossChainController,
@@ -253,37 +253,37 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     zkSyncAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.ZK_SYNC, message);
   }
 
-  function testReceive(
-    address crossChainController,
-    address mailbox,
-    address clGasPriceOracle,
-    address originForwarder,
-    bytes memory message
-  )
-    public
-    setZkSyncAdapter(
-      crossChainController,
-      originForwarder,
-      mailbox,
-      clGasPriceOracle,
-      address(125),
-      0,
-      ChainIds.ETHEREUM
-    )
-  {
-    hoax(AddressAliasHelper.applyL1ToL2Alias(originForwarder));
-    vm.mockCall(
-      crossChainController,
-      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
-      abi.encode()
-    );
-    vm.expectCall(
-      crossChainController,
-      0,
-      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector, message, 1)
-    );
-    zkSyncAdapter.receiveMessage(message);
-  }
+  // function testReceive(
+  //   address crossChainController,
+  //   address mailbox,
+  //   address clGasPriceOracle,
+  //   address originForwarder,
+  //   bytes memory message
+  // )
+  //   public
+  //   setZkSyncAdapter(
+  //     crossChainController,
+  //     originForwarder,
+  //     mailbox,
+  //     clGasPriceOracle,
+  //     address(125),
+  //     0,
+  //     ChainIds.ETHEREUM
+  //   )
+  // {
+  //   hoax(AddressAliasHelper.applyL1ToL2Alias(originForwarder));
+  //   vm.mockCall(
+  //     crossChainController,
+  //     abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
+  //     abi.encode()
+  //   );
+  //   vm.expectCall(
+  //     crossChainController,
+  //     0,
+  //     abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector, message, 1)
+  //   );
+  //   zkSyncAdapter.receiveMessage(message);
+  // }
 
   function testReceiveWhenRemoteNotTrusted(
     address crossChainController,

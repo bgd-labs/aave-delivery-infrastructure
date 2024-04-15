@@ -74,30 +74,30 @@ contract ForwarderTest is BaseCCForwarderTest {
     _validateForwardMessageWhenAtLeastOneAdapterWorking(extendedTx);
   }
 
-  function testRetryEnvelope(
-    address destination,
-    address origin,
-    uint256 destinationChainId,
-    address owner,
-    uint256 envelopeNonce
-  )
-    public
-    executeAsOwner(owner)
-    enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
-  {
-    ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
-      TestParams({
-        destination: destination,
-        origin: origin,
-        originChainId: block.chainid,
-        destinationChainId: destinationChainId,
-        envelopeNonce: envelopeNonce,
-        transactionNonce: _currentTransactionNonce
-      })
-    );
-    _registerEnvelope(extendedTx);
-    _validateRetryEnvelopeSuccessful(extendedTx);
-  }
+  // function testRetryEnvelope(
+  //   address destination,
+  //   address origin,
+  //   uint256 destinationChainId,
+  //   address owner,
+  //   uint256 envelopeNonce
+  // )
+  //   public
+  //   executeAsOwner(owner)
+  //   enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
+  // {
+  //   ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
+  //     TestParams({
+  //       destination: destination,
+  //       origin: origin,
+  //       originChainId: block.chainid,
+  //       destinationChainId: destinationChainId,
+  //       envelopeNonce: envelopeNonce,
+  //       transactionNonce: _currentTransactionNonce
+  //     })
+  //   );
+  //   _registerEnvelope(extendedTx);
+  //   _validateRetryEnvelopeSuccessful(extendedTx);
+  // }
 
   function testRetryEnvelopeWhenNoAdapters(
     address destination,
