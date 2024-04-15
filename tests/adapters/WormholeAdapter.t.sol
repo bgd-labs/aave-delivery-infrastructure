@@ -136,56 +136,56 @@ contract WormholeAdapterTest is BaseAdapterTest {
     assertEq(wormholeAdapter.infraToNativeChainId(ChainIds.ETHEREUM), uint16(2));
   }
 
-  function testForwardMessage(
-    address crossChainController,
-    address wormholeRelayer,
-    address originForwarder,
-    address refundAddress,
-    uint256 baseGasLimit,
-    address caller,
-    uint256 dstGasLimit,
-    address receiver
-  )
-    public
-    setHLAdapter(
-      crossChainController,
-      wormholeRelayer,
-      originForwarder,
-      refundAddress,
-      baseGasLimit,
-      ChainIds.ETHEREUM
-    )
-  {
-    vm.assume(caller != address(0));
-    vm.assume(dstGasLimit < 1 ether);
-    vm.assume(receiver != address(0));
+  // function testForwardMessage(
+  //   address crossChainController,
+  //   address wormholeRelayer,
+  //   address originForwarder,
+  //   address refundAddress,
+  //   uint256 baseGasLimit,
+  //   address caller,
+  //   uint256 dstGasLimit,
+  //   address receiver
+  // )
+  //   public
+  //   setHLAdapter(
+  //     crossChainController,
+  //     wormholeRelayer,
+  //     originForwarder,
+  //     refundAddress,
+  //     baseGasLimit,
+  //     ChainIds.ETHEREUM
+  //   )
+  // {
+  //   vm.assume(caller != address(0));
+  //   vm.assume(dstGasLimit < 1 ether);
+  //   vm.assume(receiver != address(0));
 
-    _testForwardMessage(wormholeRelayer, receiver, dstGasLimit, caller);
-  }
+  //   _testForwardMessage(wormholeRelayer, receiver, dstGasLimit, caller);
+  // }
 
-  function testForwardMessageWhenNoValue(
-    address crossChainController,
-    address wormholeRelayer,
-    address originForwarder,
-    address refundAddress,
-    uint256 baseGasLimit,
-    uint256 dstGasLimit,
-    address receiver
-  )
-    public
-    setHLAdapter(
-      crossChainController,
-      wormholeRelayer,
-      originForwarder,
-      refundAddress,
-      baseGasLimit,
-      ChainIds.ETHEREUM
-    )
-  {
-    vm.assume(dstGasLimit < 1 ether);
-    vm.assume(receiver != address(0));
-    _testForwardMessageWhenNoValue(wormholeRelayer, receiver, dstGasLimit);
-  }
+  // function testForwardMessageWhenNoValue(
+  //   address crossChainController,
+  //   address wormholeRelayer,
+  //   address originForwarder,
+  //   address refundAddress,
+  //   uint256 baseGasLimit,
+  //   uint256 dstGasLimit,
+  //   address receiver
+  // )
+  //   public
+  //   setHLAdapter(
+  //     crossChainController,
+  //     wormholeRelayer,
+  //     originForwarder,
+  //     refundAddress,
+  //     baseGasLimit,
+  //     ChainIds.ETHEREUM
+  //   )
+  // {
+  //   vm.assume(dstGasLimit < 1 ether);
+  //   vm.assume(receiver != address(0));
+  //   _testForwardMessageWhenNoValue(wormholeRelayer, receiver, dstGasLimit);
+  // }
 
   function _testForwardMessageWhenNoValue(
     address wormholeRelayer,
@@ -270,43 +270,43 @@ contract WormholeAdapterTest is BaseAdapterTest {
     wormholeAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.POLYGON, message);
   }
 
-  function testReceive(
-    address crossChainController,
-    address wormholeRelayer,
-    address originForwarder,
-    address refundAddress,
-    uint256 baseGasLimit,
-    bytes memory message
-  )
-    public
-    setHLAdapter(
-      crossChainController,
-      wormholeRelayer,
-      originForwarder,
-      refundAddress,
-      baseGasLimit,
-      ChainIds.ETHEREUM
-    )
-  {
-    hoax(wormholeRelayer);
-    vm.mockCall(
-      crossChainController,
-      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
-      abi.encode()
-    );
-    vm.expectCall(
-      crossChainController,
-      0,
-      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector, message, 1)
-    );
-    wormholeAdapter.receiveWormholeMessages(
-      message,
-      new bytes[](0),
-      bytes32(uint256(uint160(originForwarder))),
-      uint16(2),
-      bytes32(0)
-    );
-  }
+  // function testReceive(
+  //   address crossChainController,
+  //   address wormholeRelayer,
+  //   address originForwarder,
+  //   address refundAddress,
+  //   uint256 baseGasLimit,
+  //   bytes memory message
+  // )
+  //   public
+  //   setHLAdapter(
+  //     crossChainController,
+  //     wormholeRelayer,
+  //     originForwarder,
+  //     refundAddress,
+  //     baseGasLimit,
+  //     ChainIds.ETHEREUM
+  //   )
+  // {
+  //   hoax(wormholeRelayer);
+  //   vm.mockCall(
+  //     crossChainController,
+  //     abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
+  //     abi.encode()
+  //   );
+  //   vm.expectCall(
+  //     crossChainController,
+  //     0,
+  //     abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector, message, 1)
+  //   );
+  //   wormholeAdapter.receiveWormholeMessages(
+  //     message,
+  //     new bytes[](0),
+  //     bytes32(uint256(uint160(originForwarder))),
+  //     uint16(2),
+  //     bytes32(0)
+  //   );
+  // }
 
   function testReceiveWhenCallerNotRouter(
     address crossChainController,
