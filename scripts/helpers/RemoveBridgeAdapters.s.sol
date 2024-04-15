@@ -19,12 +19,55 @@ abstract contract BaseRemoveBridgeAdapters is BaseScript {
     returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory);
 
   function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    ICrossChainForwarder(addresses.crossChainController).disableBridgeAdapters(
-      getBridgeAdaptersToDisable()
-    );
-    //    ICrossChainReceiver(addresses.crossChainController).disallowReceiverBridgeAdapters(
-    //      getReceiverBridgeAdaptersToDisallow()
+    //    ICrossChainForwarder(addresses.crossChainController).disableBridgeAdapters(
+    //      getBridgeAdaptersToDisable()
     //    );
+    ICrossChainReceiver(addresses.crossChainController).disallowReceiverBridgeAdapters(
+      getReceiverBridgeAdaptersToDisallow()
+    );
+  }
+}
+
+contract Celo is BaseRemoveBridgeAdapters {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function getBridgeAdaptersToDisable()
+    public
+    pure
+    override
+    returns (ICrossChainForwarder.BridgeAdapterToDisable[] memory)
+  {
+    ICrossChainForwarder.BridgeAdapterToDisable[]
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](0);
+    return bridgeAdapters;
+  }
+
+  function getReceiverBridgeAdaptersToDisallow()
+    public
+    pure
+    override
+    returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory)
+  {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.ETHEREUM;
+
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+      memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](3);
+    bridgeAdapters[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: 0xcB1F67533DAD738E1930404bE9D4F844752773DA,
+      chainIds: chainIds
+    });
+    bridgeAdapters[1] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: 0x2e649f6b54B07E210b31c9cC2eB8a0d5997c3D4A,
+      chainIds: chainIds
+    });
+    bridgeAdapters[2] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: 0x9fE056F44510F970d724adA16903ba5D75CC4742,
+      chainIds: chainIds
+    });
+    return bridgeAdapters;
   }
 }
 
