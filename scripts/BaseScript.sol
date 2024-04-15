@@ -44,29 +44,29 @@ library DeployerHelpers {
 
   function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
     if (chainId == ChainIds.ETHEREUM) {
-      return './deployments/cc/mainnet/pre_prod_eth.json';
+      return './deployments/cc/mainnet/eth.json';
     } else if (chainId == ChainIds.POLYGON) {
-      return './deployments/cc/mainnet/pre_prod_pol.json';
+      return './deployments/cc/mainnet/pol.json';
     } else if (chainId == ChainIds.AVALANCHE) {
-      return './deployments/cc/mainnet/pre_prod_avax.json';
+      return './deployments/cc/mainnet/avax.json';
     } else if (chainId == ChainIds.ARBITRUM) {
-      return './deployments/cc/mainnet/pre_prod_arb.json';
+      return './deployments/cc/mainnet/arb.json';
     } else if (chainId == ChainIds.OPTIMISM) {
-      return './deployments/cc/mainnet/pre_prod_op.json';
+      return './deployments/cc/mainnet/op.json';
     } else if (chainId == ChainIds.METIS) {
-      return './deployments/cc/mainnet/pre_prod_metis.json';
+      return './deployments/cc/mainnet/metis.json';
     } else if (chainId == ChainIds.BNB) {
-      return './deployments/cc/mainnet/pre_prod_bnb.json';
+      return './deployments/cc/mainnet/bnb.json';
     } else if (chainId == ChainIds.BASE) {
-      return './deployments/cc/mainnet/pre_prod_base.json';
+      return './deployments/cc/mainnet/base.json';
     } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
       return './deployments/cc/mainnet/zkevm.json';
     } else if (chainId == ChainIds.GNOSIS) {
-      return './deployments/cc/mainnet/pre_prod_gnosis.json';
+      return './deployments/cc/mainnet/gnosis.json';
     } else if (chainId == ChainIds.SCROLL) {
-      return './deployments/cc/mainnet/pre_prod_scroll.json';
+      return './deployments/cc/mainnet/scroll.json';
     } else if (chainId == ChainIds.CELO) {
-      return './deployments/cc/mainnet/pre_prod_celo.json';
+      return './deployments/cc/mainnet/celo.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
