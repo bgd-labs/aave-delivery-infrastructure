@@ -165,7 +165,7 @@ library DeployerHelpers {
 
 library Constants {
   address public constant OWNER = 0xf71fc92e2949ccF6A5Fd369a0b402ba80Bc61E02;
-  bytes32 public constant ADMIN_SALT = keccak256(bytes('Aave Pre Prod Proxy Admin'));
+  bytes32 public constant ADMIN_SALT = keccak256(bytes('Proxy Admin'));
   bytes32 public constant CCC_SALT = keccak256(bytes('a.DI Cross Chain Controller'));
   bytes32 public constant CREATE3_FACTORY_SALT = keccak256(bytes('Create3 Factory'));
 }

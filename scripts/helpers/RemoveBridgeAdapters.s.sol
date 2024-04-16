@@ -19,9 +19,9 @@ abstract contract BaseRemoveBridgeAdapters is BaseScript {
     returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory);
 
   function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    //    ICrossChainForwarder(addresses.crossChainController).disableBridgeAdapters(
-    //      getBridgeAdaptersToDisable()
-    //    );
+    ICrossChainForwarder(addresses.crossChainController).disableBridgeAdapters(
+      getBridgeAdaptersToDisable()
+    );
     ICrossChainReceiver(addresses.crossChainController).disallowReceiverBridgeAdapters(
       getReceiverBridgeAdaptersToDisallow()
     );

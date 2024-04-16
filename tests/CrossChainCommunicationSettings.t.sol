@@ -100,128 +100,128 @@ contract BaseCCCommunicationTest is Test {
   }
 }
 
-//contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
-//  function test_Eth_Eth_Path() public {
-//    vm.selectFork(ethFork);
-//    // get bridge adapters configured for the same chain path
-//    ICrossChainForwarder.ChainIdBridgeConfig[] memory adaptersByChain = ICrossChainForwarder(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER
-//    ).getForwarderBridgeAdaptersByChain(ChainIds.ETHEREUM);
-//
-//    // there should only be one bridge adapter configured for same chain path
-//    assertEq(adaptersByChain.length, 1);
-//
-//    // for same chain path, origin and destination bridge adapter must be the same.
-//    assertEq(
-//      adaptersByChain[0].currentChainBridgeAdapter,
-//      adaptersByChain[0].destinationBridgeAdapter
-//    );
-//
-//    // same chain bridge adapter has no trusted remotes, as communication is direct (it only forwards messages)
-//    assertEq(
-//      BaseAdapter(adaptersByChain[0].currentChainBridgeAdapter).getTrustedRemoteByChainId(
-//        ChainIds.ETHEREUM
-//      ),
-//      address(0)
-//    );
-//  }
-//
-//  function test_Eth_Pol_Path() public {
-//    _checkPath(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.ETHEREUM,
-//      ChainIds.POLYGON,
-//      ethFork,
-//      polFork
-//    );
-//  }
-//
-//  function test_Pol_Eth_Path() public {
-//    _checkPath(
-//      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.POLYGON,
-//      ChainIds.ETHEREUM,
-//      polFork,
-//      ethFork
-//    );
-//  }
-//
-//  function test_Eth_Avax_Path() public {
-//    _checkPath(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Avalanche.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.ETHEREUM,
-//      ChainIds.AVALANCHE,
-//      ethFork,
-//      avaxFork
-//    );
-//  }
-//
-//  function test_Avax_Eth_Path() public {
-//    _checkPath(
-//      GovernanceV3Avalanche.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.AVALANCHE,
-//      ChainIds.ETHEREUM,
-//      avaxFork,
-//      ethFork
-//    );
-//  }
-//
-//  function test_Eth_Op_Path() public {
-//    _checkPath(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Optimism.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.ETHEREUM,
-//      ChainIds.OPTIMISM,
-//      ethFork,
-//      opFork
-//    );
-//  }
-//
-//  function test_Eth_Arb_Path() public {
-//    _checkPath(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Arbitrum.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.ETHEREUM,
-//      ChainIds.ARBITRUM,
-//      ethFork,
-//      arbFork
-//    );
-//  }
-//
-//  function test_Eth_Base_Path() public {
-//    _checkPath(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Base.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.ETHEREUM,
-//      ChainIds.BASE,
-//      ethFork,
-//      baseFork
-//    );
-//  }
-//
-//  function test_Eth_BNB_Path() public {
-//    _checkPath(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Binance.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.ETHEREUM,
-//      ChainIds.BNB,
-//      ethFork,
-//      bnbFork
-//    );
-//  }
-//
-//  function test_Eth_Metis_Path() public {
-//    _checkPath(
-//      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
-//      GovernanceV3Metis.CROSS_CHAIN_CONTROLLER,
-//      ChainIds.ETHEREUM,
-//      ChainIds.METIS,
-//      ethFork,
-//      metisFork
-//    );
-//  }
-//}
+contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
+  function xtest_Eth_Eth_Path() public {
+    vm.selectFork(ethFork);
+    // get bridge adapters configured for the same chain path
+    ICrossChainForwarder.ChainIdBridgeConfig[] memory adaptersByChain = ICrossChainForwarder(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER
+    ).getForwarderBridgeAdaptersByChain(ChainIds.ETHEREUM);
+
+    // there should only be one bridge adapter configured for same chain path
+    assertEq(adaptersByChain.length, 1);
+
+    // for same chain path, origin and destination bridge adapter must be the same.
+    assertEq(
+      adaptersByChain[0].currentChainBridgeAdapter,
+      adaptersByChain[0].destinationBridgeAdapter
+    );
+
+    // same chain bridge adapter has no trusted remotes, as communication is direct (it only forwards messages)
+    assertEq(
+      BaseAdapter(adaptersByChain[0].currentChainBridgeAdapter).getTrustedRemoteByChainId(
+        ChainIds.ETHEREUM
+      ),
+      address(0)
+    );
+  }
+
+  function xtest_Eth_Pol_Path() public {
+    _checkPath(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
+      ChainIds.ETHEREUM,
+      ChainIds.POLYGON,
+      ethFork,
+      polFork
+    );
+  }
+
+  function xtest_Pol_Eth_Path() public {
+    _checkPath(
+      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      ChainIds.POLYGON,
+      ChainIds.ETHEREUM,
+      polFork,
+      ethFork
+    );
+  }
+
+  function xtest_Eth_Avax_Path() public {
+    _checkPath(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Avalanche.CROSS_CHAIN_CONTROLLER,
+      ChainIds.ETHEREUM,
+      ChainIds.AVALANCHE,
+      ethFork,
+      avaxFork
+    );
+  }
+
+  function xtest_Avax_Eth_Path() public {
+    _checkPath(
+      GovernanceV3Avalanche.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      ChainIds.AVALANCHE,
+      ChainIds.ETHEREUM,
+      avaxFork,
+      ethFork
+    );
+  }
+
+  function xtest_Eth_Op_Path() public {
+    _checkPath(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Optimism.CROSS_CHAIN_CONTROLLER,
+      ChainIds.ETHEREUM,
+      ChainIds.OPTIMISM,
+      ethFork,
+      opFork
+    );
+  }
+
+  function xtest_Eth_Arb_Path() public {
+    _checkPath(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Arbitrum.CROSS_CHAIN_CONTROLLER,
+      ChainIds.ETHEREUM,
+      ChainIds.ARBITRUM,
+      ethFork,
+      arbFork
+    );
+  }
+
+  function xtest_Eth_Base_Path() public {
+    _checkPath(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Base.CROSS_CHAIN_CONTROLLER,
+      ChainIds.ETHEREUM,
+      ChainIds.BASE,
+      ethFork,
+      baseFork
+    );
+  }
+
+  function xtest_Eth_BNB_Path() public {
+    _checkPath(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Binance.CROSS_CHAIN_CONTROLLER,
+      ChainIds.ETHEREUM,
+      ChainIds.BNB,
+      ethFork,
+      bnbFork
+    );
+  }
+
+  function xtest_Eth_Metis_Path() public {
+    _checkPath(
+      GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
+      GovernanceV3Metis.CROSS_CHAIN_CONTROLLER,
+      ChainIds.ETHEREUM,
+      ChainIds.METIS,
+      ethFork,
+      metisFork
+    );
+  }
+}
