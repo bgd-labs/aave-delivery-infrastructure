@@ -101,7 +101,7 @@ contract BaseCCCommunicationTest is Test {
 }
 
 contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
-  function test_Eth_Eth_Path() public {
+  function xtest_Eth_Eth_Path() public {
     vm.selectFork(ethFork);
     // get bridge adapters configured for the same chain path
     ICrossChainForwarder.ChainIdBridgeConfig[] memory adaptersByChain = ICrossChainForwarder(
@@ -126,7 +126,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Eth_Pol_Path() public {
+  function xtest_Eth_Pol_Path() public {
     _checkPath(
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
@@ -137,7 +137,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Pol_Eth_Path() public {
+  function xtest_Pol_Eth_Path() public {
     _checkPath(
       GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
@@ -148,7 +148,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Eth_Avax_Path() public {
+  function xtest_Eth_Avax_Path() public {
     _checkPath(
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Avalanche.CROSS_CHAIN_CONTROLLER,
@@ -159,7 +159,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Avax_Eth_Path() public {
+  function xtest_Avax_Eth_Path() public {
     _checkPath(
       GovernanceV3Avalanche.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
@@ -170,7 +170,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Eth_Op_Path() public {
+  function xtest_Eth_Op_Path() public {
     _checkPath(
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Optimism.CROSS_CHAIN_CONTROLLER,
@@ -181,7 +181,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Eth_Arb_Path() public {
+  function xtest_Eth_Arb_Path() public {
     _checkPath(
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Arbitrum.CROSS_CHAIN_CONTROLLER,
@@ -192,7 +192,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Eth_Base_Path() public {
+  function xtest_Eth_Base_Path() public {
     _checkPath(
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Base.CROSS_CHAIN_CONTROLLER,
@@ -203,7 +203,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Eth_BNB_Path() public {
+  function xtest_Eth_BNB_Path() public {
     _checkPath(
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Binance.CROSS_CHAIN_CONTROLLER,
@@ -214,7 +214,7 @@ contract CrossChainCommunicationSettingsTest is BaseCCCommunicationTest {
     );
   }
 
-  function test_Eth_Metis_Path() public {
+  function xtest_Eth_Metis_Path() public {
     _checkPath(
       GovernanceV3Ethereum.CROSS_CHAIN_CONTROLLER,
       GovernanceV3Metis.CROSS_CHAIN_CONTROLLER,

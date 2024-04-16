@@ -31,22 +31,22 @@ contract Ethereum is BaseCCFSenderAdapters {
 
     // polygon path
     DeployerHelpers.Addresses memory addressesPolygon = _getAddresses(ChainIds.POLYGON);
-    bridgeAdaptersToEnable[14] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.polAdapter,
       destinationBridgeAdapter: addressesPolygon.polAdapter,
       destinationChainId: addressesPolygon.chainId
     });
-    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.ccipAdapter,
       destinationBridgeAdapter: addressesPolygon.ccipAdapter,
       destinationChainId: addressesPolygon.chainId
     });
-    bridgeAdaptersToEnable[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.lzAdapter,
       destinationBridgeAdapter: addressesPolygon.lzAdapter,
       destinationChainId: addressesPolygon.chainId
     });
-    bridgeAdaptersToEnable[2] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.hlAdapter,
       destinationBridgeAdapter: addressesPolygon.hlAdapter,
       destinationChainId: addressesPolygon.chainId
@@ -54,18 +54,17 @@ contract Ethereum is BaseCCFSenderAdapters {
 
     // avalanche path
     DeployerHelpers.Addresses memory addressesAvax = _getAddresses(ChainIds.AVALANCHE);
-
-    bridgeAdaptersToEnable[3] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[4] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.ccipAdapter,
       destinationBridgeAdapter: addressesAvax.ccipAdapter,
       destinationChainId: addressesAvax.chainId
     });
-    bridgeAdaptersToEnable[4] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[5] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.lzAdapter,
       destinationBridgeAdapter: addressesAvax.lzAdapter,
       destinationChainId: addressesAvax.chainId
     });
-    bridgeAdaptersToEnable[5] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[6] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.hlAdapter,
       destinationBridgeAdapter: addressesAvax.hlAdapter,
       destinationChainId: addressesAvax.chainId
@@ -73,53 +72,53 @@ contract Ethereum is BaseCCFSenderAdapters {
 
     // binance path
     DeployerHelpers.Addresses memory addressesBNB = _getAddresses(ChainIds.BNB);
-
-    bridgeAdaptersToEnable[6] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[7] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.lzAdapter,
       destinationBridgeAdapter: addressesBNB.lzAdapter,
       destinationChainId: addressesBNB.chainId
     });
-    bridgeAdaptersToEnable[7] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.hlAdapter,
       destinationBridgeAdapter: addressesBNB.hlAdapter,
       destinationChainId: addressesBNB.chainId
     });
-    bridgeAdaptersToEnable[8] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.ccipAdapter,
       destinationBridgeAdapter: addressesBNB.ccipAdapter,
       destinationChainId: addressesBNB.chainId
     });
 
-    // rollups
+    // optimism
     DeployerHelpers.Addresses memory addressesOp = _getAddresses(ChainIds.OPTIMISM);
-    bridgeAdaptersToEnable[9] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[10] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.opAdapter,
       destinationBridgeAdapter: addressesOp.opAdapter,
       destinationChainId: addressesOp.chainId
     });
-
+    // arbitrum
     DeployerHelpers.Addresses memory addressesArb = _getAddresses(ChainIds.ARBITRUM);
-    bridgeAdaptersToEnable[10] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[11] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.arbAdapter,
       destinationBridgeAdapter: addressesArb.arbAdapter,
       destinationChainId: addressesArb.chainId
     });
-
+    // metis
     DeployerHelpers.Addresses memory addressesMetis = _getAddresses(ChainIds.METIS);
-    bridgeAdaptersToEnable[11] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[12] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.metisAdapter,
       destinationBridgeAdapter: addressesMetis.metisAdapter,
       destinationChainId: addressesMetis.chainId
     });
+    //base
     DeployerHelpers.Addresses memory addressesBase = _getAddresses(ChainIds.BASE);
-    bridgeAdaptersToEnable[12] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[13] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.baseAdapter,
       destinationBridgeAdapter: addressesBase.baseAdapter,
       destinationChainId: addressesBase.chainId
     });
 
     // same chain path
-    bridgeAdaptersToEnable[13] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    bridgeAdaptersToEnable[14] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
       currentChainBridgeAdapter: addresses.sameChainAdapter,
       destinationBridgeAdapter: addresses.sameChainAdapter,
       destinationChainId: addresses.chainId
