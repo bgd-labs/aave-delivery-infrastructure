@@ -27,12 +27,6 @@ abstract contract BaseCCCUpdate is BaseScript {
       addresses.clEmergencyOracle = CL_EMERGENCY_ORACLE();
     }
 
-    //    ProxyAdmin(addresses.proxyAdmin).upgradeAndCall(
-    //      TransparentUpgradeableProxy(payable(addresses.crossChainController)),
-    //      crossChainControllerImpl,
-    //      abi.encodeWithSelector(IReinitialize.initializeRevision.selector)
-    //    );
-
     addresses.crossChainControllerImpl = crossChainControllerImpl;
   }
 }
