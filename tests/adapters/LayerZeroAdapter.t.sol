@@ -19,6 +19,9 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
+    vm.assume(lzEndpoint > address(65536));
+    vm.assume(originForwarder > address(65536));
+    vm.assume(crossChainController > address(65536));
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(lzEndpoint);
@@ -212,39 +215,39 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
   //   _testForwardMessage(lzEndpoint, receiver, dstGasLimit, caller);
   // }
 
-  // function testForwardPayloadWithNoValue(
-  //   address crossChainController,
-  //   address lzEndpoint,
-  //   address originForwarder,
-  //   uint256 baseGasLimit,
-  //   uint256 dstGasLimit,
-  //   address receiver
-  // )
-  //   public
-  //   setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
-  // {
-  //   vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
-  //   vm.assume(receiver != address(0));
+  function testForwardPayloadWithNoValue(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
+    vm.assume(receiver != address(0));
 
-  //   bytes memory payload = abi.encode('test message');
+    bytes memory payload = abi.encode('test message');
 
-  //   vm.mockCall(
-  //     lzEndpoint,
-  //     abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
-  //     abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
-  //   );
-  //   vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
-  //   (bool success, ) = address(layerZeroAdapter).delegatecall(
-  //     abi.encodeWithSelector(
-  //       IBaseAdapter.forwardMessage.selector,
-  //       receiver,
-  //       dstGasLimit,
-  //       ChainIds.POLYGON,
-  //       payload
-  //     )
-  //   );
-  //   assertEq(success, false);
-  // }
+    vm.mockCall(
+      lzEndpoint,
+      abi.encodeWithSelector(ILayerZeroEndpointV2.quote.selector),
+      abi.encode(MessagingFee({nativeFee: 10, lzTokenFee: 0}))
+    );
+    vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
+    (bool success, ) = address(layerZeroAdapter).delegatecall(
+      abi.encodeWithSelector(
+        IBaseAdapter.forwardMessage.selector,
+        receiver,
+        dstGasLimit,
+        ChainIds.POLYGON,
+        payload
+      )
+    );
+    assertEq(success, false);
+  }
 
   function testForwardPayloadWhenNoChainSet(
     address crossChainController,
