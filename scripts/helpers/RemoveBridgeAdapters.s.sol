@@ -28,6 +28,121 @@ abstract contract BaseRemoveBridgeAdapters is BaseScript {
   }
 }
 
+contract Celo is BaseRemoveBridgeAdapters {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function getBridgeAdaptersToDisable()
+    public
+    pure
+    override
+    returns (ICrossChainForwarder.BridgeAdapterToDisable[] memory)
+  {
+    ICrossChainForwarder.BridgeAdapterToDisable[]
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](0);
+    return bridgeAdapters;
+  }
+
+  function getReceiverBridgeAdaptersToDisallow()
+    public
+    pure
+    override
+    returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory)
+  {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.ETHEREUM;
+
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+      memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](3);
+    bridgeAdapters[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: 0xcB1F67533DAD738E1930404bE9D4F844752773DA,
+      chainIds: chainIds
+    });
+    bridgeAdapters[1] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: 0x2e649f6b54B07E210b31c9cC2eB8a0d5997c3D4A,
+      chainIds: chainIds
+    });
+    bridgeAdapters[2] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: 0x9fE056F44510F970d724adA16903ba5D75CC4742,
+      chainIds: chainIds
+    });
+    return bridgeAdapters;
+  }
+}
+
+contract Scroll is BaseRemoveBridgeAdapters {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.ETHEREUM;
+  }
+
+  function getBridgeAdaptersToDisable()
+    public
+    pure
+    override
+    returns (ICrossChainForwarder.BridgeAdapterToDisable[] memory)
+  {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.CELO;
+
+    ICrossChainForwarder.BridgeAdapterToDisable[]
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
+    bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+      bridgeAdapter: 0xFf8C72bE9bE0Fe889e04BBFdA7D83f78dE7A5E64,
+      chainIds: chainIds
+    });
+    return bridgeAdapters;
+  }
+
+  function getReceiverBridgeAdaptersToDisallow()
+    public
+    pure
+    override
+    returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory)
+  {
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+      memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0);
+
+    return bridgeAdapters;
+  }
+}
+
+contract Ethereum is BaseRemoveBridgeAdapters {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.ETHEREUM;
+  }
+
+  function getBridgeAdaptersToDisable()
+    public
+    pure
+    override
+    returns (ICrossChainForwarder.BridgeAdapterToDisable[] memory)
+  {
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.CELO;
+
+    ICrossChainForwarder.BridgeAdapterToDisable[]
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
+    bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+      bridgeAdapter: 0xFf8C72bE9bE0Fe889e04BBFdA7D83f78dE7A5E64,
+      chainIds: chainIds
+    });
+    return bridgeAdapters;
+  }
+
+  function getReceiverBridgeAdaptersToDisallow()
+    public
+    pure
+    override
+    returns (ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory)
+  {
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+      memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0);
+
+    return bridgeAdapters;
+  }
+}
+
 contract Ethereum_testnet is BaseRemoveBridgeAdapters {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.ETHEREUM_SEPOLIA;
