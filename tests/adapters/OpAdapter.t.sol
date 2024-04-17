@@ -35,11 +35,16 @@ contract OpAdapterTest is Test {
       CROSS_CHAIN_CONTROLLER,
       OVM_CROSS_DOMAIN_MESSENGER,
       BASE_GAS_LIMIT,
+      'Optimism native adapter',
       originConfigs
     );
   }
 
   function testInitialize() public {
+    assertEq(
+      keccak256(abi.encode(opAdapter.adapterName())),
+      keccak256(abi.encode('Optimism native adapter'))
+    );
     assertEq(opAdapter.getTrustedRemoteByChainId(ORIGIN_CHAIN_ID), ORIGIN_FORWARDER);
   }
 

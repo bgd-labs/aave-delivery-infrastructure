@@ -14,4 +14,6 @@ library ChainIds {
   uint256 constant BASE = 8453;
   uint256 constant POLYGON_ZK_EVM = 1101;
   uint256 constant GNOSIS = 100;
+  uint256 constant SCROLL = 534352;
+  uint256 constant CELO = 42220;
 }

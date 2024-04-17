@@ -12,7 +12,7 @@ abstract contract BaseSendDirectMessage is BaseScript {
   }
 
   function getGasLimit() public view virtual returns (uint256) {
-    return 300_000;
+    return 150_000;
   }
 
   function getMessage() public view virtual returns (bytes memory) {
@@ -37,7 +37,7 @@ contract Ethereum is BaseSendDirectMessage {
   }
 
   function DESTINATION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.POLYGON_ZK_EVM;
+    return ChainIds.METIS;
   }
 }
 
@@ -49,10 +49,6 @@ contract Avalanche is BaseSendDirectMessage {
   function DESTINATION_NETWORK() public pure override returns (uint256) {
     return ChainIds.ETHEREUM;
   }
-
-  function getMessage() public pure override returns (bytes memory) {
-    return abi.encode(0, 1_000_000 ether, 300_000 ether);
-  }
 }
 
 contract Polygon is BaseSendDirectMessage {
@@ -63,8 +59,34 @@ contract Polygon is BaseSendDirectMessage {
   function DESTINATION_NETWORK() public pure override returns (uint256) {
     return ChainIds.ETHEREUM;
   }
+}
 
-  function getMessage() public pure override returns (bytes memory) {
-    return abi.encode(0, 1_000_000 ether, 300_000 ether);
+contract Ethereum_testnet is BaseSendDirectMessage {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
+  }
+
+  function DESTINATION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.POLYGON_MUMBAI;
+  }
+}
+
+contract Avalanche_testnet is BaseSendDirectMessage {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.AVALANCHE_FUJI;
+  }
+
+  function DESTINATION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
+  }
+}
+
+contract Polygon_testnet is BaseSendDirectMessage {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.POLYGON_MUMBAI;
+  }
+
+  function DESTINATION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
   }
 }

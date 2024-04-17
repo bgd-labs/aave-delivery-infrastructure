@@ -1,131 +1,171 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import 'forge-std/Test.sol';
-import {HyperLaneAdapter, IHyperLaneAdapter, IMailbox, IInterchainGasPaymaster} from '../../src/contracts/adapters/hyperLane/HyperLaneAdapter.sol';
+import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
+import {HyperLaneAdapter, IHyperLaneAdapter, IMailbox, TypeCasts, StandardHookMetadata} from '../../src/contracts/adapters/hyperLane/HyperLaneAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
-import {TypeCasts} from 'hyperlane-monorepo/libs/TypeCasts.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
+import {BaseAdapterTest} from './BaseAdapterTest.sol';
 
-contract HyperLaneAdapterTest is Test {
-  address public constant ORIGIN_FORWARDER = address(123);
-  address public constant CROSS_CHAIN_CONTROLLER = address(1234);
-  address public constant MAIL_BOX = address(12345);
-  address public constant IGP = address(123456);
-  address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
-  address public constant ADDRESS_WITH_ETH = address(12301234);
-
-  uint256 public constant ORIGIN_HL_CHAIN_ID = ChainIds.ETHEREUM;
-  uint256 public constant BASE_GAS_LIMIT = 10_000;
-
+contract HyperLaneAdapterTest is BaseAdapterTest {
   HyperLaneAdapter public hlAdapter;
-
-  IBaseAdapter.TrustedRemotesConfig internal originConfig =
-    IBaseAdapter.TrustedRemotesConfig({
-      originForwarder: ORIGIN_FORWARDER,
-      originChainId: ORIGIN_HL_CHAIN_ID
-    });
 
   event SetTrustedRemote(uint256 indexed originChainId, address indexed originForwarder);
 
-  function setUp() public {
+  modifier setHLAdapter(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  ) {
+    vm.assume(baseGasLimit < 1e7);
+    _assumeSafeAddress(crossChainController);
+    _assumeSafeAddress(mailBox);
+    vm.assume(originForwarder != address(0));
+    vm.assume(originChainId > 0);
+
+    IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
+      originForwarder: originForwarder,
+      originChainId: originChainId
+    });
     IBaseAdapter.TrustedRemotesConfig[]
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    hlAdapter = new HyperLaneAdapter(
-      CROSS_CHAIN_CONTROLLER,
-      MAIL_BOX,
-      IGP,
-      BASE_GAS_LIMIT,
-      originConfigs
+    hlAdapter = new HyperLaneAdapter(crossChainController, mailBox, baseGasLimit, originConfigs);
+    _;
+  }
+
+  function setUp() public {}
+
+  function testWrongMailBox(
+    address crossChainController,
+    uint256 baseGasLimit,
+    address originForwarder,
+    uint256 originChainId
+  ) public {
+    vm.assume(crossChainController != address(0));
+    vm.assume(originForwarder != address(0));
+    vm.assume(originChainId > 0);
+
+    IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
+      originForwarder: originForwarder,
+      originChainId: originChainId
+    });
+    IBaseAdapter.TrustedRemotesConfig[]
+      memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
+    originConfigs[0] = originConfig;
+    vm.expectRevert(bytes(Errors.INVALID_HL_MAILBOX));
+    new HyperLaneAdapter(crossChainController, address(0), baseGasLimit, originConfigs);
+  }
+
+  function testInitialize(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, originChainId)
+  {
+    assertEq(
+      keccak256(abi.encode(hlAdapter.adapterName())),
+      keccak256(abi.encode('Hyperlane adapter'))
     );
+    assertEq(hlAdapter.getTrustedRemoteByChainId(originChainId), originForwarder);
   }
 
-  function testInitialize() public {
-    assertEq(hlAdapter.getTrustedRemoteByChainId(ORIGIN_HL_CHAIN_ID), ORIGIN_FORWARDER);
-  }
-
-  function testGetInfraChainFromBridgeChain() public {
+  function testGetInfraChainFromBridgeChain(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, originChainId)
+  {
     assertEq(hlAdapter.nativeToInfraChainId(uint32(ChainIds.POLYGON)), ChainIds.POLYGON);
   }
 
-  function testGetBridgeChainFromInfraChain() public {
+  function testGetBridgeChainFromInfraChain(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, originChainId)
+  {
     assertEq(hlAdapter.infraToNativeChainId(ChainIds.POLYGON), uint32(ChainIds.POLYGON));
   }
 
-  function testForwardMessage() public {
-    uint40 payloadId = uint40(0);
-    bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-    uint256 dstGasLimit = 600000;
-    bytes32 messageId = keccak256(abi.encode(1));
-    uint32 nativeChainId = uint32(ChainIds.POLYGON);
+  function testForwardMessage(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver,
+    address caller
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.POLYGON)
+  {
+    vm.assume(caller != address(0));
+    vm.assume(dstGasLimit < 1 ether);
+    vm.assume(receiver != address(0));
 
-    hoax(ADDRESS_WITH_ETH, 10 ether);
-    vm.mockCall(
-      MAIL_BOX,
-      abi.encodeWithSelector(IMailbox.dispatch.selector),
-      abi.encode(messageId)
-    );
-    vm.mockCall(
-      IGP,
-      abi.encodeWithSelector(
-        IInterchainGasPaymaster.quoteGasPayment.selector,
-        nativeChainId,
-        dstGasLimit + BASE_GAS_LIMIT
-      ),
-      abi.encode(10)
-    );
-    vm.mockCall(
-      IGP,
-      10,
-      abi.encodeWithSelector(
-        IInterchainGasPaymaster.payForGas.selector,
-        messageId,
-        nativeChainId,
-        dstGasLimit + BASE_GAS_LIMIT,
-        ADDRESS_WITH_ETH
-      ),
-      abi.encode()
-    );
-    (bool success, bytes memory returnData) = address(hlAdapter).delegatecall(
+    _testForwardMessage(mailBox, receiver, dstGasLimit, baseGasLimit, caller);
+  }
+
+  function testForwardMessageWithNoValue(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.POLYGON)
+  {
+    vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
+    vm.assume(receiver != address(0));
+
+    bytes memory message = abi.encode('test message');
+
+    vm.mockCall(mailBox, abi.encodeWithSelector(IMailbox.quoteDispatch.selector), abi.encode(1e4));
+    vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
+    (bool success, ) = address(hlAdapter).delegatecall(
       abi.encodeWithSelector(
         IBaseAdapter.forwardMessage.selector,
-        RECEIVER_CROSS_CHAIN_CONTROLLER,
+        receiver,
         dstGasLimit,
         ChainIds.POLYGON,
         message
       )
     );
-    vm.clearMockedCalls();
-
-    assertEq(success, true);
-    assertEq(returnData, abi.encode(MAIL_BOX, messageId));
-  }
-
-  function testForwardMessageWithNoValue() public {
-    uint40 payloadId = uint40(0);
-    bytes memory payload = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-
-    vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
-    (bool success, ) = address(hlAdapter).delegatecall(
-      abi.encodeWithSelector(
-        IBaseAdapter.forwardMessage.selector,
-        RECEIVER_CROSS_CHAIN_CONTROLLER,
-        0,
-        ChainIds.POLYGON,
-        payload
-      )
-    );
     assertEq(success, false);
   }
 
-  function testForwardMessageWhenWrongReceiver() public {
-    uint40 payloadId = uint40(0);
-    bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-    uint256 dstGasLimit = 600000;
+  function testForwardMessageWhenWrongReceiver(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.POLYGON)
+  {
+    vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
+    bytes memory message = abi.encode('test message');
 
     vm.expectRevert(bytes(Errors.RECEIVER_NOT_SET));
     HyperLaneAdapter(address(hlAdapter)).forwardMessage(
@@ -136,49 +176,119 @@ contract HyperLaneAdapterTest is Test {
     );
   }
 
-  function testHandle() public {
-    uint32 originChain = uint32(1);
+  function testHandle(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
     bytes memory message = abi.encode('some message');
 
-    hoax(MAIL_BOX);
+    hoax(mailBox);
     vm.mockCall(
-      CROSS_CHAIN_CONTROLLER,
+      crossChainController,
       abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
       abi.encode()
     );
     vm.expectCall(
-      CROSS_CHAIN_CONTROLLER,
+      crossChainController,
       0,
-      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector, message, 1)
+      abi.encodeWithSelector(
+        ICrossChainReceiver.receiveCrossChainMessage.selector,
+        message,
+        ChainIds.ETHEREUM
+      )
     );
     HyperLaneAdapter(address(hlAdapter)).handle(
-      originChain,
-      TypeCasts.addressToBytes32(ORIGIN_FORWARDER),
+      uint32(ChainIds.ETHEREUM),
+      TypeCasts.addressToBytes32(originForwarder),
       message
     );
   }
 
-  function testHandleWhenCallerNotMailBox() public {
-    uint32 originChain = uint32(1);
+  function testHandleWhenCallerNotMailBox(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    address caller
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
     bytes memory message = abi.encode('some message');
 
+    vm.assume(caller != mailBox);
+    hoax(caller);
     vm.expectRevert(bytes(Errors.CALLER_NOT_HL_MAILBOX));
     HyperLaneAdapter(address(hlAdapter)).handle(
-      originChain,
-      TypeCasts.addressToBytes32(ORIGIN_FORWARDER),
+      uint32(ChainIds.ETHEREUM),
+      TypeCasts.addressToBytes32(originForwarder),
       message
     );
   }
 
-  function testHandleWhenWrongSrcAddress(uint32 originChain, address addr) public {
+  function testHandleWhenWrongSrcAddress(
+    address crossChainController,
+    address mailBox,
+    address originForwarder,
+    uint256 baseGasLimit,
+    address srcAddress
+  )
+    public
+    setHLAdapter(crossChainController, mailBox, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(srcAddress != originForwarder);
     bytes memory message = abi.encode('some message');
 
-    hoax(MAIL_BOX);
+    hoax(mailBox);
     vm.expectRevert(bytes(Errors.REMOTE_NOT_TRUSTED));
     HyperLaneAdapter(address(hlAdapter)).handle(
-      originChain,
-      TypeCasts.addressToBytes32(addr),
+      uint32(ChainIds.ETHEREUM),
+      TypeCasts.addressToBytes32(srcAddress),
       message
     );
+  }
+
+  function _testForwardMessage(
+    address mailBox,
+    address receiver,
+    uint256 dstGasLimit,
+    uint256 baseGasLimit,
+    address caller
+  ) internal {
+    bytes memory message = abi.encode('test message');
+    bytes32 messageId = keccak256(abi.encode(1));
+
+    hoax(caller, 10 ether);
+    vm.mockCall(
+      mailBox,
+      abi.encodeWithSelector(
+        IMailbox.quoteDispatch.selector,
+        uint32(ChainIds.POLYGON),
+        TypeCasts.addressToBytes32(receiver),
+        message,
+        StandardHookMetadata.overrideGasLimit(dstGasLimit + baseGasLimit)
+      ),
+      abi.encode(10)
+    );
+    vm.mockCall(mailBox, abi.encodeWithSelector(IMailbox.dispatch.selector), abi.encode(messageId));
+
+    (bool success, bytes memory returnData) = address(hlAdapter).delegatecall(
+      abi.encodeWithSelector(
+        IBaseAdapter.forwardMessage.selector,
+        receiver,
+        dstGasLimit,
+        ChainIds.POLYGON,
+        message
+      )
+    );
+    vm.clearMockedCalls();
+
+    assertEq(success, true);
+    assertEq(returnData, abi.encode(mailBox, messageId));
   }
 }

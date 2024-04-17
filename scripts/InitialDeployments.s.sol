@@ -1,18 +1,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import './BaseScript.sol';
 import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
 import {Create3Factory} from 'solidity-utils/contracts/create3/Create3Factory.sol';
-import {MiscEthereum} from 'aave-address-book/MiscEthereum.sol';
-import {MiscPolygon} from 'aave-address-book/MiscPolygon.sol';
-import {MiscAvalanche} from 'aave-address-book/MiscAvalanche.sol';
-import {MiscMetis} from 'aave-address-book/MiscMetis.sol';
-import {MiscOptimism} from 'aave-address-book/MiscOptimism.sol';
-import {MiscArbitrum} from 'aave-address-book/MiscArbitrum.sol';
-import {MiscBase} from 'aave-address-book/MiscBase.sol';
-import {MiscBNB} from 'aave-address-book/MiscBNB.sol';
-import {MiscGnosis} from 'aave-address-book/MiscGnosis.sol';
+import {MiscArbitrum, MiscAvalanche, MiscBase, MiscEthereum, MiscOptimism, MiscPolygon, MiscMetis, MiscGnosis, MiscBNB, MiscScroll, MiscPolygonZkEvm} from 'aave-address-book/AaveAddressBook.sol';
+import './BaseScript.sol';
 
 abstract contract BaseInitialDeployment is BaseScript {
   function OWNER() public virtual returns (address) {
@@ -64,7 +56,7 @@ contract Ethereum is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0xCA76Ebd8617a03126B6FB84F9b1c1A0fB71C2633;
+    return MiscEthereum.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -82,7 +74,7 @@ contract Polygon is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0x1450F2898D6bA2710C98BE9CAF3041330eD5ae58;
+    return MiscPolygon.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -100,7 +92,7 @@ contract Avalanche is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0xa35b76E4935449E33C56aB24b23fcd3246f13470;
+    return MiscAvalanche.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -118,7 +110,7 @@ contract Optimism is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0xE50c8C619d05ff98b22Adf991F17602C774F785c;
+    return MiscOptimism.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -136,7 +128,7 @@ contract Arbitrum is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0xbbd9f90699c1FA0D7A65870D241DD1f1217c96Eb;
+    return MiscArbitrum.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -154,7 +146,7 @@ contract Metis is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0xF6Db48C5968A9eBCB935786435530f28e32Cc501;
+    return MiscMetis.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -172,7 +164,7 @@ contract Binance is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0xF6Db48C5968A9eBCB935786435530f28e32Cc501;
+    return MiscBNB.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -190,7 +182,7 @@ contract Gnosis is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0xF163b8698821cefbD33Cf449764d69Ea445cE23D;
+    return MiscGnosis.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -208,7 +200,7 @@ contract Base is BaseInitialDeployment {
   }
 
   function GUARDIAN() public pure override returns (address) {
-    return 0x9e10C0A1Eb8FF6a0AaA53a62C7a338f35D7D9a2A;
+    return MiscBase.PROTOCOL_GUARDIAN;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -216,21 +208,58 @@ contract Base is BaseInitialDeployment {
   }
 }
 
+contract Scroll is BaseInitialDeployment {
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return MiscScroll.TRANSPARENT_PROXY_FACTORY;
+  }
+
+  function PROXY_ADMIN() public pure override returns (address) {
+    return MiscScroll.PROXY_ADMIN;
+  }
+
+  function GUARDIAN() public pure override returns (address) {
+    return MiscScroll.PROTOCOL_GUARDIAN;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.SCROLL;
+  }
+}
+
 contract Zkevm is BaseInitialDeployment {
-  //  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
-  //    return AaveMisc.TRANSPARENT_PROXY_FACTORY_ZKEVM;
-  //  }
-  //
-  //  function PROXY_ADMIN() public pure override returns (address) {
-  //    return AaveMisc.PROXY_ADMIN_ZKEVM;
-  //  }
-  //
-  //  function GUARDIAN() public pure override returns (address) {
-  //    return ;
-  //  }
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return MiscPolygonZkEvm.TRANSPARENT_PROXY_FACTORY;
+  }
+
+  function PROXY_ADMIN() public pure override returns (address) {
+    return MiscPolygonZkEvm.PROXY_ADMIN;
+  }
+
+  function GUARDIAN() public pure override returns (address) {
+    return MiscPolygonZkEvm.PROTOCOL_GUARDIAN;
+  }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return ChainIds.POLYGON_ZK_EVM;
+  }
+}
+
+contract Celo is BaseInitialDeployment {
+  function TRANSPARENT_PROXY_FACTORY() public pure override returns (address) {
+    return 0xb172a90A7C238969CE9B27cc19D13b60A91e7F00;
+  }
+
+  //
+  //  function PROXY_ADMIN() public pure override returns (address) {
+  //    return 0x01d678F1bbE148C96e7501F1Ac41661904F84F61;
+  //  }
+
+  //  function GUARDIAN() public pure override returns (address) {
+  //    return;
+  //  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
   }
 }
 
@@ -291,5 +320,17 @@ contract Gnosis_testnet is BaseInitialDeployment {
 contract Zkevm_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
     return TestNetChainIds.POLYGON_ZK_EVM_GOERLI;
+  }
+}
+
+contract Scroll_testnet is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.SCROLL_SEPOLIA;
+  }
+}
+
+contract Celo_testnet is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
   }
 }

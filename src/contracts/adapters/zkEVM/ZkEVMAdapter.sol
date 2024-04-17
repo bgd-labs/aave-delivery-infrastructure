@@ -34,7 +34,14 @@ abstract contract ZkEVMAdapter is BaseAdapter, IBridgeMessageReceiver {
     address zkEVMBridge,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
+  )
+    BaseAdapter(
+      crossChainController,
+      providerGasLimit,
+      'Polygon ZkEvm native adapter',
+      trustedRemotes
+    )
+  {
     ZK_EVM_BRIDGE = zkEVMBridge;
   }
 

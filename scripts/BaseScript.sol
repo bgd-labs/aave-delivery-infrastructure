@@ -38,6 +38,8 @@ library DeployerHelpers {
     address proxyAdmin;
     address proxyFactory;
     address sameChainAdapter;
+    address scrollAdapter;
+    address wormholeAdapter;
     address zkevmAdapter;
   }
 
@@ -62,29 +64,35 @@ library DeployerHelpers {
       return './deployments/cc/mainnet/zkevm.json';
     } else if (chainId == ChainIds.GNOSIS) {
       return './deployments/cc/mainnet/gnosis.json';
+    } else if (chainId == ChainIds.SCROLL) {
+      return './deployments/cc/mainnet/scroll.json';
+    } else if (chainId == ChainIds.CELO) {
+      return './deployments/cc/mainnet/celo.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
-    } else if (chainId == TestNetChainIds.ETHEREUM_GOERLI) {
-      return './deployments/cc/testnet/goerli.json';
     } else if (chainId == TestNetChainIds.POLYGON_MUMBAI) {
       return './deployments/cc/testnet/mum.json';
     } else if (chainId == TestNetChainIds.AVALANCHE_FUJI) {
       return './deployments/cc/testnet/fuji.json';
-    } else if (chainId == TestNetChainIds.ARBITRUM_GOERLI) {
-      return './deployments/cc/testnet/arb_go.json';
-    } else if (chainId == TestNetChainIds.OPTIMISM_GOERLI) {
-      return './deployments/cc/testnet/op_go.json';
+    } else if (chainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
+      return './deployments/cc/testnet/arb_sep.json';
+    } else if (chainId == TestNetChainIds.OPTIMISM_SEPOLIA) {
+      return './deployments/cc/testnet/op_sep.json';
     } else if (chainId == TestNetChainIds.METIS_TESTNET) {
       return './deployments/cc/testnet/met_test.json';
     } else if (chainId == TestNetChainIds.BNB_TESTNET) {
       return './deployments/cc/testnet/bnb_test.json';
-    } else if (chainId == TestNetChainIds.BASE_GOERLI) {
-      return './deployments/cc/testnet/base_go.json';
+    } else if (chainId == TestNetChainIds.BASE_SEPOLIA) {
+      return './deployments/cc/testnet/base_sep.json';
     } else if (chainId == TestNetChainIds.POLYGON_ZK_EVM_GOERLI) {
       return './deployments/cc/testnet/zkevm_go.json';
     } else if (chainId == TestNetChainIds.GNOSIS_CHIADO) {
       return './deployments/cc/testnet/gno_chiado.json';
+    } else if (chainId == TestNetChainIds.SCROLL_SEPOLIA) {
+      return './deployments/cc/testnet/scroll_sepolia.json';
+    } else if (chainId == TestNetChainIds.CELO_ALFAJORES) {
+      return './deployments/cc/testnet/celo_alfajores.json';
     } else {
       revert('chain id is not supported');
     }
@@ -119,7 +127,9 @@ library DeployerHelpers {
       mockDestination: abi.decode(persistedJson.parseRaw('.mockDestination'), (address)),
       baseAdapter: abi.decode(persistedJson.parseRaw('.baseAdapter'), (address)),
       zkevmAdapter: abi.decode(persistedJson.parseRaw('.zkevmAdapter'), (address)),
-      gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address))
+      gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address)),
+      scrollAdapter: abi.decode(persistedJson.parseRaw('.scrollAdapter'), (address)),
+      wormholeAdapter: abi.decode(persistedJson.parseRaw('.wormholeAdapter'), (address))
     });
 
     return addresses;
@@ -149,6 +159,8 @@ library DeployerHelpers {
     json.serialize('proxyAdmin', addresses.proxyAdmin);
     json.serialize('proxyFactory', addresses.proxyFactory);
     json.serialize('sameChainAdapter', addresses.sameChainAdapter);
+    json.serialize('scrollAdapter', addresses.scrollAdapter);
+    json.serialize('wormholeAdapter', addresses.wormholeAdapter);
     json = json.serialize('zkevmAdapter', addresses.zkevmAdapter);
     vm.writeJson(json, path);
   }

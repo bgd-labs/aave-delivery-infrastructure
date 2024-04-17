@@ -7,8 +7,6 @@ import './BaseAdapterScript.sol';
 abstract contract BaseHLAdapter is BaseAdapterScript {
   function HL_MAIL_BOX() public view virtual returns (address);
 
-  function HL_IGP() public view virtual returns (address);
-
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
@@ -17,7 +15,6 @@ abstract contract BaseHLAdapter is BaseAdapterScript {
       new HyperLaneAdapter(
         addresses.crossChainController,
         HL_MAIL_BOX(),
-        HL_IGP(),
         GET_BASE_GAS_LIMIT(),
         trustedRemotes
       )
@@ -27,11 +24,7 @@ abstract contract BaseHLAdapter is BaseAdapterScript {
 
 contract Ethereum is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
+    return 0xc005dc82818d67AF737725bD4bf75435d065D239;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -48,11 +41,7 @@ contract Ethereum is BaseHLAdapter {
 
 contract Ethereum_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0xF987d7edcb5890cB321437d8145E3D51131298b6;
+    return 0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -69,11 +58,7 @@ contract Ethereum_testnet is BaseHLAdapter {
 
 contract Avalanche is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
+    return 0xFf06aFcaABaDDd1fb08371f9ccA15D73D51FeBD6;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -89,11 +74,7 @@ contract Avalanche is BaseHLAdapter {
 
 contract Avalanche_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0xF90cB82a76492614D07B82a7658917f3aC811Ac1;
+    return 0x5b6CFf85442B851A8e6eaBd2A4E4507B5135B3B0;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -109,11 +90,7 @@ contract Avalanche_testnet is BaseHLAdapter {
 
 contract Polygon is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
+    return 0x5d934f4e2f797775e53561bB72aca21ba36B96BB;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -129,11 +106,7 @@ contract Polygon is BaseHLAdapter {
 
 contract Polygon_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0xF90cB82a76492614D07B82a7658917f3aC811Ac1;
+    return 0x2d1889fe5B092CD988972261434F7E5f26041115;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -149,11 +122,7 @@ contract Polygon_testnet is BaseHLAdapter {
 
 contract Binance is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
+    return 0x2971b9Aec44bE4eb673DF1B88cDB57b96eefe8a4;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -169,11 +138,7 @@ contract Binance is BaseHLAdapter {
 
 contract Binance_testnet is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0xCC737a94FecaeC165AbCf12dED095BB13F037685;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0xF90cB82a76492614D07B82a7658917f3aC811Ac1;
+    return 0xF9F6F5646F478d5ab4e20B0F910C92F1CCC9Cc6D;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -189,11 +154,7 @@ contract Binance_testnet is BaseHLAdapter {
 
 contract Gnosis is BaseHLAdapter {
   function HL_MAIL_BOX() public pure override returns (address) {
-    return 0x35231d4c2D8B8ADcB5617A638A0c4548684c7C70;
-  }
-
-  function HL_IGP() public pure override returns (address) {
-    return 0x56f52c0A1ddcD557285f7CBc782D3d83096CE1Cc;
+    return 0xaD09d78f4c6b9dA2Ae82b1D34107802d380Bb74f;
   }
 
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
@@ -203,6 +164,38 @@ contract Gnosis is BaseHLAdapter {
   function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
     uint256[] memory remoteNetworks = new uint256[](1);
     remoteNetworks[0] = ChainIds.ETHEREUM;
+    return remoteNetworks;
+  }
+}
+
+contract Celo is BaseHLAdapter {
+  function HL_MAIL_BOX() public pure override returns (address) {
+    return 0x50da3B3907A08a24fe4999F4Dcf337E8dC7954bb;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = ChainIds.ETHEREUM;
+    return remoteNetworks;
+  }
+}
+
+contract Celo_testnet is BaseHLAdapter {
+  function HL_MAIL_BOX() public pure override returns (address) {
+    return 0xEf9F292fcEBC3848bF4bB92a96a04F9ECBb78E59;
+  }
+
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.CELO_ALFAJORES;
+  }
+
+  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+    uint256[] memory remoteNetworks = new uint256[](1);
+    remoteNetworks[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
     return remoteNetworks;
   }
 }

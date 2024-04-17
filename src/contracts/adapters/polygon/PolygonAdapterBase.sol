@@ -34,7 +34,7 @@ abstract contract PolygonAdapterBase is IPolygonAdapter, IFxMessageProcessor, Ba
     address fxTunnel,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, 'Polygon native adapter', trustedRemotes) {
     FX_TUNNEL = fxTunnel;
   }
 
