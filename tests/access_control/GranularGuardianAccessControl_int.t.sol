@@ -53,6 +53,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     uint256 gasLimit
   )
     public
+    filterAddress(destination)
     generateRetryTxState(
       GovernanceV3Polygon.EXECUTOR_LVL_1,
       GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
@@ -86,8 +87,8 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     vm.stopPrank();
   }
 
-  function test_retryTxWhenWrongCaller() public {
-    uint256 gasLimit = 300_000;
+  function test_retryTxWhenWrongCaller(uint256 gasLimit) public {
+    vm.assume(gasLimit < 300_000);
     address[] memory bridgeAdaptersToRetry = new address[](0);
 
     vm.expectRevert(
@@ -209,7 +210,8 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     );
   }
 
-  function test_updateGuardian(address newGuardian) public {
+  function test_updateGuardian(address newGuardian) public filterAddress(newGuardian) {
+    vm.assume(newGuardian != address(0));
     vm.startPrank(AAVE_GUARDIAN);
     control.updateGuardian(newGuardian);
     assertEq(IWithGuardian(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER).guardian(), newGuardian);
@@ -228,23 +230,4 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     );
     control.updateGuardian(newGuardian);
   }
-
-  //  function _retryEnvelope(bytes32 mockEnvId) internal returns (bytes32) {
-  //    Envelope memory envelope = Envelope({
-  //      nonce: 1,
-  //      origin: address(12468),
-  //      destination: address(2341),
-  //      originChainId: 1,
-  //      destinationChainId: 137,
-  //      message: abi.encode('mock message')
-  //    });
-  //    uint256 gasLimit = 300_000;
-  //
-  //    vm.mockCall(
-  //      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
-  //      abi.encodeWithSelector(ICrossChainForwarder.retryEnvelope.selector, envelope, gasLimit),
-  //      abi.encode(mockEnvId)
-  //    );
-  //    return control.retryEnvelope(envelope, gasLimit);
-  //  }
 }
