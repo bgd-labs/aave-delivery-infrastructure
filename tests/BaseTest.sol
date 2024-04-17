@@ -10,6 +10,8 @@ import {CrossChainController, ICrossChainController} from '../src/contracts/Cros
 import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../src/contracts/CrossChainControllerWithEmergencyMode.sol';
 import {IEmergencyConsumer} from '../src/contracts/emergency/interfaces/IEmergencyConsumer.sol';
 import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmergencyOracle.sol';
+import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
+import './mocks/AdapterMock.sol';
 
 contract BaseTest is Test {
   bytes internal constant MESSAGE = bytes('this is the message to send');
@@ -21,13 +23,7 @@ contract BaseTest is Test {
   }
 
   modifier filterAddress(address addressToFilter) {
-    vm.assume(
-      addressToFilter != 0xCe71065D4017F316EC606Fe4422e11eB2c47c246 && // FuzzerDict
-        addressToFilter != 0x4e59b44847b379578588920cA78FbF26c0B4956C && // CREATE2 Factory (?)
-        addressToFilter != 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84 && // address(this)
-        addressToFilter != 0x185a4dc360CE69bDCceE33b3784B0282f7961aea && // ???
-        addressToFilter != 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D // cheat codes
-    );
+    _filterAddress(addressToFilter);
     _;
   }
 
@@ -51,11 +47,10 @@ contract BaseTest is Test {
 
   modifier generateEmergencyState(address ccc) {
     address clEmergencyOracle = IEmergencyConsumer(ccc).getChainlinkEmergencyOracle();
-    (, int256 answer, , , ) = ICLEmergencyOracle(clEmergencyOracle).latestRoundData();
     vm.mockCall(
       clEmergencyOracle,
       abi.encodeWithSelector(ICLEmergencyOracle.latestRoundData.selector),
-      abi.encode(uint80(2), int256(answer + 1), block.timestamp - 5, block.timestamp - 5, uint80(2))
+      abi.encode(uint80(2), int256(1), block.timestamp, block.timestamp, uint80(2))
     );
     _;
   }
@@ -77,6 +72,7 @@ contract BaseTest is Test {
     address destination,
     uint256 gasLimit
   ) {
+    vm.assume(gasLimit < 300_000);
     // set caller as an approved sender
     address[] memory senders = new address[](1);
     senders[0] = address(this);
@@ -88,6 +84,94 @@ contract BaseTest is Test {
     // call forward message
     ICrossChainForwarder(ccc).forwardMessage(destinationChainId, destination, gasLimit, MESSAGE);
     _;
+  }
+
+  function deployCCC(
+    address clEmergencyOracle,
+    bool withEmergency,
+    address owner,
+    uint256 destinationChainId
+  ) internal returns (address) {
+    address crossChainController;
+    address crossChainControllerImpl;
+
+    address proxyFactory = address(new TransparentProxyFactory());
+    address proxyAdmin = TransparentProxyFactory(proxyFactory).createDeterministicProxyAdmin(
+      owner,
+      'admin salt'
+    );
+
+    if (withEmergency) {
+      crossChainControllerImpl = address(
+        ICrossChainController(address(new CrossChainControllerWithEmergencyMode(clEmergencyOracle)))
+      );
+
+      crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
+        crossChainControllerImpl,
+        proxyAdmin,
+        abi.encodeWithSelector(
+          ICrossChainControllerWithEmergencyMode.initialize.selector,
+          owner,
+          address(this),
+          clEmergencyOracle,
+          new ICrossChainController.ConfirmationInput[](0),
+          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
+          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
+          new address[](0)
+        ),
+        'test deployment'
+      );
+    } else {
+      crossChainControllerImpl = address(new CrossChainController());
+
+      crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
+        crossChainControllerImpl,
+        proxyAdmin,
+        abi.encodeWithSelector(
+          CrossChainController.initialize.selector,
+          owner,
+          address(this),
+          new ICrossChainController.ConfirmationInput[](0),
+          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
+          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
+          new address[](0)
+        ),
+        'test deployment'
+      );
+    }
+
+    ICrossChainController.ForwarderBridgeAdapterConfigInput[]
+      memory forwarders = new ICrossChainController.ForwarderBridgeAdapterConfigInput[](2);
+    forwarders[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: address(
+        new AdapterMock(new IBaseAdapter.TrustedRemotesConfig[](0))
+      ),
+      destinationBridgeAdapter: address(1),
+      destinationChainId: destinationChainId
+    });
+    forwarders[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: address(
+        new AdapterMock(new IBaseAdapter.TrustedRemotesConfig[](0))
+      ),
+      destinationBridgeAdapter: address(1),
+      destinationChainId: destinationChainId
+    });
+
+    hoax(owner);
+    ICrossChainForwarder(crossChainController).enableBridgeAdapters(forwarders);
+
+    return crossChainController;
+  }
+
+  function _filterAddress(address addressToFilter) internal pure {
+    vm.assume(
+      addressToFilter != address(0) &&
+        addressToFilter != 0xCe71065D4017F316EC606Fe4422e11eB2c47c246 && // FuzzerDict
+        addressToFilter != 0x4e59b44847b379578588920cA78FbF26c0B4956C && // CREATE2 Factory (?)
+        addressToFilter != 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84 && // address(this)
+        addressToFilter != 0x185a4dc360CE69bDCceE33b3784B0282f7961aea && // ???
+        addressToFilter != 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D // cheat codes
+    );
   }
 
   function _generateExtendedTransaction(
