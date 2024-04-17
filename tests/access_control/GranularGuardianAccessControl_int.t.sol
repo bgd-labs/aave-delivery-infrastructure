@@ -24,6 +24,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     bool withEmergency
   ) {
     vm.assume(retryUser != address(this));
+    vm.assume(solveEmergencyUser != address(this));
     _filterAddress(clEmergencyOracle);
     _filterAddress(owner);
     _filterAddress(guardian);
@@ -149,6 +150,28 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     generateEmergencyState(ccc)
     validateEmergencySolved(ccc)
   {
+    vm.startPrank(solveEmergencyUser);
+    control.solveEmergency(
+      new ICrossChainReceiver.ConfirmationInput[](0),
+      new ICrossChainReceiver.ValidityTimestampInput[](0),
+      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
+      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
+      new address[](0),
+      new address[](0),
+      new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
+      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
+    );
+    vm.stopPrank();
+  }
+
+  function test_solveEmergencyWhenNotCCCWithEmergency(
+    address owner,
+    address guardian,
+    address retryUser,
+    address solveEmergencyUser,
+    address clEmergencyOracle
+  ) public createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, false) {
+    vm.expectRevert(bytes(''));
     vm.startPrank(solveEmergencyUser);
     control.solveEmergency(
       new ICrossChainReceiver.ConfirmationInput[](0),
