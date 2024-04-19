@@ -11,7 +11,6 @@ import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergenc
 import {IEmergencyConsumer} from '../src/contracts/emergency/interfaces/IEmergencyConsumer.sol';
 import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmergencyOracle.sol';
 import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
-import './mocks/AdapterMock.sol';
 
 contract BaseTest is Test {
   bytes internal constant MESSAGE = bytes('this is the message to send');
