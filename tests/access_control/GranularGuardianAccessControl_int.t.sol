@@ -45,7 +45,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function setUp() public {
-    vm.createSelectFork('polygon', 51416198);
+    vm.createSelectFork('polygon', 56006881);
   }
 
   function test_initialization(
@@ -96,10 +96,10 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     );
 
     ICrossChainForwarder.ChainIdBridgeConfig[] memory bridgeAdaptersByChain = ICrossChainForwarder(
-      ccc
+      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER
     ).getForwarderBridgeAdaptersByChain(1);
     address[] memory bridgeAdaptersToRetry = new address[](1);
-    bridgeAdaptersToRetry[0] = bridgeAdaptersByChain[1].currentChainBridgeAdapter;
+    bridgeAdaptersToRetry[0] = bridgeAdaptersByChain[0].currentChainBridgeAdapter;
 
     vm.startPrank(retryGuardian);
     control.retryTransaction(extendedTx.transactionEncoded, gasLimit, bridgeAdaptersToRetry);
