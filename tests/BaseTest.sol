@@ -86,82 +86,82 @@ contract BaseTest is Test {
     _;
   }
 
-  function deployCCC(
-    address clEmergencyOracle,
-    bool withEmergency,
-    address owner,
-    uint256 destinationChainId
-  ) internal returns (address) {
-    address crossChainController;
-    address crossChainControllerImpl;
-
-    address proxyFactory = address(new TransparentProxyFactory());
-    address proxyAdmin = TransparentProxyFactory(proxyFactory).createDeterministicProxyAdmin(
-      owner,
-      'admin salt'
-    );
-
-    if (withEmergency) {
-      crossChainControllerImpl = address(
-        ICrossChainController(address(new CrossChainControllerWithEmergencyMode(clEmergencyOracle)))
-      );
-
-      crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
-        crossChainControllerImpl,
-        proxyAdmin,
-        abi.encodeWithSelector(
-          ICrossChainControllerWithEmergencyMode.initialize.selector,
-          owner,
-          address(this),
-          clEmergencyOracle,
-          new ICrossChainController.ConfirmationInput[](0),
-          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
-          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
-          new address[](0)
-        ),
-        'test deployment'
-      );
-    } else {
-      crossChainControllerImpl = address(new CrossChainController());
-
-      crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
-        crossChainControllerImpl,
-        proxyAdmin,
-        abi.encodeWithSelector(
-          CrossChainController.initialize.selector,
-          owner,
-          address(this),
-          new ICrossChainController.ConfirmationInput[](0),
-          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
-          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
-          new address[](0)
-        ),
-        'test deployment'
-      );
-    }
-
-    ICrossChainController.ForwarderBridgeAdapterConfigInput[]
-      memory forwarders = new ICrossChainController.ForwarderBridgeAdapterConfigInput[](2);
-    forwarders[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(
-        new AdapterMock(new IBaseAdapter.TrustedRemotesConfig[](0))
-      ),
-      destinationBridgeAdapter: address(1),
-      destinationChainId: destinationChainId
-    });
-    forwarders[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(
-        new AdapterMock(new IBaseAdapter.TrustedRemotesConfig[](0))
-      ),
-      destinationBridgeAdapter: address(1),
-      destinationChainId: destinationChainId
-    });
-
-    hoax(owner);
-    ICrossChainForwarder(crossChainController).enableBridgeAdapters(forwarders);
-
-    return crossChainController;
-  }
+  //  function deployCCC(
+  //    address clEmergencyOracle,
+  //    bool withEmergency,
+  //    address owner,
+  //    uint256 destinationChainId
+  //  ) internal returns (address) {
+  //    address crossChainController;
+  //    address crossChainControllerImpl;
+  //
+  //    address proxyFactory = address(new TransparentProxyFactory());
+  //    address proxyAdmin = TransparentProxyFactory(proxyFactory).createDeterministicProxyAdmin(
+  //      owner,
+  //      'admin salt'
+  //    );
+  //
+  //    if (withEmergency) {
+  //      crossChainControllerImpl = address(
+  //        ICrossChainController(address(new CrossChainControllerWithEmergencyMode(clEmergencyOracle)))
+  //      );
+  //
+  //      crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
+  //        crossChainControllerImpl,
+  //        proxyAdmin,
+  //        abi.encodeWithSelector(
+  //          ICrossChainControllerWithEmergencyMode.initialize.selector,
+  //          owner,
+  //          address(this),
+  //          clEmergencyOracle,
+  //          new ICrossChainController.ConfirmationInput[](0),
+  //          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
+  //          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
+  //          new address[](0)
+  //        ),
+  //        'test deployment'
+  //      );
+  //    } else {
+  //      crossChainControllerImpl = address(new CrossChainController());
+  //
+  //      crossChainController = TransparentProxyFactory(proxyFactory).createDeterministic(
+  //        crossChainControllerImpl,
+  //        proxyAdmin,
+  //        abi.encodeWithSelector(
+  //          CrossChainController.initialize.selector,
+  //          owner,
+  //          address(this),
+  //          new ICrossChainController.ConfirmationInput[](0),
+  //          new ICrossChainController.ReceiverBridgeAdapterConfigInput[](0),
+  //          new ICrossChainController.ForwarderBridgeAdapterConfigInput[](0),
+  //          new address[](0)
+  //        ),
+  //        'test deployment'
+  //      );
+  //    }
+  //
+  //    ICrossChainController.ForwarderBridgeAdapterConfigInput[]
+  //      memory forwarders = new ICrossChainController.ForwarderBridgeAdapterConfigInput[](2);
+  //    forwarders[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+  //      currentChainBridgeAdapter: address(
+  //        new AdapterMock(new IBaseAdapter.TrustedRemotesConfig[](0))
+  //      ),
+  //      destinationBridgeAdapter: address(1),
+  //      destinationChainId: destinationChainId
+  //    });
+  //    forwarders[1] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+  //      currentChainBridgeAdapter: address(
+  //        new AdapterMock(new IBaseAdapter.TrustedRemotesConfig[](0))
+  //      ),
+  //      destinationBridgeAdapter: address(1),
+  //      destinationChainId: destinationChainId
+  //    });
+  //
+  //    hoax(owner);
+  //    ICrossChainForwarder(crossChainController).enableBridgeAdapters(forwarders);
+  //
+  //    return crossChainController;
+  //  }
 
   function _filterAddress(address addressToFilter) internal pure {
     vm.assume(

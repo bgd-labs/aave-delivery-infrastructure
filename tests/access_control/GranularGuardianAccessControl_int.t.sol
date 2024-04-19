@@ -5,9 +5,14 @@ import {TestUtils} from '../utils/TestUtils.sol';
 import '../../src/contracts/access_control/GranularGuardianAccessControl.sol';
 import {OwnableWithGuardian, IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 import '../BaseTest.sol';
+import {GovernanceV3Polygon} from 'aave-address-book/GovernanceV3Polygon.sol';
+import {MiscPolygon} from 'aave-address-book/MiscPolygon.sol';
 
 contract GranularGuardianAccessControlIntTest is BaseTest {
   bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
+  address public constant BGD_GUARDIAN = 0xbCEB4f363f2666E2E8E430806F37e97C405c130b;
+
+  address public constant AAVE_GUARDIAN = MiscPolygon.PROTOCOL_GUARDIAN;
 
   // list of supported chains
   uint256 destinationChainId = ChainIds.ETHEREUM;
@@ -15,164 +20,202 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   GranularGuardianAccessControl public control;
   address public ccc;
 
-  modifier createGGAC(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle,
-    bool withEmergency
-  ) {
-    vm.assume(retryUser != address(this));
-    vm.assume(solveEmergencyUser != address(this));
-    _filterAddress(clEmergencyOracle);
-    _filterAddress(owner);
-    _filterAddress(guardian);
-    _filterAddress(retryUser);
-    _filterAddress(solveEmergencyUser);
+  modifier createGGAC(address retryGuardian, address solveEmergencyGuardian) {
+    vm.assume(retryGuardian != address(this));
+    vm.assume(solveEmergencyGuardian != address(this));
+    _filterAddress(retryGuardian);
+    _filterAddress(solveEmergencyGuardian);
 
-    // deploy ccc
-    ccc = deployCCC(clEmergencyOracle, withEmergency, owner, destinationChainId);
+    IGranularGuardianAccessControl.InitialGuardians
+      memory initialGuardians = IGranularGuardianAccessControl.InitialGuardians({
+        defaultAdmin: AAVE_GUARDIAN,
+        retryGuardian: retryGuardian,
+        solveEmergencyGuardian: solveEmergencyGuardian
+      });
+    control = new GranularGuardianAccessControl(
+      initialGuardians,
+      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER
+    );
 
-    control = new GranularGuardianAccessControl(guardian, retryUser, solveEmergencyUser, ccc);
-
-    OwnableWithGuardian(ccc).updateGuardian(address(control));
+    hoax(BGD_GUARDIAN);
+    OwnableWithGuardian(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER).updateGuardian(
+      address(control)
+    );
     _;
   }
 
-  function setUp() public {}
+  function setUp() public {
+    vm.createSelectFork('polygon', 51416198);
+  }
 
   function test_initialization(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle,
-    bool withEmergency
-  )
-    public
-    createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, withEmergency)
-  {
-    assertEq(control.CROSS_CHAIN_CONTROLLER(), ccc);
-    assertEq(control.hasRole(DEFAULT_ADMIN_ROLE, guardian), true);
+    address retryGuardian,
+    address solveEmergencyGuardian
+  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+    assertEq(control.CROSS_CHAIN_CONTROLLER(), GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER);
+    assertEq(control.hasRole(DEFAULT_ADMIN_ROLE, AAVE_GUARDIAN), true);
     assertEq(control.getRoleAdmin(control.RETRY_ROLE()), DEFAULT_ADMIN_ROLE);
     assertEq(control.getRoleAdmin(control.SOLVE_EMERGENCY_ROLE()), DEFAULT_ADMIN_ROLE);
     assertEq(control.getRoleMemberCount(control.RETRY_ROLE()), 1);
     assertEq(control.getRoleMemberCount(control.SOLVE_EMERGENCY_ROLE()), 1);
-    assertEq(control.getRoleMember(control.RETRY_ROLE(), 0), retryUser);
-    assertEq(control.getRoleMember(control.SOLVE_EMERGENCY_ROLE(), 0), solveEmergencyUser);
+    assertEq(control.getRoleMember(control.RETRY_ROLE(), 0), retryGuardian);
+    assertEq(control.getRoleMember(control.SOLVE_EMERGENCY_ROLE(), 0), solveEmergencyGuardian);
   }
 
   function test_retryTx(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    address destination,
+    uint256 gasLimit
   )
     public
-    createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, true)
-    generateRetryTxState(owner, ccc, destinationChainId, address(1324), 150_000)
+    createGGAC(retryGuardian, solveEmergencyGuardian)
+    generateRetryTxState(
+      GovernanceV3Polygon.EXECUTOR_LVL_1,
+      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
+      destinationChainId,
+      destination,
+      gasLimit
+    )
   {
-    _retryTx(retryUser);
+    _retryTx(destination, retryGuardian, gasLimit);
   }
 
-  function test_retryTxWhenWrongCaller(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle,
-    bool withEmergency
-  )
-    public
-    createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, withEmergency)
-  {
-    address[] memory bridgeAdaptersToRetry = new address[](0);
-
-    vm.expectRevert(
-      bytes(
-        string.concat(
-          'AccessControl: account 0x',
-          TestUtils.toAsciiString(address(this)),
-          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
-        )
-      )
+  function _retryTx(address destination, address retryGuardian, uint256 gasLimit) internal {
+    ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
+      TestParams({
+        destination: destination,
+        origin: address(this),
+        originChainId: block.chainid,
+        destinationChainId: destinationChainId,
+        envelopeNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+          .getCurrentTransactionNonce() - 1,
+        transactionNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+          .getCurrentTransactionNonce() - 1
+      })
     );
 
-    control.retryTransaction(abi.encode('will not get used'), 150_000, bridgeAdaptersToRetry);
-  }
+    ICrossChainForwarder.ChainIdBridgeConfig[] memory bridgeAdaptersByChain = ICrossChainForwarder(
+      ccc
+    ).getForwarderBridgeAdaptersByChain(1);
+    address[] memory bridgeAdaptersToRetry = new address[](1);
+    bridgeAdaptersToRetry[0] = bridgeAdaptersByChain[1].currentChainBridgeAdapter;
 
-  function test_retryEnvelope(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle
-  )
-    public
-    createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, true)
-    generateRetryTxState(owner, ccc, destinationChainId, address(1324), 150_000)
-  {
-    _retryEnvelope(retryUser);
-  }
-
-  function test_retryEnvelopeWhenWrongCaller(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle
-  ) public createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, true) {
-    Envelope memory envelope;
-
-    vm.expectRevert(
-      bytes(
-        string.concat(
-          'AccessControl: account 0x',
-          TestUtils.toAsciiString(address(this)),
-          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
-        )
-      )
-    );
-    control.retryEnvelope(envelope, 150_000);
-  }
-
-  function test_solveEmergency(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle
-  )
-    public
-    createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, true)
-    generateEmergencyState(ccc)
-    validateEmergencySolved(ccc)
-  {
-    vm.startPrank(solveEmergencyUser);
-    control.solveEmergency(
-      new ICrossChainReceiver.ConfirmationInput[](0),
-      new ICrossChainReceiver.ValidityTimestampInput[](0),
-      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
-      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
-      new address[](0),
-      new address[](0),
-      new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
-    );
+    vm.startPrank(retryGuardian);
+    control.retryTransaction(extendedTx.transactionEncoded, gasLimit, bridgeAdaptersToRetry);
     vm.stopPrank();
   }
 
-  function test_solveEmergencyWhenNotCCCWithEmergency(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle
-  ) public createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, false) {
-    vm.expectRevert(bytes(''));
-    vm.startPrank(solveEmergencyUser);
+  function test_retryTxWhenWrongCaller(
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    uint256 gasLimit,
+    address caller
+  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+    address[] memory bridgeAdaptersToRetry = new address[](0);
+    vm.assume(caller != retryGuardian);
+
+    hoax(caller);
+    vm.expectRevert(
+      bytes(
+        string.concat(
+          'AccessControl: account 0x',
+          TestUtils.toAsciiString(caller),
+          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
+        )
+      )
+    );
+
+    control.retryTransaction(abi.encode('will not get used'), gasLimit, bridgeAdaptersToRetry);
+  }
+
+  function test_retryEnvelope(
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    address destination,
+    uint256 gasLimit
+  )
+    public
+    createGGAC(retryGuardian, solveEmergencyGuardian)
+    generateRetryTxState(
+      GovernanceV3Polygon.EXECUTOR_LVL_1,
+      GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
+      destinationChainId,
+      destination,
+      gasLimit
+    )
+  {
+    _retryEnvelope(destination, retryGuardian, gasLimit);
+  }
+
+  function _retryEnvelope(address destination, address retryGuardian, uint256 gasLimit) internal {
+    uint256 envNonce = ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+      .getCurrentEnvelopeNonce() - 1;
+
+    ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
+      TestParams({
+        destination: destination,
+        origin: address(this),
+        originChainId: block.chainid,
+        destinationChainId: destinationChainId,
+        envelopeNonce: envNonce,
+        transactionNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+          .getCurrentTransactionNonce() - 1
+      })
+    );
+
+    vm.startPrank(retryGuardian);
+    bytes32 newTxId = control.retryEnvelope(extendedTx.envelope, gasLimit);
+
+    ExtendedTransaction memory extendedTxAfter = _generateExtendedTransaction(
+      TestParams({
+        destination: destination,
+        origin: address(this),
+        originChainId: block.chainid,
+        destinationChainId: destinationChainId,
+        envelopeNonce: envNonce,
+        transactionNonce: ICrossChainForwarder(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+          .getCurrentTransactionNonce() - 1
+      })
+    );
+
+    assertEq(extendedTxAfter.transactionId, newTxId);
+    vm.stopPrank();
+  }
+
+  function test_retryEnvelopeWhenWrongCaller(
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    uint256 gasLimit,
+    address caller
+  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+    vm.assume(caller != retryGuardian);
+
+    Envelope memory envelope;
+
+    hoax(caller);
+    vm.expectRevert(
+      bytes(
+        string.concat(
+          'AccessControl: account 0x',
+          TestUtils.toAsciiString(caller),
+          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
+        )
+      )
+    );
+    control.retryEnvelope(envelope, gasLimit);
+  }
+
+  function test_solveEmergency(
+    address retryGuardian,
+    address solveEmergencyGuardian
+  )
+    public
+    createGGAC(retryGuardian, solveEmergencyGuardian)
+    generateEmergencyState(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+    validateEmergencySolved(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+  {
+    vm.startPrank(solveEmergencyGuardian);
     control.solveEmergency(
       new ICrossChainReceiver.ConfirmationInput[](0),
       new ICrossChainReceiver.ValidityTimestampInput[](0),
@@ -187,17 +230,17 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_solveEmergencyWhenWrongCaller(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle
-  ) public createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, true) {
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    address caller
+  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+    vm.assume(caller != solveEmergencyGuardian);
+    hoax(caller);
     vm.expectRevert(
       bytes(
         string.concat(
           'AccessControl: account 0x',
-          TestUtils.toAsciiString(address(this)),
+          TestUtils.toAsciiString(caller),
           ' is missing role 0xf4cdc679c22cbf47d6de8e836ce79ffdae51f38408dcde3f0645de7634fa607d'
         )
       )
@@ -215,102 +258,34 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_updateGuardian(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle,
-    bool withEmergency,
+    address retryGuardian,
+    address solveEmergencyGuardian,
     address newGuardian
-  )
-    public
-    createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, withEmergency)
-  {
+  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
     _filterAddress(newGuardian);
-    vm.startPrank(guardian);
+    vm.startPrank(AAVE_GUARDIAN);
     control.updateGuardian(newGuardian);
-    assertEq(IWithGuardian(ccc).guardian(), newGuardian);
+    assertEq(IWithGuardian(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER).guardian(), newGuardian);
     vm.stopPrank();
   }
 
   function test_updateGuardianWhenWrongCaller(
-    address owner,
-    address guardian,
-    address retryUser,
-    address solveEmergencyUser,
-    address clEmergencyOracle,
-    bool withEmergency,
-    address newGuardian
-  )
-    public
-    createGGAC(owner, guardian, retryUser, solveEmergencyUser, clEmergencyOracle, withEmergency)
-  {
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    address newGuardian,
+    address caller
+  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+    vm.assume(caller != AAVE_GUARDIAN);
+    hoax(caller);
     vm.expectRevert(
       bytes(
         string.concat(
           'AccessControl: account 0x',
-          TestUtils.toAsciiString(address(this)),
+          TestUtils.toAsciiString(caller),
           ' is missing role 0x0000000000000000000000000000000000000000000000000000000000000000'
         )
       )
     );
     control.updateGuardian(newGuardian);
-  }
-
-  function _retryEnvelope(address retryUser) internal {
-    vm.startPrank(retryUser);
-
-    uint256 txNonce = ICrossChainForwarder(ccc).getCurrentTransactionNonce() - 1;
-    uint256 envNonce = ICrossChainForwarder(ccc).getCurrentEnvelopeNonce() - 1;
-
-    ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
-      TestParams({
-        destination: address(1324),
-        origin: address(this),
-        originChainId: block.chainid,
-        destinationChainId: destinationChainId,
-        envelopeNonce: envNonce,
-        transactionNonce: txNonce
-      })
-    );
-
-    bytes32 newTxId = control.retryEnvelope(extendedTx.envelope, 150_000);
-
-    ExtendedTransaction memory extendedTxAfter = _generateExtendedTransaction(
-      TestParams({
-        destination: address(1324),
-        origin: address(this),
-        originChainId: block.chainid,
-        destinationChainId: destinationChainId,
-        envelopeNonce: envNonce,
-        transactionNonce: ICrossChainForwarder(ccc).getCurrentTransactionNonce() - 1
-      })
-    );
-
-    assertEq(extendedTxAfter.transactionId, newTxId);
-    vm.stopPrank();
-  }
-
-  function _retryTx(address retryUser) internal {
-    ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
-      TestParams({
-        destination: address(1324),
-        origin: address(this),
-        originChainId: block.chainid,
-        destinationChainId: destinationChainId,
-        envelopeNonce: ICrossChainForwarder(ccc).getCurrentTransactionNonce() - 1,
-        transactionNonce: ICrossChainForwarder(ccc).getCurrentTransactionNonce() - 1
-      })
-    );
-
-    ICrossChainForwarder.ChainIdBridgeConfig[] memory bridgeAdaptersByChain = ICrossChainForwarder(
-      ccc
-    ).getForwarderBridgeAdaptersByChain(1);
-    address[] memory bridgeAdaptersToRetry = new address[](1);
-    bridgeAdaptersToRetry[0] = bridgeAdaptersByChain[1].currentChainBridgeAdapter;
-
-    vm.startPrank(retryUser);
-    control.retryTransaction(extendedTx.transactionEncoded, 150_000, bridgeAdaptersToRetry);
-    vm.stopPrank();
   }
 }

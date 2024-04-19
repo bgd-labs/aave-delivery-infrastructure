@@ -12,6 +12,17 @@ import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
  */
 interface IGranularGuardianAccessControl {
   /**
+   * @param defaultAdmin address that will have control of the default admin
+   * @param retryGuardian address to be added to the retry role
+   * @param solveEmergencyGuardian address to be added to the solve emergency role
+   */
+  struct InitialGuardians {
+    address defaultAdmin;
+    address retryGuardian;
+    address solveEmergencyGuardian;
+  }
+
+  /**
    * @notice method called to re forward a previously sent envelope.
              This method is only callable by the accounts holding the RETRY_ROLE role
    * @param envelope the Envelope type data

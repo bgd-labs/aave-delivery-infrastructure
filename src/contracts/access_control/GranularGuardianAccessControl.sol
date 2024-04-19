@@ -7,6 +7,10 @@ import {IGranularGuardianAccessControl, Envelope, ICrossChainReceiver} from './I
 import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
 import {IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 
+error DefaultAdminCantBe0();
+error CrossChainControllerCantBe0();
+error NewGuardianCantBe0();
+
 /**
  * @title GranularGuardianAccessControl
  * @author BGD Labs
@@ -23,26 +27,27 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
   bytes32 public constant RETRY_ROLE = keccak256('RETRY_ROLE');
 
   /**
-   * @param defaultAdmin address that will have control of the default admin
-   * @param retryGuardian address to be added to the retry role
-   * @param solveEmergencyGuardian address to be added to the solve emergency role
+   * @param initialGuardians object with the initial guardians to assign the roles to
    * @param crossChainController address of the CrossChainController
    */
-  constructor(
-    address defaultAdmin,
-    address retryGuardian,
-    address solveEmergencyGuardian,
-    address crossChainController
-  ) {
-    require(crossChainController != address(0), 'INVALID_CROSS_CHAIN_CONTROLLER');
-    require(defaultAdmin != address(0), 'INVALID_DEFAULT_ADMIN');
+  constructor(InitialGuardians memory initialGuardians, address crossChainController) {
+    if (crossChainController == address(0)) {
+      revert CrossChainControllerCantBe0();
+    }
+    if (initialGuardians.defaultAdmin == address(0)) {
+      revert DefaultAdminCantBe0();
+    }
 
     CROSS_CHAIN_CONTROLLER = crossChainController;
 
-    _setupRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+    _grantRole(DEFAULT_ADMIN_ROLE, initialGuardians.defaultAdmin);
 
-    _grantRole(SOLVE_EMERGENCY_ROLE, solveEmergencyGuardian);
-    _grantRole(RETRY_ROLE, retryGuardian);
+    if (initialGuardians.solveEmergencyGuardian != address(0)) {
+      _grantRole(SOLVE_EMERGENCY_ROLE, initialGuardians.solveEmergencyGuardian);
+    }
+    if (initialGuardians.solveEmergencyGuardian != address(0)) {
+      _grantRole(RETRY_ROLE, initialGuardians.retryGuardian);
+    }
   }
 
   /// @inheritdoc IGranularGuardianAccessControl
@@ -93,7 +98,9 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
   function updateGuardian(
     address newCrossChainControllerGuardian
   ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    require(newCrossChainControllerGuardian != address(0), 'INVALID_GUARDIAN');
+    if (newCrossChainControllerGuardian == address(0)) {
+      revert NewGuardianCantBe0();
+    }
     IWithGuardian(CROSS_CHAIN_CONTROLLER).updateGuardian(newCrossChainControllerGuardian);
   }
 }
