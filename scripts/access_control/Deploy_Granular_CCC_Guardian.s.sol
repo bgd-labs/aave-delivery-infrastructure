@@ -6,7 +6,6 @@ import {GovernanceV3Polygon} from 'aave-address-book/GovernanceV3Polygon.sol';
 import {GovernanceV3Avalanche} from 'aave-address-book/GovernanceV3Avalanche.sol';
 import {GovernanceV3BNB} from 'aave-address-book/GovernanceV3BNB.sol';
 import {GovernanceV3Gnosis} from 'aave-address-book/GovernanceV3Gnosis.sol';
-//import {MiscEthereum} from 'aave-address-book/MiscEthereum.sol';
 import {MiscPolygon} from 'aave-address-book/MiscPolygon.sol';
 import {MiscAvalanche} from 'aave-address-book/MiscAvalanche.sol';
 import {MiscBNB} from 'aave-address-book/MiscBNB.sol';
