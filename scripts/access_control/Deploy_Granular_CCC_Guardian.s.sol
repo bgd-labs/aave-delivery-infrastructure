@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import '../../src/contracts/access_control/GranularGuardianAccessControl.sol';
-//import {GovernanceV3Ethereum} from 'aave-address-book/GovernanceV3Ethereum.sol';
 import {GovernanceV3Polygon} from 'aave-address-book/GovernanceV3Polygon.sol';
 import {GovernanceV3Avalanche} from 'aave-address-book/GovernanceV3Avalanche.sol';
 import {GovernanceV3BNB} from 'aave-address-book/GovernanceV3BNB.sol';
