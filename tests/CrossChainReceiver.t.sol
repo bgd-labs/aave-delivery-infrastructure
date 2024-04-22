@@ -12,13 +12,13 @@ import {BaseTest} from './BaseTest.sol';
 import {Transaction, Envelope} from '../src/contracts/libs/EncodingUtils.sol';
 
 contract CrossChainReceiverTest is BaseTest {
-  address public constant GUARDIAN = address(12);
-  address public constant OWNER = address(123);
-  address public constant BRIDGE_ADAPTER = address(1234);
-  address public constant BRIDGE_ADAPTER_2 = address(1234567);
+  address public constant GUARDIAN = address(65536 + 12);
+  address public constant OWNER = address(65536 + 123);
+  address public constant BRIDGE_ADAPTER = address(65536 + 1234);
+  address public constant BRIDGE_ADAPTER_2 = address(65536 + 1234567);
 
-  address public constant GOVERNANCE_CORE = address(12345);
-  address public constant VOTING_MACHINE = address(123456);
+  address public constant GOVERNANCE_CORE = address(65536 + 12345);
+  address public constant VOTING_MACHINE = address(65536 + 123456);
   uint256 public constant DEFAULT_ORIGIN_CHAIN_ID = 1;
 
   ICrossChainReceiver public crossChainReceiver;
