@@ -9,6 +9,7 @@ import {ICrossChainForwarder} from './interfaces/ICrossChainForwarder.sol';
 import {IBaseAdapter} from './adapters/IBaseAdapter.sol';
 import {Transaction, EncodedTransaction, Envelope, EncodedEnvelope, TransactionUtils} from './libs/EncodingUtils.sol';
 import {Errors} from './libs/Errors.sol';
+import {Math} from './libs/Math.sol';
 
 /**
  * @title CrossChainForwarder
@@ -125,6 +126,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     uint256 gasLimit,
     bytes memory message
   ) external onlyApprovedSenders returns (bytes32, bytes32) {
+    // TODO: use here method to get shuffled bridge adapters
     ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[destinationChainId];
     require(bridgeAdapters.length > 0, Errors.NO_BRIDGE_ADAPTERS_FOR_SPECIFIED_CHAIN);
 
@@ -160,6 +162,40 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     return (encodedEnvelope.id, encodedTransaction.id);
   }
 
+  function _getShuffledBridgeAdaptersByChain(
+    uint256 destinationChainId
+  ) internal returns (ChainIdBridgeConfig[] memory) {
+    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
+      destinationChainId
+    ];
+
+    ChainIdBridgeConfig[] memory shuffledBridgeAdapters = new ChainIdBridgeConfig[](
+      destinationRequiredConfirmations
+    );
+    ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[destinationChainId];
+
+    uint256 randomIndex = Math.randMod(bridgeAdapters.length);
+    require(randomIndex < bridgeAdapters.length, 'Index out of bounds'); // TODO: is this require even needed? if so add error to lib
+    uint256 shuffledBridgeCount = 0;
+    if (randomIndex + destinationRequiredConfirmations > bridgeAdapters.length) {
+      for (
+        uint256 i = randomIndex;
+        i < randomIndex + destinationRequiredConfirmations - bridgeAdapters.length;
+        i++
+      ) {
+        shuffledBridgeAdapters[shuffledBridgeCount] = bridgeAdapters[i];
+        shuffledBridgeCount++;
+      }
+    }
+
+    for (uint256 i = 0; i < destinationRequiredConfirmations - shuffledBridgeAdapters.length; i++) {
+      shuffledBridgeAdapters[shuffledBridgeCount] = bridgeAdapters[i];
+      shuffledBridgeCount++;
+    }
+
+    return shuffledBridgeAdapters;
+  }
+
   /// @inheritdoc ICrossChainForwarder
   function retryEnvelope(
     Envelope memory envelope,
@@ -170,6 +206,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     // Message can be retried only if it was sent before with exactly the same parameters
     require(isEnvelopeRegistered(encodedEnvelope.id), Errors.ENVELOPE_NOT_PREVIOUSLY_REGISTERED);
 
+    // TODO: use here method to get shuffled bridge adapters
     ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[
       envelope.destinationChainId
     ];
@@ -279,10 +316,10 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   }
 
   /// @inheritdoc ICrossChainForwarder
-  function updateRequiredConfirmationsOnReceiver(
+  function updateRequiredConfirmationsForReceiverChain(
     RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) external onlyOwner {
-    _updateRequiredConfirmationsOnReceiver(requiredConfirmationsByReceiverChain);
+    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 
   /**
@@ -472,8 +509,8 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       // once set in forwarder, even if we remove all forwarders for whatever reason, there should be no need to actually
       // set the required Confirmations to 0.
       _requiredConfirmationsByReceiverChain[
-        requiredConfirmationsByReceiverChain.chainId
-      ] = requiredConfirmationsByReceiverChain.requiredConfirmations;
+        requiredConfirmationsByReceiverChain[i].chainId
+      ] = requiredConfirmationsByReceiverChain[i].requiredConfirmations;
     }
   }
 

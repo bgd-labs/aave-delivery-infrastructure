@@ -228,7 +228,7 @@ interface ICrossChainForwarder {
    * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
             receiver chain id
    */
-  function updateRequiredConfirmationsOnReceiver(
+  function updateRequiredConfirmationsForReceiverChain(
     RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) external;
 }
