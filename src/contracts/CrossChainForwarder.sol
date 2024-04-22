@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
+import {EnumerableSet} from 'openzeppelin-contracts/contracts/utils/structs/EnumerableSet.sol';
 import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 import {Address} from 'solidity-utils/contracts/oz-common/Address.sol';
 
@@ -17,6 +18,8 @@ import {Errors} from './libs/Errors.sol';
  * @dev To be able to forward a message, caller needs to be an approved sender.
  */
 contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
+  using EnumerableSet for EnumerableSet.UintSet;
+
   // every message originator sends we put into an envelope and attach a nonce. It increments by one
   uint256 internal _currentEnvelopeNonce;
 
@@ -40,9 +43,19 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   // (chainId => chain configuration) list of bridge adapter configurations for a chain
   mapping(uint256 => ChainIdBridgeConfig[]) internal _bridgeAdaptersByChain;
 
+  // ------------- new storage -----------------------
+
+  // stores the currently supported chains (chains that can be forwarded to)
+  // TODO: not sure if it makes sense to add this EnumerableSet.UintSet internal _supportedChains;
+
+  // chainId => requiredConfirmations
+  mapping(uint256 => uint256) internal _requiredConfirmationsByReceiverChain;
+
+  //-----------------------------------------
+
   // storage gap allocation to be used for later updates. This way storage can be added on parent contract without
   // overwriting storage on child
-  uint256[50] private __FORWARDER_GAP;
+  uint256[49] private __FORWARDER_GAP;
 
   // checks if caller is an approved sender
   modifier onlyApprovedSenders() {
@@ -56,13 +69,17 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
    */
   constructor(
     ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) {
     _configureForwarderBasics(
-      bridgeAdaptersToEnable,
+      bridgeAdaptersToEnable, // TODO: maybe makes more sense to change this input to add the requiredConfirmations. This would
+      // imply a bunch of changes on the scripts though, so not entirely sure if it makes sense to change this, or just
+      // add a new param
       new BridgeAdapterToDisable[](0),
       sendersToApprove,
-      new address[](0)
+      new address[](0),
+      requiredConfirmationsByReceiverChain
     );
   }
 
@@ -261,6 +278,13 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     _disableBridgeAdapters(bridgeAdapters);
   }
 
+  /// @inheritdoc ICrossChainForwarder
+  function updateRequiredConfirmationsOnReceiver(
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+  ) external onlyOwner {
+    _updateRequiredConfirmationsOnReceiver(requiredConfirmationsByReceiverChain);
+  }
+
   /**
    * @notice internal method that has the logic to forward a transaction to the specified chain
    * @param envelopeId the id of the envelope
@@ -433,16 +457,38 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     }
   }
 
+  /**
+  * @notice method to update the required confirmations of a receiver chain
+  * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
+           receiver chain id
+  */
+  function _updateRequiredConfirmationsForReceiverChain(
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+  ) internal {
+    for (uint256 i = 0; i < requiredConfirmationsByReceiverChain.length; i++) {
+      // TODO: required confirmations should never be lower than amount of forwarders to specified chain. If there is
+      // the need to lower to 0, first all forwarders to that chain should be removed.
+      // Not entirely sure if this makes sense, as in the end requiredCOnfirmations only affect on receiver side, so
+      // once set in forwarder, even if we remove all forwarders for whatever reason, there should be no need to actually
+      // set the required Confirmations to 0.
+      _requiredConfirmationsByReceiverChain[
+        requiredConfirmationsByReceiverChain.chainId
+      ] = requiredConfirmationsByReceiverChain.requiredConfirmations;
+    }
+  }
+
   /// @dev utility function, defining an order of actions commonly done in batch
   function _configureForwarderBasics(
     ForwarderBridgeAdapterConfigInput[] memory bridgesToEnable,
     BridgeAdapterToDisable[] memory bridgesToDisable,
     address[] memory sendersToEnable,
-    address[] memory sendersToDisable
+    address[] memory sendersToDisable,
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) internal {
     _enableBridgeAdapters(bridgesToEnable);
     _disableBridgeAdapters(bridgesToDisable);
     _updateSenders(sendersToEnable, true);
     _updateSenders(sendersToDisable, false);
+    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 }

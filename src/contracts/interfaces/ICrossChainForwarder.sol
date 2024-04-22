@@ -10,6 +10,16 @@ import {Transaction, Envelope} from '../libs/EncodingUtils.sol';
  */
 interface ICrossChainForwarder {
   /**
+   * @notice Object containing the required confirmations for a receiver chain id
+   * @param chainId id of the receiver chain
+   * @param requiredConfirmations number of messages confirmed that receiver needs to deliver a message
+   */
+  struct RequiredConfirmationsByReceiverChain {
+    uint256 chainId;
+    uint256 requiredConfirmations;
+  }
+
+  /**
    * @notice object storing the connected pair of bridge adapters, on current and destination chain
    * @param destinationBridgeAdapter address of the bridge adapter on the destination chain
    * @param currentChainBridgeAdapter address of the bridge adapter deployed on current network
@@ -212,4 +222,13 @@ interface ICrossChainForwarder {
    * @return boolean indicating if the address has been approved as sender
    */
   function isSenderApproved(address sender) external view returns (bool);
+
+  /**
+   * @notice method to update the required confirmations of a receiver chain
+   * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
+            receiver chain id
+   */
+  function updateRequiredConfirmationsOnReceiver(
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+  ) external;
 }
