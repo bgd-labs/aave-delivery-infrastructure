@@ -113,41 +113,41 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     assertEq(layerZeroAdapter.infraToNativeChainId(ChainIds.POLYGON), 30109);
   }
 
-  // function testLzReceive(
-  //   address crossChainController,
-  //   address lzEndpoint,
-  //   address originForwarder,
-  //   uint256 baseGasLimit
-  // )
-  //   public
-  //   setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
-  // {
-  //   bytes memory payload = abi.encode('test message');
+  function testLzReceive(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    bytes memory payload = abi.encode('test message');
 
-  //   Origin memory origin = Origin({
-  //     srcEid: uint32(30101),
-  //     sender: bytes32(uint256(uint160(originForwarder))),
-  //     nonce: uint64(1)
-  //   });
+    Origin memory origin = Origin({
+      srcEid: uint32(30101),
+      sender: bytes32(uint256(uint160(originForwarder))),
+      nonce: uint64(1)
+    });
 
-  //   hoax(lzEndpoint);
-  //   vm.mockCall(
-  //     crossChainController,
-  //     abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
-  //     abi.encode()
-  //   );
-  //   vm.expectCall(
-  //     crossChainController,
-  //     0,
-  //     abi.encodeWithSelector(
-  //       ICrossChainReceiver.receiveCrossChainMessage.selector,
-  //       payload,
-  //       ChainIds.ETHEREUM
-  //     )
-  //   );
-  //   layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
-  //   vm.clearMockedCalls();
-  // }
+    hoax(lzEndpoint);
+    vm.mockCall(
+      crossChainController,
+      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
+      abi.encode()
+    );
+    vm.expectCall(
+      crossChainController,
+      0,
+      abi.encodeWithSelector(
+        ICrossChainReceiver.receiveCrossChainMessage.selector,
+        payload,
+        ChainIds.ETHEREUM
+      )
+    );
+    layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
+    vm.clearMockedCalls();
+  }
 
   function testLzReceiveWhenNotEndpoint(
     address crossChainController,
@@ -196,24 +196,24 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     layerZeroAdapter.lzReceive(origin, bytes32(0), payload, address(23), bytes(''));
   }
 
-  // function testForwardPayload(
-  //   address crossChainController,
-  //   address lzEndpoint,
-  //   address originForwarder,
-  //   uint256 baseGasLimit,
-  //   uint256 dstGasLimit,
-  //   address receiver,
-  //   address caller
-  // )
-  //   public
-  //   setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
-  // {
-  //   vm.assume(dstGasLimit < 1 ether);
-  //   vm.assume(receiver != address(0));
-  //   vm.assume(caller != address(0));
+  function testForwardPayload(
+    address crossChainController,
+    address lzEndpoint,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 dstGasLimit,
+    address receiver,
+    address caller
+  )
+    public
+    setLZAdapter(crossChainController, lzEndpoint, originForwarder, baseGasLimit, ChainIds.ETHEREUM)
+  {
+    vm.assume(dstGasLimit < 1 ether);
+    vm.assume(receiver != address(0));
+    vm.assume(caller != address(0));
 
-  //   _testForwardMessage(lzEndpoint, receiver, dstGasLimit, caller);
-  // }
+    _testForwardMessage(lzEndpoint, receiver, dstGasLimit, caller);
+  }
 
   function testForwardPayloadWithNoValue(
     address crossChainController,
