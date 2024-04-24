@@ -26,8 +26,7 @@ contract CrossChainControllerWithEmergencyMode is
     ConfirmationInput[] memory initialRequiredConfirmations,
     ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    address[] memory sendersToApprove
   ) external initializer {
     _updateCLEmergencyOracle(clEmergencyOracle);
     _baseInitialize(
@@ -36,8 +35,7 @@ contract CrossChainControllerWithEmergencyMode is
       initialRequiredConfirmations,
       receiverBridgeAdaptersToAllow,
       forwarderBridgeAdaptersToEnable,
-      sendersToApprove,
-      requiredConfirmationsByReceiverChain
+      sendersToApprove
     );
   }
 
@@ -50,9 +48,16 @@ contract CrossChainControllerWithEmergencyMode is
     address[] memory sendersToApprove,
     address[] memory sendersToRemove,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
-  ) external onlyGuardian onlyInEmergency {
+    BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+  )
+    external
+    // TODO: RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain does it make sense to also have req confirmations
+    // on solve emergency? Even if when config for a destination network is set to 0, it implies that it will not be able to use adapters (as if
+    // destination network was not "allowed" i dont really think that it implies that it is an emergency, as this would be able to be solved
+    // by passing a new proposal. It does not affect receiving adapters configuration, so it does not break communication
+    onlyGuardian
+    onlyInEmergency
+  {
     // receiver side
     _configureReceiverBasics(
       receiverBridgeAdaptersToAllow,
@@ -66,8 +71,7 @@ contract CrossChainControllerWithEmergencyMode is
       forwarderBridgeAdaptersToEnable,
       forwarderBridgeAdaptersToDisable,
       sendersToApprove,
-      sendersToRemove,
-      requiredConfirmationsByReceiverChain
+      sendersToRemove
     );
   }
 

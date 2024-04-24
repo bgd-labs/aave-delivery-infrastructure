@@ -26,11 +26,7 @@ contract BaseCrossChainController is
 {
   constructor()
     CrossChainReceiver(new ConfirmationInput[](0), new ReceiverBridgeAdapterConfigInput[](0))
-    CrossChainForwarder(
-      new ForwarderBridgeAdapterConfigInput[](0),
-      new address[](0),
-      new RequiredConfirmationsByReceiverChain[](0)
-    )
+    CrossChainForwarder(new ForwarderBridgeAdapterConfigInput[](0), new address[](0))
   {}
 
   /// @dev child class should make a call of this method
@@ -40,8 +36,7 @@ contract BaseCrossChainController is
     ConfirmationInput[] memory initialRequiredConfirmations,
     ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    address[] memory sendersToApprove
   ) internal initializer {
     _transferOwnership(owner);
     _updateGuardian(guardian);
@@ -56,8 +51,7 @@ contract BaseCrossChainController is
       forwarderBridgeAdaptersToEnable,
       new BridgeAdapterToDisable[](0), // On first init, no bridges to disable
       sendersToApprove,
-      new address[](0), // On first init, no senders to unauthorize
-      requiredConfirmationsByReceiverChain
+      new address[](0) // On first init, no senders to unauthorize
     );
   }
 

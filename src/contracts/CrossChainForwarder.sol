@@ -46,9 +46,6 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
 
   // ------------- new storage -----------------------
 
-  // stores the currently supported chains (chains that can be forwarded to)
-  // TODO: not sure if it makes sense to add this EnumerableSet.UintSet internal _supportedChains;
-
   // chainId => requiredConfirmations
   mapping(uint256 => uint256) internal _requiredConfirmationsByReceiverChain;
 
@@ -70,17 +67,16 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
    */
   constructor(
     ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable,
-    address[] memory sendersToApprove,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    address[] memory sendersToApprove
   ) {
     _configureForwarderBasics(
-      bridgeAdaptersToEnable, // TODO: maybe makes more sense to change this input to add the requiredConfirmations. This would
-      // imply a bunch of changes on the scripts though, so not entirely sure if it makes sense to change this, or just
-      // add a new param
+      bridgeAdaptersToEnable,
       new BridgeAdapterToDisable[](0),
       sendersToApprove,
-      new address[](0),
-      requiredConfirmationsByReceiverChain
+      new address[](0)
+      // TODO: does it make sense to modify constructor and all dependant contracts to include here an initial
+      // configuration for the required confirmations number??
+      // This would mean that all the contracts where this is inherited would need to add this array (meaning old revisions also)
     );
   }
 
@@ -126,11 +122,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     uint256 gasLimit,
     bytes memory message
   ) external onlyApprovedSenders returns (bytes32, bytes32) {
-    // TODO: use here method to get shuffled bridge adapters
     ChainIdBridgeConfig[] memory bridgeAdapters = _getShuffledBridgeAdaptersByChain(
       destinationChainId
     );
-    //    _bridgeAdaptersByChain[destinationChainId];
     require(bridgeAdapters.length > 0, Errors.NO_BRIDGE_ADAPTERS_FOR_SPECIFIED_CHAIN);
 
     uint256 envelopeNonce = _currentEnvelopeNonce++;
@@ -180,6 +174,11 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     uint256 randomIndex = Math.randMod(bridgeAdapters.length);
     require(randomIndex < bridgeAdapters.length, 'Index out of bounds'); // TODO: is this require even needed? if so add error to lib
     uint256 shuffledBridgeCount = 0;
+    // TODO: I think it would make sense to make it so that if configured required confirmations for a destination
+    // network are set to 0, it should use all the adapters available. This way there would be no way of breaking forwarding
+    // communication by setting wrong configuration. Problem with this is that if at some point we have a lot of bridges
+    // it could drain funds (but i think, its quite remote, and would still be fixable by proposal) and provably its more important
+    // to not break forwardability
     if (randomIndex + destinationRequiredConfirmations > bridgeAdapters.length) {
       for (
         uint256 i = randomIndex;
@@ -524,13 +523,15 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     ForwarderBridgeAdapterConfigInput[] memory bridgesToEnable,
     BridgeAdapterToDisable[] memory bridgesToDisable,
     address[] memory sendersToEnable,
-    address[] memory sendersToDisable,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
-  ) internal {
+    address[] memory sendersToDisable
+  )
+    internal
+  //  TODO: to add RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain here would mean that
+  // an update on all contracts including old revisions. Would it be better to create a new method? for this?
+  {
     _enableBridgeAdapters(bridgesToEnable);
     _disableBridgeAdapters(bridgesToDisable);
     _updateSenders(sendersToEnable, true);
     _updateSenders(sendersToDisable, false);
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 }
