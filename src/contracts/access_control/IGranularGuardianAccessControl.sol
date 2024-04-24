@@ -11,6 +11,15 @@ import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
  * @notice interface containing the objects, events and methods definitions of the GranularGuardianAccessControl contract
  */
 interface IGranularGuardianAccessControl {
+  /// @dev default admin address can not be address 0
+  error DefaultAdminCantBe0();
+
+  /// @dev CrossChainController address can not be address 0
+  error CrossChainControllerCantBe0();
+
+  /// @dev new Guardian address can not be address 0
+  error NewGuardianCantBe0();
+
   /**
    * @param defaultAdmin address that will have control of the default admin
    * @param retryGuardian address to be added to the retry role

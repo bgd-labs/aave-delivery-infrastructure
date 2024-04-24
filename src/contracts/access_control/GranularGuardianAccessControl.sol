@@ -7,10 +7,6 @@ import {IGranularGuardianAccessControl, Envelope, ICrossChainReceiver} from './I
 import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
 import {IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 
-error DefaultAdminCantBe0();
-error CrossChainControllerCantBe0();
-error NewGuardianCantBe0();
-
 /**
  * @title GranularGuardianAccessControl
  * @author BGD Labs

@@ -47,7 +47,7 @@ contract GranularGuardianAccessControlTest is BaseTest {
         retryGuardian: retryGuardian,
         solveEmergencyGuardian: solveEmergencyGuardian
       });
-    vm.expectRevert(DefaultAdminCantBe0.selector);
+    vm.expectRevert(IGranularGuardianAccessControl.DefaultAdminCantBe0.selector);
     new GranularGuardianAccessControl(initialGuardians, ccc);
   }
 
@@ -65,7 +65,7 @@ contract GranularGuardianAccessControlTest is BaseTest {
         retryGuardian: retryGuardian,
         solveEmergencyGuardian: solveEmergencyGuardian
       });
-    vm.expectRevert(CrossChainControllerCantBe0.selector);
+    vm.expectRevert(IGranularGuardianAccessControl.CrossChainControllerCantBe0.selector);
     new GranularGuardianAccessControl(initialGuardians, address(0));
   }
 
@@ -192,6 +192,7 @@ contract GranularGuardianAccessControlTest is BaseTest {
     address ccc,
     address newGuardian
   ) public setUpGranularGuardians(defaultAdmin, retryGuardian, solveEmergencyGuardian, ccc) {
+    _filterAddress(newGuardian);
     vm.startPrank(defaultAdmin);
     vm.mockCall(
       ccc,
@@ -231,7 +232,7 @@ contract GranularGuardianAccessControlTest is BaseTest {
     address ccc
   ) public setUpGranularGuardians(defaultAdmin, retryGuardian, solveEmergencyGuardian, ccc) {
     vm.startPrank(defaultAdmin);
-    vm.expectRevert(NewGuardianCantBe0.selector);
+    vm.expectRevert(IGranularGuardianAccessControl.NewGuardianCantBe0.selector);
     control.updateGuardian(address(0));
     vm.stopPrank();
   }
