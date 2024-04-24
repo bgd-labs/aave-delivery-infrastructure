@@ -11,9 +11,9 @@ import {ScrollAdapter, IOpAdapter, IL1MessageQueue, IScrollMessenger} from '../.
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 
 contract ScrollAdapterTest is Test {
-  address public constant ORIGIN_FORWARDER = address(123);
-  address public constant CROSS_CHAIN_CONTROLLER = address(1234);
-  address public constant OVM_CROSS_DOMAIN_MESSENGER = address(12345);
+  address public constant ORIGIN_FORWARDER = address(65536 + 123);
+  address public constant CROSS_CHAIN_CONTROLLER = address(65536 + 1234);
+  address public constant OVM_CROSS_DOMAIN_MESSENGER = address(65536 + 12345);
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
@@ -63,46 +63,47 @@ contract ScrollAdapterTest is Test {
     assertEq(scrollAdapter.infraToNativeChainId(ChainIds.ETHEREUM), ChainIds.ETHEREUM);
   }
 
-  // function testForwardMessage() public {
-  //   uint40 payloadId = uint40(0);
-  //   bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
-  //   uint32 dstGasLimit = 600000;
-  //   uint256 fee = 345;
+  function testForwardMessage() public {
+    uint40 payloadId = uint40(0);
+    bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
+    uint32 dstGasLimit = 600000;
+    uint256 fee = 345;
 
-  //   hoax(ADDRESS_WITH_ETH, 10 ether);
-  //   vm.mockCall(
-  //     SCROLL_MESSAGE_QUEUE,
-  //     abi.encodeWithSelector(
-  //       IL1MessageQueue.estimateCrossDomainMessageFee.selector,
-  //       dstGasLimit + BASE_GAS_LIMIT
-  //     ),
-  //     abi.encode(fee)
-  //   );
-  //   vm.mockCall(
-  //     OVM_CROSS_DOMAIN_MESSENGER,
-  //     fee,
-  //     abi.encodeWithSelector(
-  //       ICrossDomainMessenger.sendMessage.selector,
-  //       RECEIVER_CROSS_CHAIN_CONTROLLER,
-  //       abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
-  //       SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
-  //     ),
-  //     abi.encode()
-  //   );
-  //   (bool success, bytes memory returnData) = address(scrollAdapter).delegatecall(
-  //     abi.encodeWithSelector(
-  //       IBaseAdapter.forwardMessage.selector,
-  //       RECEIVER_CROSS_CHAIN_CONTROLLER,
-  //       dstGasLimit,
-  //       ChainIds.SCROLL,
-  //       message
-  //     )
-  //   );
-  //   vm.clearMockedCalls();
+    hoax(ADDRESS_WITH_ETH, 10 ether);
+    vm.mockCall(
+      SCROLL_MESSAGE_QUEUE,
+      abi.encodeWithSelector(
+        IL1MessageQueue.estimateCrossDomainMessageFee.selector,
+        dstGasLimit + BASE_GAS_LIMIT
+      ),
+      abi.encode(fee)
+    );
+    vm.mockCall(
+      OVM_CROSS_DOMAIN_MESSENGER,
+      fee,
+      abi.encodeWithSelector(
+        hex"b2267a7b",
+        RECEIVER_CROSS_CHAIN_CONTROLLER,
+        0,
+        abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
+        SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
+      ),
+      abi.encode()
+    );
+    (bool success, bytes memory returnData) = address(scrollAdapter).delegatecall(
+      abi.encodeWithSelector(
+        IBaseAdapter.forwardMessage.selector,
+        RECEIVER_CROSS_CHAIN_CONTROLLER,
+        dstGasLimit,
+        ChainIds.SCROLL,
+        message
+      )
+    );
+    vm.clearMockedCalls();
 
-  //   assertEq(success, true);
-  //   assertEq(returnData, abi.encode(OVM_CROSS_DOMAIN_MESSENGER, 0));
-  // }
+    assertEq(success, true);
+    assertEq(returnData, abi.encode(OVM_CROSS_DOMAIN_MESSENGER, 0));
+  }
 
   function testForwardMessageWhenChainNotSupported() public {
     uint40 payloadId = uint40(0);
