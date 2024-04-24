@@ -56,7 +56,7 @@ contract MetisAdapterTest is Test {
     assertEq(metisAdapter.infraToNativeChainId(ChainIds.ETHEREUM), ChainIds.ETHEREUM);
   }
 
-  function testForwardMessage11() public {
+  function testForwardMessage() public {
     uint40 payloadId = uint40(0);
     bytes memory message = abi.encode(payloadId, CROSS_CHAIN_CONTROLLER);
     uint32 dstGasLimit = 600000;
@@ -66,6 +66,7 @@ contract MetisAdapterTest is Test {
       OVM_CROSS_DOMAIN_MESSENGER,
       abi.encodeWithSelector(
         ICrossDomainMessenger.sendMessageViaChainId.selector,
+        ChainIds.METIS,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
         SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
