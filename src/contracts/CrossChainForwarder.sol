@@ -127,7 +127,10 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     bytes memory message
   ) external onlyApprovedSenders returns (bytes32, bytes32) {
     // TODO: use here method to get shuffled bridge adapters
-    ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[destinationChainId];
+    ChainIdBridgeConfig[] memory bridgeAdapters = _getShuffledBridgeAdaptersByChain(
+      destinationChainId
+    );
+    //    _bridgeAdaptersByChain[destinationChainId];
     require(bridgeAdapters.length > 0, Errors.NO_BRIDGE_ADAPTERS_FOR_SPECIFIED_CHAIN);
 
     uint256 envelopeNonce = _currentEnvelopeNonce++;
@@ -206,10 +209,12 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     // Message can be retried only if it was sent before with exactly the same parameters
     require(isEnvelopeRegistered(encodedEnvelope.id), Errors.ENVELOPE_NOT_PREVIOUSLY_REGISTERED);
 
-    // TODO: use here method to get shuffled bridge adapters
-    ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[
+    ChainIdBridgeConfig[] memory bridgeAdapters = _getShuffledBridgeAdaptersByChain(
       envelope.destinationChainId
-    ];
+    );
+    //            _bridgeAdaptersByChain[
+    //      envelope.destinationChainId
+    //    ];
     require(bridgeAdapters.length > 0, Errors.NO_BRIDGE_ADAPTERS_FOR_SPECIFIED_CHAIN);
 
     EncodedTransaction memory encodedTransaction = (
