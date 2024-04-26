@@ -159,45 +159,6 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     return (encodedEnvelope.id, encodedTransaction.id);
   }
 
-  function _getShuffledBridgeAdaptersByChain(
-    uint256 destinationChainId
-  ) internal returns (ChainIdBridgeConfig[] memory) {
-    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
-      destinationChainId
-    ];
-
-    ChainIdBridgeConfig[] memory shuffledBridgeAdapters = new ChainIdBridgeConfig[](
-      destinationRequiredConfirmations
-    );
-    ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[destinationChainId];
-
-    uint256 randomIndex = Math.randMod(bridgeAdapters.length);
-    require(randomIndex < bridgeAdapters.length, 'Index out of bounds'); // TODO: is this require even needed? if so add error to lib
-    uint256 shuffledBridgeCount = 0;
-    // TODO: I think it would make sense to make it so that if configured required confirmations for a destination
-    // network are set to 0, it should use all the adapters available. This way there would be no way of breaking forwarding
-    // communication by setting wrong configuration. Problem with this is that if at some point we have a lot of bridges
-    // it could drain funds (but i think, its quite remote, and would still be fixable by proposal) and provably its more important
-    // to not break forwardability
-    if (randomIndex + destinationRequiredConfirmations > bridgeAdapters.length) {
-      for (
-        uint256 i = randomIndex;
-        i < randomIndex + destinationRequiredConfirmations - bridgeAdapters.length;
-        i++
-      ) {
-        shuffledBridgeAdapters[shuffledBridgeCount] = bridgeAdapters[i];
-        shuffledBridgeCount++;
-      }
-    }
-
-    for (uint256 i = 0; i < destinationRequiredConfirmations - shuffledBridgeAdapters.length; i++) {
-      shuffledBridgeAdapters[shuffledBridgeCount] = bridgeAdapters[i];
-      shuffledBridgeCount++;
-    }
-
-    return shuffledBridgeAdapters;
-  }
-
   /// @inheritdoc ICrossChainForwarder
   function retryEnvelope(
     Envelope memory envelope,
@@ -211,9 +172,6 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     ChainIdBridgeConfig[] memory bridgeAdapters = _getShuffledBridgeAdaptersByChain(
       envelope.destinationChainId
     );
-    //            _bridgeAdaptersByChain[
-    //      envelope.destinationChainId
-    //    ];
     require(bridgeAdapters.length > 0, Errors.NO_BRIDGE_ADAPTERS_FOR_SPECIFIED_CHAIN);
 
     EncodedTransaction memory encodedTransaction = (
@@ -324,6 +282,63 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) external onlyOwner {
     _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
+  }
+
+  /**
+   * @notice method to shuffle an array of forwarder configurations
+   * @param arrayToShuffle array that needs to be shuffled
+   * @return shuffled array of forwarder configurations
+   */
+  function _shuffleForwarderAdapters(
+    ChainIdBridgeConfig[] memory arrayToShuffle
+  ) internal returns (ChainIdBridgeConfig[] memory) {
+    uint256 arrayLength = arrayToShuffle.length;
+    for (uint256 i = 0; i < arrayLength; i++) {
+      uint256 j = Math.getPseudoRandom(i) % arrayLength;
+      ChainIdBridgeConfig memory arrayItem = arrayToShuffle[i];
+      arrayToShuffle[i] = arrayToShuffle[j];
+      arrayToShuffle[j] = arrayItem;
+    }
+    return arrayToShuffle;
+  }
+
+  /**
+   * @notice method to get a shuffled array of forwarder bridge adapters configurations
+   * @param destinationChainId id of the destination chain to get the adapters that communicate to it
+   * @return a shuffled array of the forwarder configurations for a destination chain
+   */
+  function _getShuffledBridgeAdaptersByChain(
+    uint256 destinationChainId
+  ) internal returns (ChainIdBridgeConfig[] memory) {
+    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
+      destinationChainId
+    ];
+
+    ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
+
+    // TODO: I think it would make sense to make it so that if configured required confirmations for a destination
+    // network are set to 0, it should use all the adapters available. This way there would be no way of breaking forwarding
+    // communication by setting wrong configuration. Problem with this is that if at some point we have a lot of bridges
+    // it could drain funds (but i think, its quite remote, and would still be fixable by proposal) and provably its more important
+    // to not break forwardability
+    if (
+      destinationRequiredConfirmations == 0 ||
+      destinationRequiredConfirmations == forwarderAdapters.length
+    ) {
+      return forwarderAdapters;
+    }
+
+    ChainIdBridgeConfig[] memory shuffledForwarders = _shuffleForwarderAdapters(forwarderAdapters);
+
+    ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
+      destinationRequiredConfirmations
+    );
+
+    for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
+      selectedBridgeAdapters[i] = shuffledForwarders[i];
+    }
+
+    return selectedBridgeAdapters;
   }
 
   /**
