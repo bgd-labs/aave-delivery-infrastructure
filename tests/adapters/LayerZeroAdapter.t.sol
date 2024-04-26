@@ -19,9 +19,6 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
-    vm.assume(lzEndpoint > address(65536));
-    vm.assume(originForwarder > address(65536));
-    vm.assume(crossChainController > address(65536));
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(lzEndpoint);

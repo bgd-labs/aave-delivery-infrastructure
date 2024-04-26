@@ -21,10 +21,6 @@ contract WormholeAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
-    vm.assume(crossChainController > address(65536));
-    vm.assume(wormholeRelayer > address(65536));
-    vm.assume(originForwarder > address(65536));
-    vm.assume(refundAddress > address(65536));
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(wormholeRelayer);
@@ -360,7 +356,6 @@ contract WormholeAdapterTest is BaseAdapterTest {
       ChainIds.ETHEREUM
     )
   {
-    vm.assume(remote > address(65536));
     vm.assume(remote != originForwarder);
 
     hoax(wormholeRelayer);

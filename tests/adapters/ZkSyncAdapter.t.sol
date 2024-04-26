@@ -21,10 +21,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
-    vm.assume(crossChainController > address(65536));
-    vm.assume(mailBox > address(65536));
-    vm.assume(originForwarder > address(65536));
-    vm.assume(clGasPriceOracle > address(65536));
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(mailBox);
