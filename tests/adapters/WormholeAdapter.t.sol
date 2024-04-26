@@ -24,6 +24,7 @@ contract WormholeAdapterTest is BaseAdapterTest {
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(wormholeRelayer);
+    vm.assume(originForwarder != address(0));
     vm.assume(originChainId > 0);
 
     IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
