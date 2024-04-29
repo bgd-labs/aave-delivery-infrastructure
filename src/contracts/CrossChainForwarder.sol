@@ -323,7 +323,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     // to not break forwardability
     if (
       destinationRequiredConfirmations == 0 ||
-      destinationRequiredConfirmations == forwarderAdapters.length
+      destinationRequiredConfirmations >= forwarderAdapters.length
     ) {
       return forwarderAdapters;
     }
