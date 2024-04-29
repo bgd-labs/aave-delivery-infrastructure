@@ -162,6 +162,29 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     assertEq(_forwardedTransactions[extendedTx.transactionId], false);
   }
 
+  modifier validateRequiredConfirmationsUsed(
+    ExtendedTransaction memory extendedTx,
+    uint256 requiredConfirmations
+  ) {
+    _;
+    uint256 destinationChainId = extendedTx.envelope.destinationChainId;
+    UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[destinationChainId];
+    uint256 successfulAdapters;
+    for (uint256 i = 0; i < usedAdapters.length; i++) {
+      if (usedAdapters[i].success) {
+        successfulAdapters++;
+      }
+    }
+
+    uint256 numberOfAdapters = this.getForwarderBridgeAdaptersByChain(destinationChainId).length;
+
+    if (requiredConfirmations == 0 || requiredConfirmations >= numberOfAdapters) {
+      assertEq(successfulAdapters, numberOfAdapters);
+    } else {
+      assertEq(successfulAdapters, requiredConfirmations);
+    }
+  }
+
   // ----- internal tests helpers ---------------
 
   function _registerEnvelope(ExtendedTransaction memory extendedTx) internal {

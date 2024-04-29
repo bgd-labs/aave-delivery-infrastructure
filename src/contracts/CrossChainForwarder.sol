@@ -316,11 +316,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
 
     ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
 
-    // TODO: I think it would make sense to make it so that if configured required confirmations for a destination
-    // network are set to 0, it should use all the adapters available. This way there would be no way of breaking forwarding
-    // communication by setting wrong configuration. Problem with this is that if at some point we have a lot of bridges
-    // it could drain funds (but i think, its quite remote, and would still be fixable by proposal) and provably its more important
-    // to not break forwardability
+    // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
+    // it will use all the adapters available. This way there would be no way of breaking forwarding communication
+    // by setting wrong configuration.
     if (
       destinationRequiredConfirmations == 0 ||
       destinationRequiredConfirmations >= forwarderAdapters.length
@@ -522,11 +520,6 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) internal {
     for (uint256 i = 0; i < requiredConfirmationsByReceiverChain.length; i++) {
-      // TODO: required confirmations should never be lower than amount of forwarders to specified chain. If there is
-      // the need to lower to 0, first all forwarders to that chain should be removed.
-      // Not entirely sure if this makes sense, as in the end requiredCOnfirmations only affect on receiver side, so
-      // once set in forwarder, even if we remove all forwarders for whatever reason, there should be no need to actually
-      // set the required Confirmations to 0.
       _requiredConfirmationsByReceiverChain[
         requiredConfirmationsByReceiverChain[i].chainId
       ] = requiredConfirmationsByReceiverChain[i].requiredConfirmations;
