@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {ICrossChainForwarder} from '../../interfaces/ICrossChainForwarder.sol';
+
 /**
  * @title IReinitialize
  * @author BGD Labs
@@ -10,5 +12,8 @@ interface IReinitialize {
   /**
    * @notice method called to re initialize the proxy
    */
-  function initializeRevision() external;
+  function initializeRevision(
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain
+  ) external;
 }

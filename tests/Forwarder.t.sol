@@ -5,6 +5,14 @@ import './BaseCCForwarder.t.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 
 contract ForwarderTest is BaseCCForwarderTest {
+  struct TestArgs {
+    address destination;
+    address origin;
+    uint256 destinationChainId;
+    //    uint256 numberOfAdapters;
+    //    uint256 requiredConfirmations;
+  }
+
   function testForwardMessageAllAdaptersWorking(
     address destination,
     address origin,
@@ -26,28 +34,21 @@ contract ForwarderTest is BaseCCForwarderTest {
       })
     );
     _validateForwardMessageWhenAtLeastOneAdapterWorking(extendedTx);
-    _validateRequiredConfirations(0);
   }
 
   function testForwardMessage_reqConfLTAdapters(
     address destination,
     address origin,
     uint256 destinationChainId,
-    uint256 numberOfAdapters,
     uint256 requiredConfirmations
   )
     public
     executeAs(origin)
     approveSender(origin)
-    enableBridgeAdaptersForPath(
-      destinationChainId,
-      numberOfAdapters,
-      AdapterSuccessType.ALL_SUCCESS
-    )
+    enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
     setRequiredConfirmations(destinationChainId, requiredConfirmations)
   {
-    numberOfAdapters = bound(numberOfAdapters, 2, 10);
-    vm.assume(requiredConfirmations > 0 && requiredConfirmations < numberOfAdapters);
+    vm.assume(requiredConfirmations > 0 && requiredConfirmations < 5);
 
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
@@ -63,7 +64,33 @@ contract ForwarderTest is BaseCCForwarderTest {
     _validateRequiredConfirmations(extendedTx, requiredConfirmations);
   }
 
-  function testForwardMessage_reqConfGTAdapters() public {}
+  function testForwardMessage_reqConfGTAdapters(
+    address destination,
+    address origin,
+    uint256 destinationChainId,
+    uint256 requiredConfirmations
+  )
+    public
+    executeAs(origin)
+    approveSender(origin)
+    enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
+    setRequiredConfirmations(destinationChainId, requiredConfirmations)
+  {
+    vm.assume(requiredConfirmations > 5);
+
+    ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
+      TestParams({
+        destination: destination,
+        origin: origin,
+        originChainId: block.chainid,
+        destinationChainId: destinationChainId,
+        envelopeNonce: _currentEnvelopeNonce,
+        transactionNonce: _currentTransactionNonce
+      })
+    );
+
+    _validateRequiredConfirmations(extendedTx, requiredConfirmations);
+  }
 
   function testForwardMessageWhenAdaptersNotWorking(
     address destination,
@@ -472,7 +499,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     validateEnvelopRegistry(extendedTx)
     validateTransactionRegistry(extendedTx)
   {
-    _testForwardMessage(extendedTx);
+    _testForwardMessage(extendedTx, 0);
   }
 
   function _validateForwardMessageWhenNoAdapterWorking(
@@ -484,13 +511,13 @@ contract ForwarderTest is BaseCCForwarderTest {
     validateEnvelopRegistry(extendedTx)
     validateTransactionRegistry(extendedTx)
   {
-    _testForwardMessage(extendedTx);
+    _testForwardMessage(extendedTx, 0);
   }
 
   function _validateRequiredConfirmations(
     ExtendedTransaction memory extendedTx,
     uint256 requiredConfirmations
   ) internal validateRequiredConfirmationsUsed(extendedTx, requiredConfirmations) {
-    _testForwardMessage(extendedTx);
+    _testForwardMessage(extendedTx, requiredConfirmations);
   }
 }

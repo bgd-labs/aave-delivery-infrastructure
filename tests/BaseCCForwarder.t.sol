@@ -113,6 +113,16 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     _;
   }
 
+  modifier setRequiredConfirmations(uint256 destinationChainId, uint256 requiredConfirmations) {
+    RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new RequiredConfirmationsByReceiverChain[](1);
+    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
+    requiredConfirmationsByReceiverChain[0].chainId = destinationChainId;
+
+    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
+    _;
+  }
+
   // ------------------- Validators modifiers --------------------------
   modifier validateEnvelopeNonceIncrement() {
     uint256 beforeNonce = _currentEnvelopeNonce;
@@ -170,7 +180,10 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     uint256 destinationChainId = extendedTx.envelope.destinationChainId;
     UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[destinationChainId];
     uint256 successfulAdapters;
-    for (uint256 i = 0; i < usedAdapters.length; i++) {
+    uint256 length = requiredConfirmations >= usedAdapters.length
+      ? usedAdapters.length
+      : requiredConfirmations;
+    for (uint256 i = 0; i < length; i++) {
       if (usedAdapters[i].success) {
         successfulAdapters++;
       }
@@ -195,25 +208,41 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     _forwardedTransactions[extendedTx.transactionId] = true;
   }
 
-  function _testForwardMessage(ExtendedTransaction memory extendedTx) internal {
+  function _testForwardMessage(
+    ExtendedTransaction memory extendedTx,
+    uint256 requiredConfirmations
+  ) internal {
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
     vm.expectEmit(true, true, true, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
     UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[
       extendedTx.envelope.destinationChainId
     ];
-    for (uint256 i = 0; i < usedAdapters.length; i++) {
-      vm.expectEmit(true, true, true, true);
-      emit TransactionForwardingAttempted(
-        extendedTx.transactionId,
-        extendedTx.envelopeId,
-        extendedTx.transactionEncoded,
-        extendedTx.envelope.destinationChainId,
-        usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter,
-        usedAdapters[i].bridgeAdapterConfig.destinationBridgeAdapter,
-        usedAdapters[i].success,
-        usedAdapters[i].returnData
-      );
+
+    ChainIdBridgeConfig[] memory shuffledAdapters = _getShuffledBridgeAdaptersByChain(
+      extendedTx.envelope.destinationChainId
+    );
+    for (uint256 i = 0; i < shuffledAdapters.length; i++) {
+      for (uint256 j = 0; j < usedAdapters.length; j++) {
+        if (
+          usedAdapters[j].bridgeAdapterConfig.currentChainBridgeAdapter ==
+          shuffledAdapters[i].currentChainBridgeAdapter &&
+          usedAdapters[j].bridgeAdapterConfig.destinationBridgeAdapter ==
+          shuffledAdapters[i].destinationBridgeAdapter
+        ) {
+          vm.expectEmit(true, true, true, true);
+          emit TransactionForwardingAttempted(
+            extendedTx.transactionId,
+            extendedTx.envelopeId,
+            extendedTx.transactionEncoded,
+            extendedTx.envelope.destinationChainId,
+            usedAdapters[j].bridgeAdapterConfig.currentChainBridgeAdapter,
+            usedAdapters[j].bridgeAdapterConfig.destinationBridgeAdapter,
+            usedAdapters[j].success,
+            usedAdapters[j].returnData
+          );
+        }
+      }
     }
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = this.forwardMessage(
       extendedTx.envelope.destinationChainId,
