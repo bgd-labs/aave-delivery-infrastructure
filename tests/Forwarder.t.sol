@@ -5,14 +5,6 @@ import './BaseCCForwarder.t.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 
 contract ForwarderTest is BaseCCForwarderTest {
-  struct TestArgs {
-    address destination;
-    address origin;
-    uint256 destinationChainId;
-    //    uint256 numberOfAdapters;
-    //    uint256 requiredConfirmations;
-  }
-
   function testForwardMessageAllAdaptersWorking(
     address destination,
     address origin,

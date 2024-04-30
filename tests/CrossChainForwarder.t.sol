@@ -109,6 +109,45 @@ contract CrossChainForwarderTest is BaseTest {
   }
 
   // TEST SETTERS
+  function testUpdateRequiredConfirmationsByReceiverChain(
+    uint256 requiredConfirmations,
+    uint256 chainId
+  ) public {
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      );
+    requiredConfirmationsByReceiverChain[0].chainId = chainId;
+    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
+
+    hoax(OWNER);
+    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
+      requiredConfirmationsByReceiverChain
+    );
+
+    assertEq(
+      crossChainForwarder.getRequiredConfirmationsByReceiverChain(chainId),
+      requiredConfirmations
+    );
+  }
+
+  function testUpdateRequiredConfirmationsByReceiverChainWhenNotOwner(
+    uint256 requiredConfirmations,
+    uint256 chainId
+  ) public {
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      );
+    requiredConfirmationsByReceiverChain[0].chainId = chainId;
+    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
+
+    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
+      requiredConfirmationsByReceiverChain
+    );
+  }
+
   function testApproveSenders() public {
     address[] memory newSenders = new address[](2);
     address newSender1 = address(101);

@@ -231,4 +231,11 @@ interface ICrossChainForwarder {
   function updateRequiredConfirmationsForReceiverChain(
     RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) external;
+
+  /**
+   * @notice method to get the required confirmations for the receiver chain
+   * @param chainId id of the receiver chain to get the required confirmations from
+   * @return required confirmations of the receiver chain
+   */
+  function getRequiredConfirmationsByReceiverChain(uint256 chainId) external view returns (uint256);
 }

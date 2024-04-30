@@ -44,12 +44,8 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   // (chainId => chain configuration) list of bridge adapter configurations for a chain
   mapping(uint256 => ChainIdBridgeConfig[]) internal _bridgeAdaptersByChain;
 
-  // ------------- new storage -----------------------
-
   // chainId => requiredConfirmations
   mapping(uint256 => uint256) internal _requiredConfirmationsByReceiverChain;
-
-  //-----------------------------------------
 
   // storage gap allocation to be used for later updates. This way storage can be added on parent contract without
   // overwriting storage on child
@@ -78,6 +74,13 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       // configuration for the required confirmations number??
       // This would mean that all the contracts where this is inherited would need to add this array (meaning old revisions also)
     );
+  }
+
+  /// @inheritdoc ICrossChainForwarder
+  function getRequiredConfirmationsByReceiverChain(
+    uint256 chainId
+  ) external view returns (uint256) {
+    return _requiredConfirmationsByReceiverChain[chainId];
   }
 
   /// @inheritdoc ICrossChainForwarder
@@ -532,11 +535,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     BridgeAdapterToDisable[] memory bridgesToDisable,
     address[] memory sendersToEnable,
     address[] memory sendersToDisable
-  )
-    internal
-  //  TODO: to add RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain here would mean that
-  // an update on all contracts including old revisions. Would it be better to create a new method? for this?
-  {
+  ) internal {
     _enableBridgeAdapters(bridgesToEnable);
     _disableBridgeAdapters(bridgesToDisable);
     _updateSenders(sendersToEnable, true);
