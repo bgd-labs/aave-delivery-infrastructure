@@ -239,11 +239,6 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
       abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
       abi.encode()
     );
-    vm.mockCall(
-      address(currentChainBridgeAdapter),
-      abi.encodeWithSelector(IBaseAdapter.forwardMessage.selector),
-      abi.encode()
-    );
     _enableBridgeAdapters(bridgeAdaptersInfo);
   }
 
