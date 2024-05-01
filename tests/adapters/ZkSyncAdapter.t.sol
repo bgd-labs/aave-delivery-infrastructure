@@ -21,6 +21,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
+    vm.assume(crossChainController != tx.origin); // zkVM doesn't support mocking tx.origin
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(mailBox);
