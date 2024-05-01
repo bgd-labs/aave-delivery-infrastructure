@@ -20,9 +20,6 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     uint256 originChainId
   ) {
     vm.assume(crossChainController != tx.origin); // zkVM doesn't support mocking tx.origin
-    vm.assume(lzEndpoint > address(65536));
-    vm.assume(originForwarder > address(65536));
-    vm.assume(crossChainController > address(65536));
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(lzEndpoint);
