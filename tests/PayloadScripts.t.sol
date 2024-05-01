@@ -10,10 +10,10 @@ import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmerg
 import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../src/contracts/CrossChainControllerWithEmergencyMode.sol';
 
 // contract PayloadScriptsTest is Test {
-//   address public constant CL_EMERGENCY_ORACLE = address(65566 + 12345);
-//   address public constant OWNER = address(65566 + 123);
-//   address public constant GUARDIAN = address(65566 + 1234);
-//   address public constant BRIDGE_ADAPTER = address(65566 + 123456);
+//   address public constant CL_EMERGENCY_ORACLE = address(65536 + 12345);
+//   address public constant OWNER = address(65536 + 123);
+//   address public constant GUARDIAN = address(65536 + 1234);
+//   address public constant BRIDGE_ADAPTER = address(65536 + 123456);
 //   bytes32 public constant PROXY_ADMIN_SALT = keccak256('proxy admin salt');
 //   bytes32 public constant CROSS_CHAIN_CONTROLLER_SALT = keccak256('cross chain controller salt');
 //   uint8 public constant CONFIRMATIONS = 1;
@@ -87,7 +87,7 @@ import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergenc
 
 //     // Senders to approve
 //     address[] memory sendersToApprove = new address[](1);
-//     sendersToApprove[0] = address(65566 + 102);
+//     sendersToApprove[0] = address(65536 + 102);
 
 //     // Forwarder adapters to enable
 //     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
@@ -97,7 +97,7 @@ import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergenc
 
 //     for (uint256 i = 0; i < chainIds.length; ++i) {
 //       address currentChainAdapter = address(uint160(uint256(keccak256('currentChainAdapter')) + i));
-//       address destChainAdapter = address(65566 + 110 + uint160(i));
+//       address destChainAdapter = address(65536 + 110 + uint160(i));
 
 //       for (uint256 j = 0; j < chainIds.length; ++j) {
 //         forwarderBridgeAdaptersToEnable[i * chainIds.length + j] = ICrossChainForwarder

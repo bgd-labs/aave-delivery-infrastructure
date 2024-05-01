@@ -6,7 +6,7 @@ import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmerg
 import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../src/contracts/CrossChainControllerWithEmergencyMode.sol';
 
 contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTest {
-  address public constant CL_EMERGENCY_ORACLE = address(65566 + 12345);
+  address public constant CL_EMERGENCY_ORACLE = address(65536 + 12345);
   event CLEmergencyOracleUpdated(address indexed newChainlinkEmergencyOracle);
 
   function _deployControllerImplementation() internal override returns (address) {
@@ -55,14 +55,14 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
 
     // forwarder configs
     address[] memory sendersToApprove = new address[](1);
-    sendersToApprove[0] = address(65566 + 102);
+    sendersToApprove[0] = address(65536 + 102);
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
         1
       );
     forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(65566 + 103),
-      destinationBridgeAdapter: address(65566 + 110),
+      currentChainBridgeAdapter: address(65536 + 103),
+      destinationBridgeAdapter: address(65536 + 110),
       destinationChainId: ChainIds.POLYGON
     });
 
@@ -101,7 +101,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         1
       );
     receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
-      bridgeAdapter: address(65566 + 201),
+      bridgeAdapter: address(65536 + 201),
       chainIds: originChainIds
     });
     uint8 newConfirmation = 1;
@@ -131,16 +131,16 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
 
     // forwarder config
     address[] memory sendersToApprove = new address[](1);
-    sendersToApprove[0] = address(65566 + 202);
+    sendersToApprove[0] = address(65536 + 202);
     address[] memory sendersToRemove = new address[](1);
-    sendersToRemove[0] = address(65566 + 102);
+    sendersToRemove[0] = address(65536 + 102);
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
         1
       );
     forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(65566 + 203),
-      destinationBridgeAdapter: address(65566 + 210),
+      currentChainBridgeAdapter: address(65536 + 203),
+      destinationBridgeAdapter: address(65536 + 210),
       destinationChainId: ChainIds.POLYGON
     });
     ICrossChainForwarder.BridgeAdapterToDisable[]
@@ -150,7 +150,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     uint256[] memory chainIds = new uint256[](1);
     chainIds[0] = ChainIds.POLYGON;
     forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: address(65566 + 103),
+      bridgeAdapter: address(65536 + 103),
       chainIds: chainIds
     });
 
@@ -163,7 +163,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       abi.encode(uint80(0), int256(1), 0, 0, uint80(0))
     );
     vm.mockCall(
-      address(65566 + 203),
+      address(65536 + 203),
       abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
       abi.encode()
     );
@@ -183,22 +183,22 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     assertEq(receiverConfig.requiredConfirmation, newConfirmation);
     assertEq(receiverConfig.validityTimestamp, newValidityTimestamp);
     assertEq(
-      crossChainController.isReceiverBridgeAdapterAllowed(address(65566 + 201), ChainIds.ETHEREUM),
+      crossChainController.isReceiverBridgeAdapterAllowed(address(65536 + 201), ChainIds.ETHEREUM),
       true
     );
     assertEq(
       crossChainController.isReceiverBridgeAdapterAllowed(BRIDGE_ADAPTER, ChainIds.ETHEREUM),
       false
     );
-    assertEq(crossChainController.isSenderApproved(address(65566 + 202)), true);
-    assertEq(crossChainController.isSenderApproved(address(65566 + 102)), false);
+    assertEq(crossChainController.isSenderApproved(address(65536 + 202)), true);
+    assertEq(crossChainController.isSenderApproved(address(65536 + 102)), false);
 
     ICrossChainForwarder.ChainIdBridgeConfig[] memory forwarderBridgeAdapters = crossChainController
       .getForwarderBridgeAdaptersByChain(ChainIds.POLYGON);
 
     assertEq(forwarderBridgeAdapters.length, 1);
-    assertEq(forwarderBridgeAdapters[0].destinationBridgeAdapter, address(65566 + 210));
-    assertEq(forwarderBridgeAdapters[0].currentChainBridgeAdapter, address(65566 + 203));
+    assertEq(forwarderBridgeAdapters[0].destinationBridgeAdapter, address(65536 + 210));
+    assertEq(forwarderBridgeAdapters[0].currentChainBridgeAdapter, address(65536 + 203));
   }
 
   function testSolveEmergencyWhenUnreachableConfirmations() public {
@@ -210,7 +210,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         1
       );
     receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
-      bridgeAdapter: address(65566 + 201),
+      bridgeAdapter: address(65536 + 201),
       chainIds: originChainIds
     });
     uint8 newConfirmation = 3;
@@ -240,16 +240,16 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
 
     // forwarder config
     address[] memory sendersToApprove = new address[](1);
-    sendersToApprove[0] = address(65566 + 202);
+    sendersToApprove[0] = address(65536 + 202);
     address[] memory sendersToRemove = new address[](1);
-    sendersToRemove[0] = address(65566 + 102);
+    sendersToRemove[0] = address(65536 + 102);
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
         1
       );
     forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(65566 + 203),
-      destinationBridgeAdapter: address(65566 + 210),
+      currentChainBridgeAdapter: address(65536 + 203),
+      destinationBridgeAdapter: address(65536 + 210),
       destinationChainId: ChainIds.POLYGON
     });
     ICrossChainForwarder.BridgeAdapterToDisable[]
@@ -259,7 +259,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     uint256[] memory chainIds = new uint256[](1);
     chainIds[0] = ChainIds.POLYGON;
     forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: address(65566 + 103),
+      bridgeAdapter: address(65536 + 103),
       chainIds: chainIds
     });
 
@@ -323,7 +323,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
   }
 
   function testUpdateCLEmergencyOracle() public {
-    address newChainlinkEmergencyOracle = address(65566 + 101);
+    address newChainlinkEmergencyOracle = address(65536 + 101);
 
     hoax(OWNER);
     vm.expectEmit(true, false, false, true);
@@ -340,7 +340,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
   }
 
   function testUpdateCLEmergencyOracleWhenNotOwner() public {
-    address newChainlinkEmergencyOracle = address(65566 + 101);
+    address newChainlinkEmergencyOracle = address(65536 + 101);
 
     vm.expectRevert(bytes('Ownable: caller is not the owner'));
     ICrossChainControllerWithEmergencyMode(address(crossChainController)).updateCLEmergencyOracle(
