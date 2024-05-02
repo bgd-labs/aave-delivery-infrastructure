@@ -71,10 +71,8 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       new BridgeAdapterToDisable[](0),
       sendersToApprove,
       new address[](0)
-      // TODO: does it make sense to modify constructor and all dependant contracts to include here an initial
-      // configuration for the required confirmations number??
-      // This would mean that all the contracts where this is inherited would need to add this array (meaning old revisions also)
     );
+    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 
   /// @inheritdoc ICrossChainForwarder
