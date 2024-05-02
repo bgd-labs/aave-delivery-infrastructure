@@ -201,86 +201,86 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     assertEq(forwarderBridgeAdapters[0].currentChainBridgeAdapter, address(65536 + 203));
   }
 
-  // function testSolveEmergencyWhenUnreachableConfirmations() public {
-  //   // receiver config
-  //   uint256[] memory originChainIds = new uint256[](1);
-  //   originChainIds[0] = ChainIds.ETHEREUM;
-  //   ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
-  //     memory receiverBridgeAdaptersToAllow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
-  //       1
-  //     );
-  //   receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
-  //     bridgeAdapter: address(65536 + 201),
-  //     chainIds: originChainIds
-  //   });
-  //   uint8 newConfirmation = 3;
-  //   ICrossChainReceiver.ConfirmationInput memory confirmation = ICrossChainReceiver
-  //     .ConfirmationInput({chainId: ChainIds.ETHEREUM, requiredConfirmations: newConfirmation});
-  //   ICrossChainReceiver.ConfirmationInput[]
-  //     memory newConfirmations = new ICrossChainReceiver.ConfirmationInput[](1);
-  //   newConfirmations[0] = confirmation;
+  function testSolveEmergencyWhenUnreachableConfirmations() public {
+    // receiver config
+    uint256[] memory originChainIds = new uint256[](1);
+    originChainIds[0] = ChainIds.ETHEREUM;
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+      memory receiverBridgeAdaptersToAllow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
+        1
+      );
+    receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+      bridgeAdapter: address(65536 + 201),
+      chainIds: originChainIds
+    });
+    uint8 newConfirmation = 3;
+    ICrossChainReceiver.ConfirmationInput memory confirmation = ICrossChainReceiver
+      .ConfirmationInput({chainId: ChainIds.ETHEREUM, requiredConfirmations: newConfirmation});
+    ICrossChainReceiver.ConfirmationInput[]
+      memory newConfirmations = new ICrossChainReceiver.ConfirmationInput[](1);
+    newConfirmations[0] = confirmation;
 
-  //   ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
-  //     memory receiverBridgeAdaptersToDisallow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
-  //       1
-  //     );
-  //   receiverBridgeAdaptersToDisallow[0].bridgeAdapter = BRIDGE_ADAPTER;
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
+      memory receiverBridgeAdaptersToDisallow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
+        1
+      );
+    receiverBridgeAdaptersToDisallow[0].bridgeAdapter = BRIDGE_ADAPTER;
 
-  //   receiverBridgeAdaptersToDisallow[0].chainIds = new uint256[](2);
-  //   receiverBridgeAdaptersToDisallow[0].chainIds[0] = 1;
-  //   receiverBridgeAdaptersToDisallow[0].chainIds[1] = 137;
+    receiverBridgeAdaptersToDisallow[0].chainIds = new uint256[](2);
+    receiverBridgeAdaptersToDisallow[0].chainIds[0] = 1;
+    receiverBridgeAdaptersToDisallow[0].chainIds[1] = 137;
 
-  //   uint120 newValidityTimestamp = uint120(block.timestamp + 5);
-  //   ICrossChainReceiver.ValidityTimestampInput[]
-  //     memory newValidityTimestamps = new ICrossChainReceiver.ValidityTimestampInput[](1);
-  //   newValidityTimestamps[0] = ICrossChainReceiver.ValidityTimestampInput({
-  //     chainId: ChainIds.ETHEREUM,
-  //     validityTimestamp: newValidityTimestamp
-  //   });
+    uint120 newValidityTimestamp = uint120(block.timestamp + 5);
+    ICrossChainReceiver.ValidityTimestampInput[]
+      memory newValidityTimestamps = new ICrossChainReceiver.ValidityTimestampInput[](1);
+    newValidityTimestamps[0] = ICrossChainReceiver.ValidityTimestampInput({
+      chainId: ChainIds.ETHEREUM,
+      validityTimestamp: newValidityTimestamp
+    });
 
-  //   // forwarder config
-  //   address[] memory sendersToApprove = new address[](1);
-  //   sendersToApprove[0] = address(65536 + 202);
-  //   address[] memory sendersToRemove = new address[](1);
-  //   sendersToRemove[0] = address(65536 + 102);
-  //   ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-  //     memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-  //       1
-  //     );
-  //   forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-  //     currentChainBridgeAdapter: address(65536 + 203),
-  //     destinationBridgeAdapter: address(65536 + 210),
-  //     destinationChainId: ChainIds.POLYGON
-  //   });
-  //   ICrossChainForwarder.BridgeAdapterToDisable[]
-  //     memory forwarderBridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](
-  //       1
-  //     );
-  //   uint256[] memory chainIds = new uint256[](1);
-  //   chainIds[0] = ChainIds.POLYGON;
-  //   forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-  //     bridgeAdapter: address(65536 + 103),
-  //     chainIds: chainIds
-  //   });
+    // forwarder config
+    address[] memory sendersToApprove = new address[](1);
+    sendersToApprove[0] = address(65536 + 202);
+    address[] memory sendersToRemove = new address[](1);
+    sendersToRemove[0] = address(65536 + 102);
+    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
+      memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
+        1
+      );
+    forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+      currentChainBridgeAdapter: address(65536 + 203),
+      destinationBridgeAdapter: address(65536 + 210),
+      destinationChainId: ChainIds.POLYGON
+    });
+    ICrossChainForwarder.BridgeAdapterToDisable[]
+      memory forwarderBridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](
+        1
+      );
+    uint256[] memory chainIds = new uint256[](1);
+    chainIds[0] = ChainIds.POLYGON;
+    forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+      bridgeAdapter: address(65536 + 103),
+      chainIds: chainIds
+    });
 
-  //   hoax(GUARDIAN);
-  //   vm.mockCall(
-  //     CL_EMERGENCY_ORACLE,
-  //     abi.encodeWithSelector(ICLEmergencyOracle.latestRoundData.selector),
-  //     abi.encode(uint80(0), int256(1), 0, 0, uint80(0))
-  //   );
-  //   vm.expectRevert(bytes(Errors.INVALID_REQUIRED_CONFIRMATIONS));
-  //   ICrossChainControllerWithEmergencyMode(address(crossChainController)).solveEmergency(
-  //     newConfirmations,
-  //     newValidityTimestamps,
-  //     receiverBridgeAdaptersToAllow,
-  //     receiverBridgeAdaptersToDisallow,
-  //     sendersToApprove,
-  //     sendersToRemove,
-  //     forwarderBridgeAdaptersToEnable,
-  //     forwarderBridgeAdaptersToDisable
-  //   );
-  // }
+    hoax(GUARDIAN);
+    vm.mockCall(
+      CL_EMERGENCY_ORACLE,
+      abi.encodeWithSelector(ICLEmergencyOracle.latestRoundData.selector),
+      abi.encode(uint80(0), int256(1), 0, 0, uint80(0))
+    );
+    vm.expectRevert(bytes(Errors.INVALID_REQUIRED_CONFIRMATIONS));
+    ICrossChainControllerWithEmergencyMode(address(crossChainController)).solveEmergency(
+      newConfirmations,
+      newValidityTimestamps,
+      receiverBridgeAdaptersToAllow,
+      receiverBridgeAdaptersToDisallow,
+      sendersToApprove,
+      sendersToRemove,
+      forwarderBridgeAdaptersToEnable,
+      forwarderBridgeAdaptersToDisable
+    );
+  }
 
   function testSolveEmergencyWhenNotGuardian() public {
     vm.expectRevert(bytes('ONLY_BY_GUARDIAN'));
