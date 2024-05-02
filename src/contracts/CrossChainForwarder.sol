@@ -63,7 +63,8 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
    */
   constructor(
     ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) {
     _configureForwarderBasics(
       bridgeAdaptersToEnable,
