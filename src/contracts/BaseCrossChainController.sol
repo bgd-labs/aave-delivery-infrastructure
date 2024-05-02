@@ -26,7 +26,11 @@ contract BaseCrossChainController is
 {
   constructor()
     CrossChainReceiver(new ConfirmationInput[](0), new ReceiverBridgeAdapterConfigInput[](0))
-    CrossChainForwarder(new ForwarderBridgeAdapterConfigInput[](0), new address[](0))
+    CrossChainForwarder(
+      new ForwarderBridgeAdapterConfigInput[](0),
+      new address[](0),
+      new RequiredConfirmationsByReceiverChain[](0)
+    )
   {}
 
   /// @dev child class should make a call of this method
