@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {ArbAdapter, IArbAdapter, IBaseAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
 import {ArbitrumAdapterTestnet} from '../contract_extensions/ArbitrumAdapter.sol';
 
-abstract contract BaseArbAdapter {
+contract BaseArbAdapter {
   function _deployAdapter(
     address crossChainController,
     address inbox,
