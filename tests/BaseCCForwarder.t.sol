@@ -29,7 +29,8 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
   constructor()
     CrossChainForwarder(
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      new address[](0)
+      new address[](0),
+      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
     )
   {}
 

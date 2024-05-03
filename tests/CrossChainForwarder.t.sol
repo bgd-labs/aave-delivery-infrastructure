@@ -54,7 +54,8 @@ contract CrossChainForwarderTest is BaseTest {
 
     crossChainForwarder = new CrossChainForwarder(
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      sendersToApprove
+      sendersToApprove,
+      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
     );
 
     Ownable(address(crossChainForwarder)).transferOwnership(OWNER);
