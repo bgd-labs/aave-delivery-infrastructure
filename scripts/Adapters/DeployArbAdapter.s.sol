@@ -1,39 +1,36 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {ArbAdapter, IArbAdapter, IBaseAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
+import {ArbAdapter, IArbAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
 import {ArbitrumAdapterTestnet} from '../contract_extensions/ArbitrumAdapter.sol';
+import {IBaseAdapterScript} from './IBaseAdapterScript.sol';
 
-contract BaseArbAdapter {
+contract BaseArbAdapter is IBaseAdapterScript {
   function _deployAdapter(
-    address crossChainController,
+    IBaseAdapterScript.BaseAdapterArgs memory baseArgs,
     address inbox,
-    address destinationCCC,
-    uint256 providerGasLimit,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes,
-    bool isTestnet,
-    bytes32 adapterSalt
+    address destinationCCC
   ) internal returns (address) {
-    if (isTestnet) {
+    if (baseArgs.isTestnet) {
       return
         address(
-          new ArbitrumAdapterTestnet{salt: adapterSalt}(
-            crossChainController,
+          new ArbitrumAdapterTestnet{salt: baseArgs.adapterSalt}(
+            baseArgs.crossChainController,
             inbox,
             destinationCCC,
-            providerGasLimit,
-            trustedRemotes
+            baseArgs.providerGasLimit,
+            baseArgs.trustedRemotes
           )
         );
     } else {
       return
         address(
-          new ArbAdapter(
-            crossChainController,
+          new ArbAdapter{salt: baseArgs.adapterSalt}(
+            baseArgs.crossChainController,
             inbox,
             destinationCCC,
-            providerGasLimit,
-            trustedRemotes
+            baseArgs.providerGasLimit,
+            baseArgs.trustedRemotes
           )
         );
     }
