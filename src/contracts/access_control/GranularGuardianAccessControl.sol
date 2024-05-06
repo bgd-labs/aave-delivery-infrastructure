@@ -41,7 +41,7 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
     if (initialGuardians.solveEmergencyGuardian != address(0)) {
       _grantRole(SOLVE_EMERGENCY_ROLE, initialGuardians.solveEmergencyGuardian);
     }
-    if (initialGuardians.solveEmergencyGuardian != address(0)) {
+    if (initialGuardians.retryGuardian != address(0)) {
       _grantRole(RETRY_ROLE, initialGuardians.retryGuardian);
     }
   }
