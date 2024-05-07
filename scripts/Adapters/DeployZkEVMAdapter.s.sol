@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {ZkEVMAdapterEthereum} from '../../src/contracts/adapters/zkEVM/ZkEVMAdapterEthereum.sol';
 import {ZkEVMAdapterPolygonZkEVM} from '../../src/contracts/adapters/zkEVM/ZkEVMAdapterPolygonZkEVM.sol';
 import {ZkEVMAdapterGoerli, ZkEVMAdapterZkEVMGoerli} from '../contract_extensions/ZkEVMAdapterTestnets.sol';
-import {IBaseAdapterScript} from './IBaseAdapterScript.sol';
+import {IBaseAdapterScript} from './BaseAdapterStructs.sol';
 
 contract BaseEthereumZKEVMAdapter is IBaseAdapterScript {
   function _deployAdapter(

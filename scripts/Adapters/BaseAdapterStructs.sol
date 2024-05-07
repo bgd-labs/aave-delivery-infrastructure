@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 
-interface IBaseAdapterScript {
+library BaseAdapterStructs {
   struct BaseAdapterArgs {
     address crossChainController;
     uint256 providerGasLimit;

@@ -3,30 +3,26 @@ pragma solidity ^0.8.0;
 
 import {ArbAdapter, IArbAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
 import {ArbitrumAdapterTestnet} from '../contract_extensions/ArbitrumAdapter.sol';
+import './BaseAdapterStructs.sol';
 
 library ArbAdapterDeploymentHelper {
-  struct BaseAdapterArgs {
-    address crossChainController;
-    uint256 providerGasLimit;
-    IBaseAdapter.TrustedRemotesConfig[] trustedRemotes;
-    bool isTestnet;
+  struct ArbAdapterArgs {
+    BaseAdapterStructs.BaseAdapterArgs baseArgs;
+    address inbox;
+    address destinationCCC;
   }
 
-  function getAdapterCode(
-    BaseAdapterArgs memory baseArgs,
-    address inbox,
-    address destinationCCC
-  ) internal pure returns (bytes memory) {
-    if (baseArgs.isTestnet) {
+  function getAdapterCode(ArbAdapterArgs memory arbArgs) internal pure returns (bytes memory) {
+    if (arbArgs.baseArgs.isTestnet) {
       return
         abi.encodePacked(
           type(ArbitrumAdapterTestnet).creationCode,
           abi.encode(
-            baseArgs.crossChainController,
-            inbox,
-            destinationCCC,
-            baseArgs.providerGasLimit,
-            baseArgs.trustedRemotes
+            arbArgs.baseArgs.crossChainController,
+            arbArgs.inbox,
+            arbArgs.destinationCCC,
+            arbArgs.baseArgs.providerGasLimit,
+            arbArgs.baseArgs.trustedRemotes
           )
         );
     } else {
@@ -34,11 +30,11 @@ library ArbAdapterDeploymentHelper {
         abi.encodePacked(
           type(ArbAdapter).creationCode,
           abi.encode(
-            baseArgs.crossChainController,
-            inbox,
-            destinationCCC,
-            baseArgs.providerGasLimit,
-            baseArgs.trustedRemotes
+            arbArgs.baseArgs.crossChainController,
+            arbArgs.inbox,
+            arbArgs.destinationCCC,
+            arbArgs.baseArgs.providerGasLimit,
+            arbArgs.baseArgs.trustedRemotes
           )
         );
     }

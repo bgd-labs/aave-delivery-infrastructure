@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {LayerZeroAdapter, ILayerZeroAdapter} from '../../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
 import {LayerZeroAdapterTestnet} from '../contract_extensions/LayerZeroAdapter.sol';
-import {IBaseAdapterScript} from './IBaseAdapterScript.sol';
+import {IBaseAdapterScript} from './BaseAdapterStructs.sol';
 
 abstract contract BaseLZAdapter is IBaseAdapterScript {
   function _deployAdapter(

@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {WormholeAdapter, IWormholeAdapter} from '../../src/contracts/adapters/wormhole/WormholeAdapter.sol';
 import {WormholeAdapterTestnet} from '../contract_extensions/WormholeAdapter.sol';
-import {IBaseAdapterScript} from './IBaseAdapterScript.sol';
+import {IBaseAdapterScript} from './BaseAdapterStructs.sol';
 
 abstract contract BaseWormholeAdapter is IBaseAdapterScript {
   /// @dev for now we will need to deploy one adapter for every path (one remote network) because of the refunding on

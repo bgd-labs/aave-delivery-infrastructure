@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {OpAdapter, IOpAdapter} from '../../src/contracts/adapters/optimism/OpAdapter.sol';
 import {OptimismAdapterTestnet} from '../contract_extensions/OptimismAdapter.sol';
-import {IBaseAdapterScript} from './IBaseAdapterScript.sol';
+import {IBaseAdapterScript} from './BaseAdapterStructs.sol';
 
 abstract contract BaseOpAdapter is IBaseAdapterScript {
   function _deployAdapter(

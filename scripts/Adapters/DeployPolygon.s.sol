@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {PolygonAdapterEthereum} from '../../src/contracts/adapters/polygon/PolygonAdapterEthereum.sol';
 import {PolygonAdapterPolygon} from '../../src/contracts/adapters/polygon/PolygonAdapterPolygon.sol';
 import {PolygonAdapterGoerli, PolygonAdapterMumbai} from '../contract_extensions/PolygonAdapterTestnets.sol';
-import {IBaseAdapterScript} from './IBaseAdapterScript.sol';
+import {IBaseAdapterScript} from './BaseAdapterStructs.sol';
 
 abstract contract BaseEthereumPolygonAdapter is IBaseAdapterScript {
   function _deployAdapter(

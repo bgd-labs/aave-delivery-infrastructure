@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {HyperLaneAdapter, IHyperLaneAdapter} from '../../src/contracts/adapters/hyperLane/HyperLaneAdapter.sol';
-import {IBaseAdapterScript} from './IBaseAdapterScript.sol';
+import {IBaseAdapterScript} from './BaseAdapterStructs.sol';
 
 abstract contract BaseHLAdapter is IBaseAdapterScript {
   function _deployAdapter(
