@@ -8,7 +8,6 @@ library BaseAdapterStructs {
     address crossChainController;
     uint256 providerGasLimit;
     IBaseAdapter.TrustedRemotesConfig[] trustedRemotes;
-    bytes32 adapterSalt;
     bool isTestnet;
   }
 }
