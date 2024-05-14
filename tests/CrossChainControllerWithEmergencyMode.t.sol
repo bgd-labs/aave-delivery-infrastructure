@@ -19,7 +19,9 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     ICrossChainReceiver.ConfirmationInput[] memory initialRequiredConfirmations,
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain
   ) internal pure override returns (bytes memory) {
     return
       abi.encodeWithSelector(
@@ -30,7 +32,8 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         initialRequiredConfirmations,
         receiverBridgeAdaptersToAllow,
         forwarderBridgeAdaptersToEnable,
-        sendersToApprove
+        sendersToApprove,
+        requiredConfirmationsByReceiverChain
       );
   }
 
@@ -66,6 +69,11 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       destinationChainId: ChainIds.POLYGON
     });
 
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        0
+      );
+
     vm.expectRevert(bytes(Errors.INVALID_EMERGENCY_ORACLE));
     proxyFactory.createDeterministic(
       crossChainControllerImpl,
@@ -78,7 +86,8 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         initialRequiredConfirmations,
         receiverBridgeAdaptersToAllow,
         forwarderBridgeAdaptersToEnable,
-        sendersToApprove
+        sendersToApprove,
+        requiredConfirmationsByReceiverChain
       ),
       CROSS_CHAIN_CONTROLLER_SALT
     );
@@ -92,67 +101,77 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     );
   }
 
+  struct EmergencyArgs {
+    ICrossChainReceiver.ConfirmationInput[] newConfirmations;
+    ICrossChainReceiver.ValidityTimestampInput[] newValidityTimestamps;
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] receiverBridgeAdaptersToAllow;
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] receiverBridgeAdaptersToDisallow;
+    address[] sendersToApprove;
+    address[] sendersToRemove;
+    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] forwarderBridgeAdaptersToEnable;
+    ICrossChainForwarder.BridgeAdapterToDisable[] forwarderBridgeAdaptersToDisable;
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[] requiredConfirmationsByReceiverChain;
+  }
+
   function testSolveEmergency() public {
+    EmergencyArgs memory args = EmergencyArgs({
+      newConfirmations: new ICrossChainReceiver.ConfirmationInput[](1),
+      newValidityTimestamps: new ICrossChainReceiver.ValidityTimestampInput[](1),
+      receiverBridgeAdaptersToAllow: new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](1),
+      receiverBridgeAdaptersToDisallow: new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
+        1
+      ),
+      sendersToApprove: new address[](1),
+      sendersToRemove: new address[](1),
+      forwarderBridgeAdaptersToEnable: new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
+        1
+      ),
+      forwarderBridgeAdaptersToDisable: new ICrossChainForwarder.BridgeAdapterToDisable[](1),
+      requiredConfirmationsByReceiverChain: new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      )
+    });
     // receiver config
     uint256[] memory originChainIds = new uint256[](1);
     originChainIds[0] = ChainIds.ETHEREUM;
-    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
-      memory receiverBridgeAdaptersToAllow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
-        1
-      );
-    receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+
+    args.receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
       bridgeAdapter: address(201),
       chainIds: originChainIds
     });
     uint8 newConfirmation = 1;
     ICrossChainReceiver.ConfirmationInput memory confirmation = ICrossChainReceiver
       .ConfirmationInput({chainId: ChainIds.ETHEREUM, requiredConfirmations: newConfirmation});
-    ICrossChainReceiver.ConfirmationInput[]
-      memory newConfirmations = new ICrossChainReceiver.ConfirmationInput[](1);
-    newConfirmations[0] = confirmation;
+    args.newConfirmations[0] = confirmation;
 
-    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
-      memory receiverBridgeAdaptersToDisallow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
-        1
-      );
-    receiverBridgeAdaptersToDisallow[0].bridgeAdapter = BRIDGE_ADAPTER;
-
-    receiverBridgeAdaptersToDisallow[0].chainIds = new uint256[](2);
-    receiverBridgeAdaptersToDisallow[0].chainIds[0] = 1;
-    receiverBridgeAdaptersToDisallow[0].chainIds[1] = 137;
+    args.receiverBridgeAdaptersToDisallow[0].bridgeAdapter = BRIDGE_ADAPTER;
+    args.receiverBridgeAdaptersToDisallow[0].chainIds = new uint256[](2);
+    args.receiverBridgeAdaptersToDisallow[0].chainIds[0] = 1;
+    args.receiverBridgeAdaptersToDisallow[0].chainIds[1] = 137;
 
     uint120 newValidityTimestamp = uint120(block.timestamp + 5);
-    ICrossChainReceiver.ValidityTimestampInput[]
-      memory newValidityTimestamps = new ICrossChainReceiver.ValidityTimestampInput[](1);
-    newValidityTimestamps[0] = ICrossChainReceiver.ValidityTimestampInput({
+    args.newValidityTimestamps[0] = ICrossChainReceiver.ValidityTimestampInput({
       chainId: ChainIds.ETHEREUM,
       validityTimestamp: newValidityTimestamp
     });
 
     // forwarder config
-    address[] memory sendersToApprove = new address[](1);
-    sendersToApprove[0] = address(202);
-    address[] memory sendersToRemove = new address[](1);
-    sendersToRemove[0] = address(102);
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        1
-      );
-    forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(203),
-      destinationBridgeAdapter: address(210),
-      destinationChainId: ChainIds.POLYGON
-    });
-    ICrossChainForwarder.BridgeAdapterToDisable[]
-      memory forwarderBridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](
-        1
-      );
+    args.sendersToApprove[0] = address(202);
+    args.sendersToRemove[0] = address(102);
+    args.forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder
+      .ForwarderBridgeAdapterConfigInput({
+        currentChainBridgeAdapter: address(203),
+        destinationBridgeAdapter: address(210),
+        destinationChainId: ChainIds.POLYGON
+      });
     uint256[] memory chainIds = new uint256[](1);
     chainIds[0] = ChainIds.POLYGON;
-    forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+    args.forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
       bridgeAdapter: address(103),
       chainIds: chainIds
     });
+    args.requiredConfirmationsByReceiverChain[0] = ICrossChainForwarder
+      .RequiredConfirmationsByReceiverChain({chainId: 1, requiredConfirmations: 3});
 
     skip(10);
 
@@ -167,15 +186,17 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
       abi.encode()
     );
+
     ICrossChainControllerWithEmergencyMode(address(crossChainController)).solveEmergency(
-      newConfirmations,
-      newValidityTimestamps,
-      receiverBridgeAdaptersToAllow,
-      receiverBridgeAdaptersToDisallow,
-      sendersToApprove,
-      sendersToRemove,
-      forwarderBridgeAdaptersToEnable,
-      forwarderBridgeAdaptersToDisable
+      args.newConfirmations,
+      args.newValidityTimestamps,
+      args.receiverBridgeAdaptersToAllow,
+      args.receiverBridgeAdaptersToDisallow,
+      args.sendersToApprove,
+      args.sendersToRemove,
+      args.forwarderBridgeAdaptersToEnable,
+      args.forwarderBridgeAdaptersToDisable,
+      args.requiredConfirmationsByReceiverChain
     );
 
     ICrossChainReceiver.ReceiverConfiguration memory receiverConfig = crossChainController
@@ -199,66 +220,63 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     assertEq(forwarderBridgeAdapters.length, 1);
     assertEq(forwarderBridgeAdapters[0].destinationBridgeAdapter, address(210));
     assertEq(forwarderBridgeAdapters[0].currentChainBridgeAdapter, address(203));
+    assertEq(crossChainController.getRequiredConfirmationsByReceiverChain(1), 3);
   }
 
   function testSolveEmergencyWhenUnreachableConfirmations() public {
+    EmergencyArgs memory args = EmergencyArgs({
+      newConfirmations: new ICrossChainReceiver.ConfirmationInput[](1),
+      newValidityTimestamps: new ICrossChainReceiver.ValidityTimestampInput[](1),
+      receiverBridgeAdaptersToAllow: new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](1),
+      receiverBridgeAdaptersToDisallow: new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
+        1
+      ),
+      sendersToApprove: new address[](1),
+      sendersToRemove: new address[](1),
+      forwarderBridgeAdaptersToEnable: new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
+        1
+      ),
+      forwarderBridgeAdaptersToDisable: new ICrossChainForwarder.BridgeAdapterToDisable[](1),
+      requiredConfirmationsByReceiverChain: new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        0
+      )
+    });
+
     // receiver config
     uint256[] memory originChainIds = new uint256[](1);
     originChainIds[0] = ChainIds.ETHEREUM;
-    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
-      memory receiverBridgeAdaptersToAllow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
-        1
-      );
-    receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
+    args.receiverBridgeAdaptersToAllow[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
       bridgeAdapter: address(201),
       chainIds: originChainIds
     });
     uint8 newConfirmation = 3;
     ICrossChainReceiver.ConfirmationInput memory confirmation = ICrossChainReceiver
       .ConfirmationInput({chainId: ChainIds.ETHEREUM, requiredConfirmations: newConfirmation});
-    ICrossChainReceiver.ConfirmationInput[]
-      memory newConfirmations = new ICrossChainReceiver.ConfirmationInput[](1);
-    newConfirmations[0] = confirmation;
+    args.newConfirmations[0] = confirmation;
 
-    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
-      memory receiverBridgeAdaptersToDisallow = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](
-        1
-      );
-    receiverBridgeAdaptersToDisallow[0].bridgeAdapter = BRIDGE_ADAPTER;
-
-    receiverBridgeAdaptersToDisallow[0].chainIds = new uint256[](2);
-    receiverBridgeAdaptersToDisallow[0].chainIds[0] = 1;
-    receiverBridgeAdaptersToDisallow[0].chainIds[1] = 137;
+    args.receiverBridgeAdaptersToDisallow[0].bridgeAdapter = BRIDGE_ADAPTER;
+    args.receiverBridgeAdaptersToDisallow[0].chainIds = new uint256[](2);
+    args.receiverBridgeAdaptersToDisallow[0].chainIds[0] = 1;
+    args.receiverBridgeAdaptersToDisallow[0].chainIds[1] = 137;
 
     uint120 newValidityTimestamp = uint120(block.timestamp + 5);
-    ICrossChainReceiver.ValidityTimestampInput[]
-      memory newValidityTimestamps = new ICrossChainReceiver.ValidityTimestampInput[](1);
-    newValidityTimestamps[0] = ICrossChainReceiver.ValidityTimestampInput({
+    args.newValidityTimestamps[0] = ICrossChainReceiver.ValidityTimestampInput({
       chainId: ChainIds.ETHEREUM,
       validityTimestamp: newValidityTimestamp
     });
 
     // forwarder config
-    address[] memory sendersToApprove = new address[](1);
-    sendersToApprove[0] = address(202);
-    address[] memory sendersToRemove = new address[](1);
-    sendersToRemove[0] = address(102);
-    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
-      memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
-        1
-      );
-    forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(203),
-      destinationBridgeAdapter: address(210),
-      destinationChainId: ChainIds.POLYGON
-    });
-    ICrossChainForwarder.BridgeAdapterToDisable[]
-      memory forwarderBridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](
-        1
-      );
+    args.sendersToApprove[0] = address(202);
+    args.sendersToRemove[0] = address(102);
+    args.forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder
+      .ForwarderBridgeAdapterConfigInput({
+        currentChainBridgeAdapter: address(203),
+        destinationBridgeAdapter: address(210),
+        destinationChainId: ChainIds.POLYGON
+      });
     uint256[] memory chainIds = new uint256[](1);
     chainIds[0] = ChainIds.POLYGON;
-    forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
+    args.forwarderBridgeAdaptersToDisable[0] = ICrossChainForwarder.BridgeAdapterToDisable({
       bridgeAdapter: address(103),
       chainIds: chainIds
     });
@@ -271,14 +289,15 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     );
     vm.expectRevert(bytes(Errors.INVALID_REQUIRED_CONFIRMATIONS));
     ICrossChainControllerWithEmergencyMode(address(crossChainController)).solveEmergency(
-      newConfirmations,
-      newValidityTimestamps,
-      receiverBridgeAdaptersToAllow,
-      receiverBridgeAdaptersToDisallow,
-      sendersToApprove,
-      sendersToRemove,
-      forwarderBridgeAdaptersToEnable,
-      forwarderBridgeAdaptersToDisable
+      args.newConfirmations,
+      args.newValidityTimestamps,
+      args.receiverBridgeAdaptersToAllow,
+      args.receiverBridgeAdaptersToDisallow,
+      args.sendersToApprove,
+      args.sendersToRemove,
+      args.forwarderBridgeAdaptersToEnable,
+      args.forwarderBridgeAdaptersToDisable,
+      args.requiredConfirmationsByReceiverChain
     );
   }
 
@@ -292,7 +311,8 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       new address[](0),
       new address[](0),
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
+      new ICrossChainForwarder.BridgeAdapterToDisable[](0),
+      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
     );
   }
 
@@ -318,7 +338,8 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       new address[](0),
       new address[](0),
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
+      new ICrossChainForwarder.BridgeAdapterToDisable[](0),
+      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
     );
   }
 

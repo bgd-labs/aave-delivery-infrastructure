@@ -24,6 +24,7 @@ interface ICrossChainController is IBaseCrossChainController {
     ConfirmationInput[] memory initialRequiredConfirmations,
     ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) external;
 }
