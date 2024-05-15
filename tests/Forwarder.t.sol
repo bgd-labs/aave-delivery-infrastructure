@@ -31,17 +31,14 @@ contract ForwarderTest is BaseCCForwarderTest {
   function testForwardMessage_reqConfLTAdapters(
     address destination,
     address origin,
-    uint256 destinationChainId,
-    uint256 requiredConfirmations
+    uint256 destinationChainId
   )
     public
     executeAs(origin)
     approveSender(origin)
     enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
-    setRequiredConfirmations(destinationChainId, requiredConfirmations)
+    setRequiredConfirmations(destinationChainId, 3)
   {
-    vm.assume(requiredConfirmations > 0 && requiredConfirmations < 5);
-
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
         destination: destination,
@@ -53,23 +50,20 @@ contract ForwarderTest is BaseCCForwarderTest {
       })
     );
 
-    _validateRequiredConfirmations(extendedTx, requiredConfirmations);
+    _validateRequiredConfirmations(extendedTx, 3);
   }
 
   function testForwardMessage_reqConfGTAdapters(
     address destination,
     address origin,
-    uint256 destinationChainId,
-    uint256 requiredConfirmations
+    uint256 destinationChainId
   )
     public
     executeAs(origin)
     approveSender(origin)
     enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
-    setRequiredConfirmations(destinationChainId, requiredConfirmations)
+    setRequiredConfirmations(destinationChainId, 6)
   {
-    vm.assume(requiredConfirmations > 5);
-
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
         destination: destination,
@@ -81,7 +75,7 @@ contract ForwarderTest is BaseCCForwarderTest {
       })
     );
 
-    _validateRequiredConfirmations(extendedTx, requiredConfirmations);
+    _validateRequiredConfirmations(extendedTx, 6);
   }
 
   function testForwardMessageWhenAdaptersNotWorking(

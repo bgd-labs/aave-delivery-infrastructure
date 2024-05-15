@@ -55,8 +55,8 @@ used for bridging: every time an envelope is forwarded (no matter if originally 
 - A Transaction can only be retried if it has been previously forwarded.
 - The Adapters where the retried Transaction will be sent, should be valid.
 - Forwarding a message should use the number of adapters specified by the configured required confirmations for destination chain
-  - If requiredConfirmations are 0, all adapters should be used.
   - If requiredConfirmations are greater than allowed adapters, all adapters should be used.
+- Required Confirmations can not be set to 0.
 - A Transaction can not be retried using the same adapter more than once (in the same attempt).
 - A Transaction retry should fail if it has not been forwarded to any adapter.
 - Only the Owner can enable/disable authorized senders.

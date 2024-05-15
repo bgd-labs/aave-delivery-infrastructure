@@ -32,8 +32,8 @@ These are the base contracts, internal to a.DI and defining all base mechanism o
   to arrive to the destination for whatever reason.
   The amount of Bridge Adapters used to forward a message to its destination will be the minimum specified by the required confirmations
   of the receiver chain. The specified number of adapters will be selected (pseudo randomly) from the list of allowed forwarders.
-  With this logic, a.DI can have any number of allowed forwarders for a specific destination chain, without incresing the cost
-  of forwarding a message.
+  With this logic, a.DI can have any number of allowed forwarders for a specific destination chain, without increasing the cost
+  of forwarding a message. Forwarder required confirmations set to 0, means that the message will not be forwarded.
 - [CrossChainReceiver (CCR)](../src/contracts/CrossChainReceiver.sol): contains the logic to receive messages
   from other chains. To route a message to the destination address, the message needs to be received correctly (from the
   different allowed bridges) a certain amount of times. To be received correctly means that it must be the exact same

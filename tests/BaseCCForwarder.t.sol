@@ -111,6 +111,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
       );
     }
 
+    _setConfirmationsForPath(destinationChainId, numberOfAdapters);
     _;
   }
 
@@ -293,6 +294,17 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
       abi.encode()
     );
     _enableBridgeAdapters(bridgeAdaptersInfo);
+  }
+
+  function _setConfirmationsForPath(uint256 destinationChainId, uint256 numberOfAdapters) internal {
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      );
+    requiredConfirmationsByReceiverChain[0].chainId = destinationChainId;
+    requiredConfirmationsByReceiverChain[0].requiredConfirmations = numberOfAdapters;
+
+    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 
   function _approveSender(address sender) internal {

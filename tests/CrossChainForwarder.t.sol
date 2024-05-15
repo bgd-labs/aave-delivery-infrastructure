@@ -81,6 +81,18 @@ contract CrossChainForwarderTest is BaseTest {
 
     hoax(OWNER);
     crossChainForwarder.enableBridgeAdapters(bridgeAdaptersToAllow);
+
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      );
+    requiredConfirmationsByReceiverChain[0].chainId = ChainIds.POLYGON;
+    requiredConfirmationsByReceiverChain[0].requiredConfirmations = 1;
+
+    hoax(OWNER);
+    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
+      requiredConfirmationsByReceiverChain
+    );
   }
 
   function testSetUp() public {
@@ -114,6 +126,7 @@ contract CrossChainForwarderTest is BaseTest {
     uint256 requiredConfirmations,
     uint256 chainId
   ) public {
+    vm.assume(requiredConfirmations > 0);
     ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
       memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
         1
@@ -129,6 +142,21 @@ contract CrossChainForwarderTest is BaseTest {
     assertEq(
       crossChainForwarder.getRequiredConfirmationsByReceiverChain(chainId),
       requiredConfirmations
+    );
+  }
+
+  function testUpdateRequiredConfirmationsByReceiverChainWhen0(uint256 chainId) public {
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      );
+    requiredConfirmationsByReceiverChain[0].chainId = chainId;
+    requiredConfirmationsByReceiverChain[0].requiredConfirmations = 0;
+
+    hoax(OWNER);
+    vm.expectRevert(bytes(Errors.INVALID_FORWARDER_REQUIRED_CONFIRMATIONS));
+    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
+      requiredConfirmationsByReceiverChain
     );
   }
 
