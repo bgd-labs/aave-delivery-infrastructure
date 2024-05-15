@@ -19,6 +19,8 @@ interface ICrossChainControllerWithEmergencyMode is IBaseCrossChainController, I
    * @param receiverBridgeAdaptersToAllow array of addresses of the bridge adapters that can receive messages
    * @param forwarderBridgeAdaptersToEnable array specifying for every bridgeAdapter, the destinations it can have
    * @param sendersToApprove array of addresses to allow as forwarders
+   * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
+            receiver chain id
    */
   function initialize(
     address owner,
@@ -27,7 +29,8 @@ interface ICrossChainControllerWithEmergencyMode is IBaseCrossChainController, I
     ConfirmationInput[] memory initialRequiredConfirmations,
     ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) external;
 
   /**
@@ -41,6 +44,8 @@ interface ICrossChainControllerWithEmergencyMode is IBaseCrossChainController, I
    * @param sendersToRemove list of sender addresses to be removed
    * @param forwarderBridgeAdaptersToEnable list of bridge adapters to be enabled to send messages
    * @param forwarderBridgeAdaptersToDisable list of bridge adapters to be disabled
+   * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
+            receiver chain id
    */
   function solveEmergency(
     ConfirmationInput[] memory newConfirmations,
@@ -50,6 +55,7 @@ interface ICrossChainControllerWithEmergencyMode is IBaseCrossChainController, I
     address[] memory sendersToApprove,
     address[] memory sendersToRemove,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+    BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable,
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) external;
 }

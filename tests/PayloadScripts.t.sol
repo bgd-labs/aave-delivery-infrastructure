@@ -33,7 +33,9 @@ contract PayloadScriptsTest is Test {
     ICrossChainReceiver.ConfirmationInput[] memory initialRequiredConfirmations,
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain
   ) internal pure returns (bytes memory) {
     return
       abi.encodeWithSelector(
@@ -44,7 +46,8 @@ contract PayloadScriptsTest is Test {
         initialRequiredConfirmations,
         receiverBridgeAdaptersToAllow,
         forwarderBridgeAdaptersToEnable,
-        sendersToApprove
+        sendersToApprove,
+        requiredConfirmationsByReceiverChain
       );
   }
 
@@ -114,6 +117,12 @@ contract PayloadScriptsTest is Test {
         abi.encode()
       );
     }
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      );
+    requiredConfirmationsByReceiverChain[0] = ICrossChainForwarder
+      .RequiredConfirmationsByReceiverChain({chainId: 1, requiredConfirmations: 3});
 
     // Deployment
     crossChainControllerImpl = _deployControllerImplementation();
@@ -127,7 +136,8 @@ contract PayloadScriptsTest is Test {
           initialRequiredConfirmations,
           receiverBridgeAdaptersToAllow,
           forwarderBridgeAdaptersToEnable,
-          sendersToApprove
+          sendersToApprove,
+          requiredConfirmationsByReceiverChain
         ),
         CROSS_CHAIN_CONTROLLER_SALT
       )

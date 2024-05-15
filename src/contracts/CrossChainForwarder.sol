@@ -70,9 +70,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       bridgeAdaptersToEnable,
       new BridgeAdapterToDisable[](0),
       sendersToApprove,
-      new address[](0)
+      new address[](0),
+      requiredConfirmationsByReceiverChain
     );
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 
   /// @inheritdoc ICrossChainForwarder
@@ -535,11 +535,13 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     ForwarderBridgeAdapterConfigInput[] memory bridgesToEnable,
     BridgeAdapterToDisable[] memory bridgesToDisable,
     address[] memory sendersToEnable,
-    address[] memory sendersToDisable
+    address[] memory sendersToDisable,
+    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) internal {
     _enableBridgeAdapters(bridgesToEnable);
     _disableBridgeAdapters(bridgesToDisable);
     _updateSenders(sendersToEnable, true);
     _updateSenders(sendersToDisable, false);
+    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 }
