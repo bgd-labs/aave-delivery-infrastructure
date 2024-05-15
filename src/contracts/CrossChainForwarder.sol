@@ -341,6 +341,59 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     return selectedBridgeAdapters;
   }
 
+  function _getShuffledBridgeAdaptersByChain2(
+    uint256 destinationChainId
+  ) internal returns (ChainIdBridgeConfig[] memory) {
+    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
+      destinationChainId
+    ];
+
+    ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
+
+    // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
+    // it will use all the adapters available. This way there would be no way of breaking forwarding communication
+    // by setting wrong configuration.
+    if (destinationRequiredConfirmations >= forwarderAdapters.length) {
+      return forwarderAdapters;
+    }
+
+    ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
+      destinationRequiredConfirmations
+    );
+
+    uint256[] memory selectedIndexes = new uint256[](destinationRequiredConfirmations);
+
+    for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
+      bool indexIsNew;
+      uint256 entropy;
+      while (!indexIsNew) {
+        uint256 randIndex = Math.getPseudoRandom(i + entropy) % forwarderAdapters.length;
+        ChainIdBridgeConfig memory forwarderAtIndex = forwarderAdapters[randIndex];
+
+        bool found;
+        for (uint256 j = 0; j < selectedBridgeAdapters.length; j++) {
+          if (
+            forwarderAtIndex.currentChainBridgeAdapter ==
+            selectedBridgeAdapters[j].currentChainBridgeAdapter &&
+            forwarderAtIndex.destinationBridgeAdapter ==
+            selectedBridgeAdapters[j].destinationBridgeAdapter
+          ) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          indexIsNew = true;
+          selectedBridgeAdapters[i] = forwarderAtIndex;
+        } else {
+          entropy++;
+        }
+      }
+    }
+
+    return selectedBridgeAdapters;
+  }
+
   /**
    * @notice internal method that has the logic to forward a transaction to the specified chain
    * @param envelopeId the id of the envelope
