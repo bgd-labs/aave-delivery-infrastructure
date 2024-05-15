@@ -83,6 +83,11 @@ contract SolveEmergencyPayload {
     //   chainIds: new uint256[](0)
     // });
 
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        0
+      );
+
     CONTROLLER.solveEmergency(
       confirmationInputs,
       validityTimestampInputs,
@@ -91,7 +96,8 @@ contract SolveEmergencyPayload {
       sendersToApprove,
       sendersToRemove,
       forwarderBridgeAdaptersToEnable,
-      forwarderBridgeAdaptersToDisable
+      forwarderBridgeAdaptersToDisable,
+      requiredConfirmationsByReceiverChain
     );
   }
 }
