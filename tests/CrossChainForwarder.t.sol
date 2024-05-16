@@ -126,7 +126,6 @@ contract CrossChainForwarderTest is BaseTest {
     uint256 requiredConfirmations,
     uint256 chainId
   ) public {
-    vm.assume(requiredConfirmations > 0);
     ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
       memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
         1

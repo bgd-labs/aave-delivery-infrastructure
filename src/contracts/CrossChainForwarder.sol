@@ -318,8 +318,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
 
     ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
 
-    // If configured required confirmations for a destination network are bigger than current adapters or 0,
-    // it will use all the adapters available.
+    // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
+    // it will use all the adapters available. This way there would be no way of breaking forwarding communication
+    // by setting wrong configuration.
     if (
       destinationRequiredConfirmations == 0 ||
       destinationRequiredConfirmations >= forwarderAdapters.length

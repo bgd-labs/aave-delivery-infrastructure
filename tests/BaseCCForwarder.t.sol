@@ -115,7 +115,14 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
   }
 
   modifier setRequiredConfirmations(uint256 destinationChainId, uint256 requiredConfirmations) {
-    _setConfirmationsForPath(destinationChainId, requiredConfirmations);
+    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
+      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
+        1
+      );
+    requiredConfirmationsByReceiverChain[0].chainId = destinationChainId;
+    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
+
+    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
     _;
   }
 
@@ -288,17 +295,6 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
       abi.encode()
     );
     _enableBridgeAdapters(bridgeAdaptersInfo);
-  }
-
-  function _setConfirmationsForPath(uint256 destinationChainId, uint256 numberOfAdapters) internal {
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      );
-    requiredConfirmationsByReceiverChain[0].chainId = destinationChainId;
-    requiredConfirmationsByReceiverChain[0].requiredConfirmations = numberOfAdapters;
-
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
   }
 
   function _approveSender(address sender) internal {
