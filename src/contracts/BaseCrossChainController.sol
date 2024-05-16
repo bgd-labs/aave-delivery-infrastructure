@@ -29,7 +29,7 @@ contract BaseCrossChainController is
     CrossChainForwarder(
       new ForwarderBridgeAdapterConfigInput[](0),
       new address[](0),
-      new RequiredConfirmationsByReceiverChain[](0)
+      new OptimalBandwidthByChain[](0)
     )
   {}
 
@@ -41,7 +41,7 @@ contract BaseCrossChainController is
     ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     address[] memory sendersToApprove,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal initializer {
     _transferOwnership(owner);
     _updateGuardian(guardian);
@@ -57,7 +57,7 @@ contract BaseCrossChainController is
       new BridgeAdapterToDisable[](0), // On first init, no bridges to disable
       sendersToApprove,
       new address[](0), // On first init, no senders to unauthorize
-      requiredConfirmationsByReceiverChain
+      optimalBandwidthByChain
     );
   }
 

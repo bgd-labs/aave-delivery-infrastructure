@@ -55,7 +55,7 @@ contract CrossChainForwarderTest is BaseTest {
     crossChainForwarder = new CrossChainForwarder(
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
       sendersToApprove,
-      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
 
     Ownable(address(crossChainForwarder)).transferOwnership(OWNER);
@@ -82,17 +82,13 @@ contract CrossChainForwarderTest is BaseTest {
     hoax(OWNER);
     crossChainForwarder.enableBridgeAdapters(bridgeAdaptersToAllow);
 
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      );
-    requiredConfirmationsByReceiverChain[0].chainId = ChainIds.POLYGON;
-    requiredConfirmationsByReceiverChain[0].requiredConfirmations = 1;
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = ChainIds.POLYGON;
+    optimalBandwidthByChain[0].optimalBandwidth = 1;
 
     hoax(OWNER);
-    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
-      requiredConfirmationsByReceiverChain
-    );
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 
   function testSetUp() public {
@@ -122,43 +118,29 @@ contract CrossChainForwarderTest is BaseTest {
   }
 
   // TEST SETTERS
-  function testUpdateRequiredConfirmationsByReceiverChain(
-    uint256 requiredConfirmations,
-    uint256 chainId
-  ) public {
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      );
-    requiredConfirmationsByReceiverChain[0].chainId = chainId;
-    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
+  function testUpdateOptimalBandwidthByChain(uint256 optimalBandwidth, uint256 chainId) public {
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = chainId;
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
 
     hoax(OWNER);
-    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
-      requiredConfirmationsByReceiverChain
-    );
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
 
-    assertEq(
-      crossChainForwarder.getRequiredConfirmationsByReceiverChain(chainId),
-      requiredConfirmations
-    );
+    assertEq(crossChainForwarder.getOptimalBandwidthByChain(chainId), optimalBandwidth);
   }
 
-  function testUpdateRequiredConfirmationsByReceiverChainWhenNotOwner(
-    uint256 requiredConfirmations,
+  function testUpdateOptimalBandwidthByChainWhenNotOwner(
+    uint256 optimalBandwidth,
     uint256 chainId
   ) public {
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      );
-    requiredConfirmationsByReceiverChain[0].chainId = chainId;
-    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = chainId;
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
 
     vm.expectRevert(bytes('Ownable: caller is not the owner'));
-    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
-      requiredConfirmationsByReceiverChain
-    );
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 
   function testApproveSenders() public {

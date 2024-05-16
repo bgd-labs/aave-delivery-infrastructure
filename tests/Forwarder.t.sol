@@ -28,7 +28,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     _validateForwardMessageWhenAtLeastOneAdapterWorking(extendedTx);
   }
 
-  function testForwardMessage_reqConfLTAdapters(
+  function testForwardMessage_optimalBandwidthLTAdapters(
     address destination,
     address origin,
     uint256 destinationChainId
@@ -37,7 +37,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     executeAs(origin)
     approveSender(origin)
     enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
-    setRequiredConfirmations(destinationChainId, 3)
+    setOptimalBandwidth(destinationChainId, 3)
   {
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
@@ -50,10 +50,10 @@ contract ForwarderTest is BaseCCForwarderTest {
       })
     );
 
-    _validateRequiredConfirmations(extendedTx, 3);
+    validateOptimalBandwidth(extendedTx, 3);
   }
 
-  function testForwardMessage_reqConfGTAdapters(
+  function testForwardMessage_optimalBandwidthGTAdapters(
     address destination,
     address origin,
     uint256 destinationChainId
@@ -62,7 +62,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     executeAs(origin)
     approveSender(origin)
     enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
-    setRequiredConfirmations(destinationChainId, 6)
+    setOptimalBandwidth(destinationChainId, 6)
   {
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
@@ -75,7 +75,7 @@ contract ForwarderTest is BaseCCForwarderTest {
       })
     );
 
-    _validateRequiredConfirmations(extendedTx, 6);
+    validateOptimalBandwidth(extendedTx, 6);
   }
 
   function testForwardMessageWhenAdaptersNotWorking(
@@ -500,10 +500,10 @@ contract ForwarderTest is BaseCCForwarderTest {
     _testForwardMessage(extendedTx, 0);
   }
 
-  function _validateRequiredConfirmations(
+  function validateOptimalBandwidth(
     ExtendedTransaction memory extendedTx,
-    uint256 requiredConfirmations
-  ) internal validateRequiredConfirmationsUsed(extendedTx, requiredConfirmations) {
-    _testForwardMessage(extendedTx, requiredConfirmations);
+    uint256 optimalBandwidth
+  ) internal validateOptimalBandwidthUsed(extendedTx, optimalBandwidth) {
+    _testForwardMessage(extendedTx, optimalBandwidth);
   }
 }

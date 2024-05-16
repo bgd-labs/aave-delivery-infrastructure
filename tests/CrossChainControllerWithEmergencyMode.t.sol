@@ -20,8 +20,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     address[] memory sendersToApprove,
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal pure override returns (bytes memory) {
     return
       abi.encodeWithSelector(
@@ -33,7 +32,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         receiverBridgeAdaptersToAllow,
         forwarderBridgeAdaptersToEnable,
         sendersToApprove,
-        requiredConfirmationsByReceiverChain
+        optimalBandwidthByChain
       );
   }
 
@@ -69,10 +68,8 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       destinationChainId: ChainIds.POLYGON
     });
 
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        0
-      );
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](0);
 
     vm.expectRevert(bytes(Errors.INVALID_EMERGENCY_ORACLE));
     proxyFactory.createDeterministic(
@@ -87,7 +84,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         receiverBridgeAdaptersToAllow,
         forwarderBridgeAdaptersToEnable,
         sendersToApprove,
-        requiredConfirmationsByReceiverChain
+        optimalBandwidthByChain
       ),
       CROSS_CHAIN_CONTROLLER_SALT
     );
@@ -110,7 +107,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     address[] sendersToRemove;
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] forwarderBridgeAdaptersToEnable;
     ICrossChainForwarder.BridgeAdapterToDisable[] forwarderBridgeAdaptersToDisable;
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[] requiredConfirmationsByReceiverChain;
+    ICrossChainForwarder.OptimalBandwidthByChain[] optimalBandwidthByChain;
   }
 
   function testSolveEmergency() public {
@@ -127,9 +124,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         1
       ),
       forwarderBridgeAdaptersToDisable: new ICrossChainForwarder.BridgeAdapterToDisable[](1),
-      requiredConfirmationsByReceiverChain: new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      )
+      optimalBandwidthByChain: new ICrossChainForwarder.OptimalBandwidthByChain[](1)
     });
     // receiver config
     uint256[] memory originChainIds = new uint256[](1);
@@ -170,8 +165,10 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       bridgeAdapter: address(103),
       chainIds: chainIds
     });
-    args.requiredConfirmationsByReceiverChain[0] = ICrossChainForwarder
-      .RequiredConfirmationsByReceiverChain({chainId: 1, requiredConfirmations: 3});
+    args.optimalBandwidthByChain[0] = ICrossChainForwarder.OptimalBandwidthByChain({
+      chainId: 1,
+      optimalBandwidth: 3
+    });
 
     skip(10);
 
@@ -196,7 +193,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       args.sendersToRemove,
       args.forwarderBridgeAdaptersToEnable,
       args.forwarderBridgeAdaptersToDisable,
-      args.requiredConfirmationsByReceiverChain
+      args.optimalBandwidthByChain
     );
 
     ICrossChainReceiver.ReceiverConfiguration memory receiverConfig = crossChainController
@@ -220,7 +217,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     assertEq(forwarderBridgeAdapters.length, 1);
     assertEq(forwarderBridgeAdapters[0].destinationBridgeAdapter, address(210));
     assertEq(forwarderBridgeAdapters[0].currentChainBridgeAdapter, address(203));
-    assertEq(crossChainController.getRequiredConfirmationsByReceiverChain(1), 3);
+    assertEq(crossChainController.getOptimalBandwidthByChain(1), 3);
   }
 
   function testSolveEmergencyWhenUnreachableConfirmations() public {
@@ -237,9 +234,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
         1
       ),
       forwarderBridgeAdaptersToDisable: new ICrossChainForwarder.BridgeAdapterToDisable[](1),
-      requiredConfirmationsByReceiverChain: new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        0
-      )
+      optimalBandwidthByChain: new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     });
 
     // receiver config
@@ -297,7 +292,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       args.sendersToRemove,
       args.forwarderBridgeAdaptersToEnable,
       args.forwarderBridgeAdaptersToDisable,
-      args.requiredConfirmationsByReceiverChain
+      args.optimalBandwidthByChain
     );
   }
 
@@ -312,7 +307,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       new address[](0),
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
       new ICrossChainForwarder.BridgeAdapterToDisable[](0),
-      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
   }
 
@@ -339,7 +334,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
       new address[](0),
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
       new ICrossChainForwarder.BridgeAdapterToDisable[](0),
-      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
   }
 

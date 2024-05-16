@@ -11,9 +11,9 @@ import {ICrossChainForwarder} from '../../interfaces/ICrossChainForwarder.sol';
 interface IReinitialize {
   /**
    * @notice method called to re initialize the proxy
+   * @param optimalBandwidthByChain array of optimal numbers of bridge adapters to use to send a message to receiver chain
    */
   function initializeRevision(
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external;
 }

@@ -44,8 +44,10 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   // (chainId => chain configuration) list of bridge adapter configurations for a chain
   mapping(uint256 => ChainIdBridgeConfig[]) internal _bridgeAdaptersByChain;
 
-  // chainId => requiredConfirmations
-  mapping(uint256 => uint256) internal _requiredConfirmationsByReceiverChain;
+  // configuration to limit bandwidth  to only send via X bridge adapters out of the total allowed bridge adapters for
+  // the specified chain
+  // chainId => optimalBandwidth
+  mapping(uint256 => uint256) internal _optimalBandwidthByChain;
 
   // storage gap allocation to be used for later updates. This way storage can be added on parent contract without
   // overwriting storage on child
@@ -64,22 +66,20 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   constructor(
     ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable,
     address[] memory sendersToApprove,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) {
     _configureForwarderBasics(
       bridgeAdaptersToEnable,
       new BridgeAdapterToDisable[](0),
       sendersToApprove,
       new address[](0),
-      requiredConfirmationsByReceiverChain
+      optimalBandwidthByChain
     );
   }
 
   /// @inheritdoc ICrossChainForwarder
-  function getRequiredConfirmationsByReceiverChain(
-    uint256 chainId
-  ) external view returns (uint256) {
-    return _requiredConfirmationsByReceiverChain[chainId];
+  function getOptimalBandwidthByChain(uint256 chainId) external view returns (uint256) {
+    return _optimalBandwidthByChain[chainId];
   }
 
   /// @inheritdoc ICrossChainForwarder
@@ -280,10 +280,10 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   }
 
   /// @inheritdoc ICrossChainForwarder
-  function updateRequiredConfirmationsForReceiverChain(
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+  function updateOptimalBandwidthByChain(
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external onlyOwner {
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
+    _updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 
   /**
@@ -312,13 +312,11 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   function _getShuffledBridgeAdaptersByChain(
     uint256 destinationChainId
   ) internal returns (ChainIdBridgeConfig[] memory) {
-    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
-      destinationChainId
-    ];
+    uint256 destinationRequiredConfirmations = _optimalBandwidthByChain[destinationChainId];
 
     ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
 
-    // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
+    // If configured optimal bandwidth for a destination network are set to 0 or are bigger than current adapters,
     // it will use all the adapters available. This way there would be no way of breaking forwarding communication
     // by setting wrong configuration.
     if (
@@ -514,19 +512,17 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   }
 
   /**
-  * @notice method to update the required confirmations of a receiver chain
-  * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
-           receiver chain id
-  * @dev Setting Confirmations to 0 means that no optimization will be applied, so all allowed bridges will be used to
+  * @notice method to update the optimal bandwidth of a receiver chain
+  * @param optimalBandwidthByChain array of objects containing the optimal bandwidth for a specified receiver chain id
+  * @dev Setting optimal bandwidth to 0 means that no optimization will be applied, so all allowed bridges will be used to
          forward a message.
   */
-  function _updateRequiredConfirmationsForReceiverChain(
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+  function _updateOptimalBandwidthByChain(
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal {
-    for (uint256 i = 0; i < requiredConfirmationsByReceiverChain.length; i++) {
-      _requiredConfirmationsByReceiverChain[
-        requiredConfirmationsByReceiverChain[i].chainId
-      ] = requiredConfirmationsByReceiverChain[i].requiredConfirmations;
+    for (uint256 i = 0; i < optimalBandwidthByChain.length; i++) {
+      _optimalBandwidthByChain[optimalBandwidthByChain[i].chainId] = optimalBandwidthByChain[i]
+        .optimalBandwidth;
     }
   }
 
@@ -536,12 +532,12 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     BridgeAdapterToDisable[] memory bridgesToDisable,
     address[] memory sendersToEnable,
     address[] memory sendersToDisable,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal {
     _enableBridgeAdapters(bridgesToEnable);
     _disableBridgeAdapters(bridgesToDisable);
     _updateSenders(sendersToEnable, true);
     _updateSenders(sendersToDisable, false);
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
+    _updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 }

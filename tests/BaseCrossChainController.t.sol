@@ -47,8 +47,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     address[] memory sendersToApprove,
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal view virtual returns (bytes memory);
 
   function setUp() public {
@@ -88,12 +87,12 @@ abstract contract BaseCrossChainControllerTest is Test {
       destinationBridgeAdapter: address(110),
       destinationChainId: ChainIds.POLYGON
     });
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      );
-    requiredConfirmationsByReceiverChain[0] = ICrossChainForwarder
-      .RequiredConfirmationsByReceiverChain({chainId: 1, requiredConfirmations: 1});
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0] = ICrossChainForwarder.OptimalBandwidthByChain({
+      chainId: 1,
+      optimalBandwidth: 1
+    });
 
     crossChainControllerImpl = _deployControllerImplementation();
 
@@ -113,7 +112,7 @@ abstract contract BaseCrossChainControllerTest is Test {
           receiverBridgeAdaptersToAllow,
           forwarderBridgeAdaptersToEnable,
           sendersToApprove,
-          requiredConfirmationsByReceiverChain
+          optimalBandwidthByChain
         ),
         CROSS_CHAIN_CONTROLLER_SALT
       )
@@ -153,7 +152,7 @@ abstract contract BaseCrossChainControllerTest is Test {
         receiverBridgeAdaptersToAllow,
         new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
         new address[](0),
-        new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
+        new ICrossChainForwarder.OptimalBandwidthByChain[](0)
       ),
       CROSS_CHAIN_CONTROLLER_SALT
     );

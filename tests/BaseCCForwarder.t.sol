@@ -30,7 +30,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     CrossChainForwarder(
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
       new address[](0),
-      new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](0)
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     )
   {}
 
@@ -114,15 +114,12 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     _;
   }
 
-  modifier setRequiredConfirmations(uint256 destinationChainId, uint256 requiredConfirmations) {
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      );
-    requiredConfirmationsByReceiverChain[0].chainId = destinationChainId;
-    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
+  modifier setOptimalBandwidth(uint256 destinationChainId, uint256 optimalBandwidth) {
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain = new OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
+    optimalBandwidthByChain[0].chainId = destinationChainId;
 
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
+    _updateOptimalBandwidthByChain(optimalBandwidthByChain);
     _;
   }
 
@@ -175,17 +172,17 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     assertEq(_forwardedTransactions[extendedTx.transactionId], false);
   }
 
-  modifier validateRequiredConfirmationsUsed(
+  modifier validateOptimalBandwidthUsed(
     ExtendedTransaction memory extendedTx,
-    uint256 requiredConfirmations
+    uint256 optimalBandwidth
   ) {
     _;
     uint256 destinationChainId = extendedTx.envelope.destinationChainId;
     UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[destinationChainId];
     uint256 successfulAdapters;
-    uint256 length = requiredConfirmations >= usedAdapters.length
+    uint256 length = optimalBandwidth >= usedAdapters.length
       ? usedAdapters.length
-      : requiredConfirmations;
+      : optimalBandwidth;
     for (uint256 i = 0; i < length; i++) {
       if (usedAdapters[i].success) {
         successfulAdapters++;
@@ -194,10 +191,10 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
 
     uint256 numberOfAdapters = this.getForwarderBridgeAdaptersByChain(destinationChainId).length;
 
-    if (requiredConfirmations == 0 || requiredConfirmations >= numberOfAdapters) {
+    if (optimalBandwidth == 0 || optimalBandwidth >= numberOfAdapters) {
       assertEq(successfulAdapters, numberOfAdapters);
     } else {
-      assertEq(successfulAdapters, requiredConfirmations);
+      assertEq(successfulAdapters, optimalBandwidth);
     }
   }
 
@@ -213,7 +210,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
 
   function _testForwardMessage(
     ExtendedTransaction memory extendedTx,
-    uint256 requiredConfirmations
+    uint256 optimalBandwidth
   ) internal {
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
     vm.expectEmit(true, true, true, true);
