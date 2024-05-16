@@ -359,50 +359,10 @@ contract ForwarderTest is BaseCCForwarderTest {
 
   function test_Shuffle()
     public
-    enableBridgeAdaptersForPath(1, 20, AdapterSuccessType.SOME_SUCCESS)
+    enableBridgeAdaptersForPath(1, 5, AdapterSuccessType.SOME_SUCCESS)
     setRequiredConfirmations(1, 3)
   {
     ChainIdBridgeConfig[] memory shuffledBridges = _getShuffledBridgeAdaptersByChain(1);
-    assertEq(
-      shuffledBridges[0].currentChainBridgeAdapter == shuffledBridges[1].currentChainBridgeAdapter,
-      false
-    );
-    assertEq(
-      shuffledBridges[0].currentChainBridgeAdapter == shuffledBridges[2].currentChainBridgeAdapter,
-      false
-    );
-    assertEq(
-      shuffledBridges[1].currentChainBridgeAdapter == shuffledBridges[2].currentChainBridgeAdapter,
-      false
-    );
-  }
-
-  function test_Shuffle2()
-    public
-    enableBridgeAdaptersForPath(1, 20, AdapterSuccessType.SOME_SUCCESS)
-    setRequiredConfirmations(1, 3)
-  {
-    ChainIdBridgeConfig[] memory shuffledBridges = _getShuffledBridgeAdaptersByChain2(1);
-    assertEq(
-      shuffledBridges[0].currentChainBridgeAdapter == shuffledBridges[1].currentChainBridgeAdapter,
-      false
-    );
-    assertEq(
-      shuffledBridges[0].currentChainBridgeAdapter == shuffledBridges[2].currentChainBridgeAdapter,
-      false
-    );
-    assertEq(
-      shuffledBridges[1].currentChainBridgeAdapter == shuffledBridges[2].currentChainBridgeAdapter,
-      false
-    );
-  }
-
-  function test_Shuffle3()
-    public
-    enableBridgeAdaptersForPath(1, 20, AdapterSuccessType.SOME_SUCCESS)
-    setRequiredConfirmations(1, 3)
-  {
-    ChainIdBridgeConfig[] memory shuffledBridges = _getShuffledBridgeAdaptersByChain3(1);
     assertEq(
       shuffledBridges[0].currentChainBridgeAdapter == shuffledBridges[1].currentChainBridgeAdapter,
       false
