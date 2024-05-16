@@ -301,10 +301,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
     // it will use all the adapters available. This way there would be no way of breaking forwarding communication
     // by setting wrong configuration.
-    uint256 numberOfallowedForwarders = _bridgeAdaptersByChain[destinationChainId].length;
     if (
       destinationRequiredConfirmations == 0 ||
-      destinationRequiredConfirmations >= numberOfallowedForwarders
+      destinationRequiredConfirmations >= _bridgeAdaptersByChain[destinationChainId].length
     ) {
       return _bridgeAdaptersByChain[destinationChainId];
     }
