@@ -145,21 +145,6 @@ contract CrossChainForwarderTest is BaseTest {
     );
   }
 
-  function testUpdateRequiredConfirmationsByReceiverChainWhen0(uint256 chainId) public {
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        1
-      );
-    requiredConfirmationsByReceiverChain[0].chainId = chainId;
-    requiredConfirmationsByReceiverChain[0].requiredConfirmations = 0;
-
-    hoax(OWNER);
-    vm.expectRevert(bytes(Errors.INVALID_FORWARDER_REQUIRED_CONFIRMATIONS));
-    crossChainForwarder.updateRequiredConfirmationsForReceiverChain(
-      requiredConfirmationsByReceiverChain
-    );
-  }
-
   function testUpdateRequiredConfirmationsByReceiverChainWhenNotOwner(
     uint256 requiredConfirmations,
     uint256 chainId

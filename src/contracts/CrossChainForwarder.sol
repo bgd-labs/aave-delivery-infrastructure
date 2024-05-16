@@ -318,9 +318,12 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
 
     ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
 
-    // If configured required confirmations for a destination network are bigger than current adapters,
+    // If configured required confirmations for a destination network are bigger than current adapters or 0,
     // it will use all the adapters available.
-    if (destinationRequiredConfirmations >= forwarderAdapters.length) {
+    if (
+      destinationRequiredConfirmations == 0 ||
+      destinationRequiredConfirmations >= forwarderAdapters.length
+    ) {
       return forwarderAdapters;
     }
 
@@ -513,17 +516,13 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   * @notice method to update the required confirmations of a receiver chain
   * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
            receiver chain id
+  * @dev Setting Confirmations to 0 means that 0 optimizations will be applied, so all allowed bridges will be used to
+         forward a message.
   */
   function _updateRequiredConfirmationsForReceiverChain(
     RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
   ) internal {
     for (uint256 i = 0; i < requiredConfirmationsByReceiverChain.length; i++) {
-      // There is no need to check that confirmations are <= adapters, as adapters come determined by CCR.
-      // If confirmations > adapters then all adapters will be used to forward a message
-      require(
-        requiredConfirmationsByReceiverChain[i].requiredConfirmations > 0,
-        Errors.INVALID_FORWARDER_REQUIRED_CONFIRMATIONS
-      );
       _requiredConfirmationsByReceiverChain[
         requiredConfirmationsByReceiverChain[i].chainId
       ] = requiredConfirmationsByReceiverChain[i].requiredConfirmations;

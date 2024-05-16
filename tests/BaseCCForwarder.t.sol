@@ -111,17 +111,11 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
       );
     }
 
-    _setConfirmationsForPath(destinationChainId, numberOfAdapters);
     _;
   }
 
   modifier setRequiredConfirmations(uint256 destinationChainId, uint256 requiredConfirmations) {
-    RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new RequiredConfirmationsByReceiverChain[](1);
-    requiredConfirmationsByReceiverChain[0].requiredConfirmations = requiredConfirmations;
-    requiredConfirmationsByReceiverChain[0].chainId = destinationChainId;
-
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
+    _setConfirmationsForPath(destinationChainId, requiredConfirmations);
     _;
   }
 
