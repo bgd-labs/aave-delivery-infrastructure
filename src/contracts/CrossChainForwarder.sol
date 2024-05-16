@@ -517,7 +517,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   * @notice method to update the required confirmations of a receiver chain
   * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
            receiver chain id
-  * @dev Setting Confirmations to 0 means that 0 optimizations will be applied, so all allowed bridges will be used to
+  * @dev Setting Confirmations to 0 means that no optimization will be applied, so all allowed bridges will be used to
          forward a message.
   */
   function _updateRequiredConfirmationsForReceiverChain(
