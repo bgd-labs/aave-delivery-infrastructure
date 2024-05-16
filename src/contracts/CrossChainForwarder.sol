@@ -44,7 +44,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   // (chainId => chain configuration) list of bridge adapter configurations for a chain
   mapping(uint256 => ChainIdBridgeConfig[]) internal _bridgeAdaptersByChain;
 
-  // configuration to limit bandwidth  to only send via X bridge adapters out of the total allowed bridge adapters for
+  // configuration to limit bandwidth to only send via X bridge adapters out of the total allowed bridge adapters for
   // the specified chain
   // chainId => optimalBandwidth
   mapping(uint256 => uint256) internal _optimalBandwidthByChain;

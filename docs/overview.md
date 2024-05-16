@@ -30,7 +30,7 @@ These are the base contracts, internal to a.DI and defining all base mechanism o
   previously registered, and the caller must also be an approved sender. Apart from the approved senders, the Guardian will
   be able to retry sending previously sent messages. This can happen when there was insufficient gas, or the message failed
   to arrive to the destination for whatever reason.
-  The amount of Bridge Adapters used to forward a message to its destination will be the minimum specified by the optimal bandwidth
+  The number of Bridge Adapters used to forward a message to its destination will be the minimum specified by the optimal bandwidth
   for the receiver chain. Understanding:
     - `bandwidth` as the number of bridges through which an envelope could be sent: all allowed in the system
     - `optimalBandwidth` as extra configuration to limit bandwidth and only send via X bridge adapters out of the total Y bandwidth.
