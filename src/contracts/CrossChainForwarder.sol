@@ -348,27 +348,31 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       destinationChainId
     ];
 
-    ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
-
     // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
     // it will use all the adapters available. This way there would be no way of breaking forwarding communication
     // by setting wrong configuration.
-    if (destinationRequiredConfirmations >= forwarderAdapters.length) {
-      return forwarderAdapters;
+    uint256 numberOfallowedForwarders = _bridgeAdaptersByChain[destinationChainId].length;
+    if (
+      destinationRequiredConfirmations == 0 ||
+      destinationRequiredConfirmations >= numberOfallowedForwarders
+    ) {
+      return _bridgeAdaptersByChain[destinationChainId];
     }
 
     ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
       destinationRequiredConfirmations
     );
 
-    uint256[] memory selectedIndexes = new uint256[](destinationRequiredConfirmations);
+    //    uint256[] memory selectedIndexes = new uint256[](destinationRequiredConfirmations);
 
     for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
       bool indexIsNew;
       uint256 entropy;
       while (!indexIsNew) {
-        uint256 randIndex = Math.getPseudoRandom(i + entropy) % forwarderAdapters.length;
-        ChainIdBridgeConfig memory forwarderAtIndex = forwarderAdapters[randIndex];
+        uint256 randIndex = Math.getPseudoRandom(i + entropy) % numberOfallowedForwarders;
+        ChainIdBridgeConfig memory forwarderAtIndex = _bridgeAdaptersByChain[destinationChainId][
+          randIndex
+        ];
 
         bool found;
         for (uint256 j = 0; j < selectedBridgeAdapters.length; j++) {
@@ -391,6 +395,57 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       }
     }
 
+    return selectedBridgeAdapters;
+  }
+
+  function _getShuffledBridgeAdaptersByChain3(
+    uint256 destinationChainId
+  ) internal returns (ChainIdBridgeConfig[] memory) {
+    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
+      destinationChainId
+    ];
+
+    // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
+    // it will use all the adapters available. This way there would be no way of breaking forwarding communication
+    // by setting wrong configuration.
+    uint256 numberOfallowedForwarders = _bridgeAdaptersByChain[destinationChainId].length;
+    if (
+      destinationRequiredConfirmations == 0 ||
+      destinationRequiredConfirmations >= numberOfallowedForwarders
+    ) {
+      return _bridgeAdaptersByChain[destinationChainId];
+    }
+
+    uint256[] memory selectedIndexes = new uint256[](destinationRequiredConfirmations);
+    for (uint256 i = 0; i < selectedIndexes.length; i++) {
+      uint256 entropy;
+      while (true) {
+        // +1 is needed to allow inclusion of the 0 element of the array
+        uint256 randIndex = (Math.getPseudoRandom(i + entropy) % numberOfallowedForwarders) + 1;
+        bool found;
+        for (uint256 j = 0; j < selectedIndexes.length; j++) {
+          if (selectedIndexes[j] == randIndex) {
+            found = true;
+            break;
+          }
+        }
+        // if index was not found in the array, put it there
+        if (!found) {
+          selectedIndexes[i] = randIndex;
+          break;
+        }
+        entropy++;
+      }
+    }
+
+    ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
+      destinationRequiredConfirmations
+    );
+    for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
+      selectedBridgeAdapters[i] = _bridgeAdaptersByChain[destinationChainId][
+        selectedIndexes[i] - 1
+      ];
+    }
     return selectedBridgeAdapters;
   }
 
