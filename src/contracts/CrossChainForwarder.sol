@@ -341,55 +341,55 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     return selectedBridgeAdapters;
   }
 
-  function _getShuffledBridgeAdaptersByChain3(
-    uint256 destinationChainId
-  ) internal returns (ChainIdBridgeConfig[] memory) {
-    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
-      destinationChainId
-    ];
-
-    // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
-    // it will use all the adapters available. This way there would be no way of breaking forwarding communication
-    // by setting wrong configuration.
-    if (
-      destinationRequiredConfirmations == 0 ||
-      destinationRequiredConfirmations >= forwarderAdapters.length
-    ) {
-      return _bridgeAdaptersByChain[destinationChainId];
-    }
-
-    uint256[] selectedIndexes = new uint256[](destinationRequiredConfirmations);
-    for (uint256 i = 0; i < selectedIndexes.length; i++) {
-      uint256 entropy;
-      while (true) {
-        // +1 is needed to allow inclusion of the 0 element of the array
-        uint256 randIndex = (Math.getPseudoRandom(i + entropy) % forwarderAdapters.length) + 1;
-        bool found;
-        for (uint256 j = 0; j < selectedIndexes.length; j++) {
-          if (selectedIndexes[j] == randIndex) {
-            found = true;
-            break;
-          }
-        }
-        // if index was not found in the array, put it there
-        if (!found) {
-          selectedIndexes[i] = forwarderAtIndex;
-          break;
-        }
-        entropy++;
-      }
-    }
-
-    ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
-      destinationRequiredConfirmations
-    );
-    for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
-      selectedBridgeAdapters[i] = _bridgeAdaptersByChain[destinationChainId][
-        selectedIndexes[i] - 1
-      ];
-    }
-    return selectedBridgeAdapters;
-  }
+  //  function _getShuffledBridgeAdaptersByChain3(
+  //    uint256 destinationChainId
+  //  ) internal returns (ChainIdBridgeConfig[] memory) {
+  //    uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
+  //      destinationChainId
+  //    ];
+  //
+  //    // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
+  //    // it will use all the adapters available. This way there would be no way of breaking forwarding communication
+  //    // by setting wrong configuration.
+  //    if (
+  //      destinationRequiredConfirmations == 0 ||
+  //      destinationRequiredConfirmations >= forwarderAdapters.length
+  //    ) {
+  //      return _bridgeAdaptersByChain[destinationChainId];
+  //    }
+  //
+  //    uint256[] selectedIndexes = new uint256[](destinationRequiredConfirmations);
+  //    for (uint256 i = 0; i < selectedIndexes.length; i++) {
+  //      uint256 entropy;
+  //      while (true) {
+  //        // +1 is needed to allow inclusion of the 0 element of the array
+  //        uint256 randIndex = (Math.getPseudoRandom(i + entropy) % forwarderAdapters.length) + 1;
+  //        bool found;
+  //        for (uint256 j = 0; j < selectedIndexes.length; j++) {
+  //          if (selectedIndexes[j] == randIndex) {
+  //            found = true;
+  //            break;
+  //          }
+  //        }
+  //        // if index was not found in the array, put it there
+  //        if (!found) {
+  //          selectedIndexes[i] = forwarderAtIndex;
+  //          break;
+  //        }
+  //        entropy++;
+  //      }
+  //    }
+  //
+  //    ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
+  //      destinationRequiredConfirmations
+  //    );
+  //    for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
+  //      selectedBridgeAdapters[i] = _bridgeAdaptersByChain[destinationChainId][
+  //        selectedIndexes[i] - 1
+  //      ];
+  //    }
+  //    return selectedBridgeAdapters;
+  //  }
 
   function _getShuffledBridgeAdaptersByChain2(
     uint256 destinationChainId
