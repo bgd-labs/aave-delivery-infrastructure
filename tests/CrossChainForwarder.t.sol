@@ -45,7 +45,7 @@ contract CrossChainForwarderTest is BaseTest {
     address destinationBridgeAdapter,
     bool indexed allowed
   );
-
+  event OptimalBandwidthUpdated(uint256 indexed chainId, uint256 optimalBandwidth);
   event EnvelopeRegistered(bytes32 indexed envelopeId, Envelope envelope);
 
   function setUp() public {
@@ -125,6 +125,8 @@ contract CrossChainForwarderTest is BaseTest {
     optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
 
     hoax(OWNER);
+    vm.expectEmit(true, true, false, true);
+    emit OptimalBandwidthUpdated(chainId, optimalBandwidth);
     crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
 
     assertEq(crossChainForwarder.getOptimalBandwidthByChain(chainId), optimalBandwidth);

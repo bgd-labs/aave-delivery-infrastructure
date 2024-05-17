@@ -501,6 +501,11 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     for (uint256 i = 0; i < optimalBandwidthByChain.length; i++) {
       _optimalBandwidthByChain[optimalBandwidthByChain[i].chainId] = optimalBandwidthByChain[i]
         .optimalBandwidth;
+
+      emit OptimalBandwidthUpdated(
+        optimalBandwidthByChain[i].chainId,
+        optimalBandwidthByChain[i].optimalBandwidth
+      );
     }
   }
 
