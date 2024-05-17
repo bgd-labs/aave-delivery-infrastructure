@@ -171,6 +171,17 @@ Once the Emergency is solved, the permissions granted to the `guardian` are remo
 
 <br>
 
+## CrossChainController access control
+
+The guardian system of the CrossChainController is externalized to the [GranularGuardianAccessControl](../src/contracts/access_control/GranularGuardianAccessControl.sol) contract.
+This contract holds a granular way of assigning responsibilities to different entities (roles) so that guardian access
+to CCC methods can be more deterministic. The roles that it holds are:
+- **SOLVE_EMERGENCY_ROLE**: The holders of ths role can call the method `solveEmergency` on CrossChainController on the networks that have emergency enabled.
+- **RETRY_ROLE**: the holders of this role can call the methods `retryTransaction` and `retryEnvelope` on CrossChainController (Forwarder).
+- **DEFAULT_ADMIN_ROLE**: the holder of this role can grant roles, and change the Guardian of CrossChainController by calling `updateGuardian` method.
+
+The audit report by Certora can be found [here](../security/certora/reports/Granular-Guardian-Access-Control.pdf)
+
 ### Contracts
 
 - [EmergencyRegistry](../src/contracts/emergency/EmergencyRegistry.sol): contract containing the registry of the emergency
