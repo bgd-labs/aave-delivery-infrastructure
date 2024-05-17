@@ -83,10 +83,8 @@ contract SolveEmergencyPayloadPrePopulated {
         _getUniqueAdapters(chainIds, forwarderBridgeAdaptersPerChain, forwarderMaxAdapterCount)
       );
 
-    ICrossChainForwarder.RequiredConfirmationsByReceiverChain[]
-      memory requiredConfirmationsByReceiverChain = new ICrossChainForwarder.RequiredConfirmationsByReceiverChain[](
-        0
-      );
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](0);
 
     CONTROLLER.solveEmergency(
       confirmationInputs,
@@ -97,7 +95,7 @@ contract SolveEmergencyPayloadPrePopulated {
       sendersToRemove,
       forwarderBridgeAdaptersToEnable,
       forwarderBridgeAdaptersToDisable,
-      requiredConfirmationsByReceiverChain
+      optimalBandwidthByChain
     );
   }
 

@@ -18,7 +18,7 @@ contract CrossChainController is ICrossChainController, BaseCrossChainController
     ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     address[] memory sendersToApprove,
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external initializer {
     _baseInitialize(
       owner,
@@ -27,7 +27,7 @@ contract CrossChainController is ICrossChainController, BaseCrossChainController
       receiverBridgeAdaptersToAllow,
       forwarderBridgeAdaptersToEnable,
       sendersToApprove,
-      requiredConfirmationsByReceiverChain
+      optimalBandwidthByChain
     );
   }
 }

@@ -28,20 +28,17 @@ contract ForwarderTest is BaseCCForwarderTest {
     _validateForwardMessageWhenAtLeastOneAdapterWorking(extendedTx);
   }
 
-  function testForwardMessage_reqConfLTAdapters(
+  function testForwardMessage_optimalBandwidthLTAdapters(
     address destination,
     address origin,
-    uint256 destinationChainId,
-    uint256 requiredConfirmations
+    uint256 destinationChainId
   )
     public
     executeAs(origin)
     approveSender(origin)
     enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
-    setRequiredConfirmations(destinationChainId, requiredConfirmations)
+    setOptimalBandwidth(destinationChainId, 3)
   {
-    vm.assume(requiredConfirmations > 0 && requiredConfirmations < 5);
-
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
         destination: destination,
@@ -53,23 +50,20 @@ contract ForwarderTest is BaseCCForwarderTest {
       })
     );
 
-    _validateRequiredConfirmations(extendedTx, requiredConfirmations);
+    validateOptimalBandwidth(extendedTx, 3);
   }
 
-  function testForwardMessage_reqConfGTAdapters(
+  function testForwardMessage_optimalBandwidthGTAdapters(
     address destination,
     address origin,
-    uint256 destinationChainId,
-    uint256 requiredConfirmations
+    uint256 destinationChainId
   )
     public
     executeAs(origin)
     approveSender(origin)
     enableBridgeAdaptersForPath(destinationChainId, 5, AdapterSuccessType.ALL_SUCCESS)
-    setRequiredConfirmations(destinationChainId, requiredConfirmations)
+    setOptimalBandwidth(destinationChainId, 6)
   {
-    vm.assume(requiredConfirmations > 5);
-
     ExtendedTransaction memory extendedTx = _generateExtendedTransaction(
       TestParams({
         destination: destination,
@@ -81,7 +75,7 @@ contract ForwarderTest is BaseCCForwarderTest {
       })
     );
 
-    _validateRequiredConfirmations(extendedTx, requiredConfirmations);
+    validateOptimalBandwidth(extendedTx, 6);
   }
 
   function testForwardMessageWhenAdaptersNotWorking(
@@ -360,7 +354,7 @@ contract ForwarderTest is BaseCCForwarderTest {
   function test_Shuffle()
     public
     enableBridgeAdaptersForPath(1, 5, AdapterSuccessType.SOME_SUCCESS)
-    setRequiredConfirmations(1, 3)
+    setOptimalBandwidth(1, 3)
   {
     ChainIdBridgeConfig[] memory shuffledBridges = _getShuffledBridgeAdaptersByChain(1);
     assertEq(
@@ -526,10 +520,10 @@ contract ForwarderTest is BaseCCForwarderTest {
     _testForwardMessage(extendedTx);
   }
 
-  function _validateRequiredConfirmations(
+  function validateOptimalBandwidth(
     ExtendedTransaction memory extendedTx,
-    uint256 requiredConfirmations
-  ) internal validateRequiredConfirmationsUsed(extendedTx, requiredConfirmations) {
+    uint256 optimalBandwidth
+  ) internal validateOptimalBandwidthUsed(extendedTx, optimalBandwidth) {
     _testForwardMessage(extendedTx);
   }
 }

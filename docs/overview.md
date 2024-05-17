@@ -30,10 +30,13 @@ These are the base contracts, internal to a.DI and defining all base mechanism o
   previously registered, and the caller must also be an approved sender. Apart from the approved senders, the Guardian will
   be able to retry sending previously sent messages. This can happen when there was insufficient gas, or the message failed
   to arrive to the destination for whatever reason.
-  The amount of Bridge Adapters used to forward a message to its destination will be the minimum specified by the required confirmations
-  of the receiver chain. The specified number of adapters will be selected (pseudo randomly) from the list of allowed forwarders.
-  With this logic, a.DI can have any number of allowed forwarders for a specific destination chain, without incresing the cost
-  of forwarding a message.
+  The number of Bridge Adapters used to forward a message to its destination will be the minimum specified by the optimal bandwidth
+  for the receiver chain. Understanding:
+    - `bandwidth` as the number of bridges through which an envelope could be sent: all allowed in the system
+    - `optimalBandwidth` as extra configuration to limit bandwidth and only send via X bridge adapters out of the total Y bandwidth.
+  The specified number of adapters will be selected (pseudo randomly) from the list of allowed forwarders.
+  With this logic, a.DI can have any number of allowed forwarders for a specific destination chain, without increasing the cost
+  of forwarding a message. When the optimal bandwidth is set to 0, it means that all allowed bridge adapters will be used to forward a message.
 - [CrossChainReceiver (CCR)](../src/contracts/CrossChainReceiver.sol): contains the logic to receive messages
   from other chains. To route a message to the destination address, the message needs to be received correctly (from the
   different allowed bridges) a certain amount of times. To be received correctly means that it must be the exact same

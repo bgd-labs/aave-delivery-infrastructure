@@ -10,13 +10,13 @@ import {Transaction, Envelope} from '../libs/EncodingUtils.sol';
  */
 interface ICrossChainForwarder {
   /**
-   * @notice Object containing the required confirmations for a receiver chain id
+   * @notice Object containing the optimal bandwidth for communication with a receiver chain id
    * @param chainId id of the receiver chain
-   * @param requiredConfirmations number of messages confirmed that receiver needs to deliver a message
+   * @param optimalBandwidth optimal number of bridge adapters to use to send a message to receiver chain
    */
-  struct RequiredConfirmationsByReceiverChain {
+  struct OptimalBandwidthByChain {
     uint256 chainId;
-    uint256 requiredConfirmations;
+    uint256 optimalBandwidth;
   }
 
   /**
@@ -224,18 +224,18 @@ interface ICrossChainForwarder {
   function isSenderApproved(address sender) external view returns (bool);
 
   /**
-   * @notice method to update the required confirmations of a receiver chain
-   * @param requiredConfirmationsByReceiverChain array of objects containing the requiredConfirmations for a specified
+   * @notice method to update the optimal bandwidth for communication with a receiver chain
+   * @param optimalBandwidthByChain array of objects containing the optimal bandwidth for a specified
             receiver chain id
    */
-  function updateRequiredConfirmationsForReceiverChain(
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+  function updateOptimalBandwidthByChain(
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external;
 
   /**
-   * @notice method to get the required confirmations for the receiver chain
-   * @param chainId id of the receiver chain to get the required confirmations from
-   * @return required confirmations of the receiver chain
+   * @notice method to get the optimal bandwidth for communication with the receiver chain
+   * @param chainId id of the receiver chain to get the optimal bandwidth from
+   * @return optimal bandwidth of the receiver chain
    */
-  function getRequiredConfirmationsByReceiverChain(uint256 chainId) external view returns (uint256);
+  function getOptimalBandwidthByChain(uint256 chainId) external view returns (uint256);
 }

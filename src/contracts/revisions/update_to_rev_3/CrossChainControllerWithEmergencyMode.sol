@@ -19,8 +19,8 @@ contract CrossChainControllerWithEmergencyModeUpgradeRev3 is
 
   /// @inheritdoc IReinitialize
   function initializeRevision(
-    RequiredConfirmationsByReceiverChain[] memory requiredConfirmationsByReceiverChain
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external reinitializer(3) {
-    _updateRequiredConfirmationsForReceiverChain(requiredConfirmationsByReceiverChain);
+    _updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 }
