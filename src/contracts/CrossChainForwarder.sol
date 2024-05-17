@@ -297,30 +297,31 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
       destinationChainId
     ];
+    ChainIdBridgeConfig[] storage forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
 
     // If configured required confirmations for a destination network are set to 0 or are bigger than current adapters,
     // it will use all the adapters available. This way there would be no way of breaking forwarding communication
     // by setting wrong configuration.
     if (
       destinationRequiredConfirmations == 0 ||
-      destinationRequiredConfirmations >= _bridgeAdaptersByChain[destinationChainId].length
+      destinationRequiredConfirmations >= forwarderAdapters.length
     ) {
-      return _bridgeAdaptersByChain[destinationChainId];
+      return forwarderAdapters;
     }
 
-    uint256[] memory shuffledForwarders = Math.shuffleArray(
+    uint256[] memory shuffledIndexes = Math.shuffleArray(
       Math.generateIndexArray(destinationRequiredConfirmations)
     );
 
-    ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
+    ChainIdBridgeConfig[] memory selectedForwarderAdapters = new ChainIdBridgeConfig[](
       destinationRequiredConfirmations
     );
 
     for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
-      selectedBridgeAdapters[i] = _bridgeAdaptersByChain[destinationChainId][shuffledForwarders[i]];
+      selectedForwarderAdapters[i] = forwarderAdapters[shuffledIndexes[i]];
     }
 
-    return selectedBridgeAdapters;
+    return selectedForwarderAdapters;
   }
 
   /**
