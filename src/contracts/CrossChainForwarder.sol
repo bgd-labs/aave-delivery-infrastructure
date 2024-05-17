@@ -287,56 +287,34 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   }
 
   /**
-   * @notice method to shuffle an array of forwarder configurations
-   * @param arrayToShuffle array that needs to be shuffled
-   * @return shuffled array of forwarder configurations
-   */
-  function _shuffleForwarderAdapters(
-    ChainIdBridgeConfig[] memory arrayToShuffle
-  ) internal returns (ChainIdBridgeConfig[] memory) {
-    uint256 arrayLength = arrayToShuffle.length;
-    for (uint256 i = 0; i < arrayLength; i++) {
-      uint256 j = Math.getPseudoRandom(i) % arrayLength;
-      ChainIdBridgeConfig memory arrayItem = arrayToShuffle[i];
-      arrayToShuffle[i] = arrayToShuffle[j];
-      arrayToShuffle[j] = arrayItem;
-    }
-    return arrayToShuffle;
-  }
-
-  /**
    * @notice method to get a shuffled array of forwarder bridge adapters configurations
    * @param destinationChainId id of the destination chain to get the adapters that communicate to it
    * @return a shuffled array of the forwarder configurations for a destination chain
    */
   function _getShuffledBridgeAdaptersByChain(
     uint256 destinationChainId
-  ) internal returns (ChainIdBridgeConfig[] memory) {
-    uint256 destinationRequiredConfirmations = _optimalBandwidthByChain[destinationChainId];
-
-    ChainIdBridgeConfig[] memory forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
+  ) internal view returns (ChainIdBridgeConfig[] memory) {
+    uint256 optimalBandwidth = _optimalBandwidthByChain[destinationChainId];
+    ChainIdBridgeConfig[] storage forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
 
     // If configured optimal bandwidth for a destination network are set to 0 or are bigger than current adapters,
     // it will use all the adapters available. This way there would be no way of breaking forwarding communication
     // by setting wrong configuration.
-    if (
-      destinationRequiredConfirmations == 0 ||
-      destinationRequiredConfirmations >= forwarderAdapters.length
-    ) {
+    if (optimalBandwidth == 0 || optimalBandwidth >= forwarderAdapters.length) {
       return forwarderAdapters;
     }
 
-    ChainIdBridgeConfig[] memory shuffledForwarders = _shuffleForwarderAdapters(forwarderAdapters);
+    uint256[] memory shuffledIndexes = Math.shuffleArray(Math.generateIndexArray(optimalBandwidth));
 
-    ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
-      destinationRequiredConfirmations
+    ChainIdBridgeConfig[] memory selectedForwarderAdapters = new ChainIdBridgeConfig[](
+      optimalBandwidth
     );
 
-    for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
-      selectedBridgeAdapters[i] = shuffledForwarders[i];
+    for (uint256 i = 0; i < optimalBandwidth; i++) {
+      selectedForwarderAdapters[i] = forwarderAdapters[shuffledIndexes[i]];
     }
 
-    return selectedBridgeAdapters;
+    return selectedForwarderAdapters;
   }
 
   /**
