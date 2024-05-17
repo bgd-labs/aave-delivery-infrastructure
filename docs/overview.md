@@ -36,7 +36,14 @@ These are the base contracts, internal to a.DI and defining all base mechanism o
     - `optimalBandwidth` as extra configuration to limit bandwidth and only send via X bridge adapters out of the total Y bandwidth.
   The specified number of adapters will be selected (pseudo randomly) from the list of allowed forwarders.
   With this logic, a.DI can have any number of allowed forwarders for a specific destination chain, without increasing the cost
-  of forwarding a message. When the optimal bandwidth is set to 0, it means that all allowed bridge adapters will be used to forward a message.
+  of forwarding a message.
+    - Setting optimal bandwidth to 0 means that no optimization on the number of adapters will be applied,
+  meaning that forwarding the message will make use of all the bandwidth (all allowed adapters). This will also make it so that a communication
+  path can not be broken by setting wrong configuration.
+    - For the cases where optimalBandwidth > bandwidth, the full bandwidth will be used to send the message.
+    - For the case where optimalBandwidth < bandwidth, and even with optimalBandwidth, required confirmations can not be reached
+  on receiver side, communication would still not be broken as Guardian can then retry the transaction with the unused bridge adapters to
+  reach the required confirmations.
 - [CrossChainReceiver (CCR)](../src/contracts/CrossChainReceiver.sol): contains the logic to receive messages
   from other chains. To route a message to the destination address, the message needs to be received correctly (from the
   different allowed bridges) a certain amount of times. To be received correctly means that it must be the exact same
