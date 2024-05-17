@@ -293,7 +293,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
    */
   function _getShuffledBridgeAdaptersByChain(
     uint256 destinationChainId
-  ) internal returns (ChainIdBridgeConfig[] memory) {
+  ) internal view returns (ChainIdBridgeConfig[] memory) {
     uint256 destinationRequiredConfirmations = _requiredConfirmationsByReceiverChain[
       destinationChainId
     ];
@@ -308,12 +308,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       return _bridgeAdaptersByChain[destinationChainId];
     }
 
-    uint256[] memory indexArray = new uint256[](destinationRequiredConfirmations);
-    for (uint256 i = 0; i < destinationRequiredConfirmations; i++) {
-      indexArray[i] = i;
-    }
-
-    uint256[] memory shuffledForwarders = Math.shuffleUint256Array(indexArray);
+    uint256[] memory shuffledForwarders = Math.shuffleArray(
+      Math.generateIndexArray(destinationRequiredConfirmations)
+    );
 
     ChainIdBridgeConfig[] memory selectedBridgeAdapters = new ChainIdBridgeConfig[](
       destinationRequiredConfirmations
