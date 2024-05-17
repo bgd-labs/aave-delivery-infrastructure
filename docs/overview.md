@@ -173,6 +173,8 @@ to CCC methods can be more deterministic. The roles that it holds are:
 - **RETRY_ROLE**: the holders of this role can call the methods `retryTransaction` and `retryEnvelope` on CrossChainController (Forwarder).
 - **DEFAULT_ADMIN_ROLE**: the holder of this role can grant roles, and change the Guardian of CrossChainController by calling `updateGuardian` method.
 
+The audit report by Certora can be found [here](../security/certora/reports/Granular-Guardian-Access-Control.pdf)
+
 ### Contracts
 
 - [EmergencyRegistry](../src/contracts/emergency/EmergencyRegistry.sol): contract containing the registry of the emergency
