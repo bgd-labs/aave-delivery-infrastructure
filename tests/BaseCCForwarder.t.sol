@@ -209,10 +209,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     _forwardedTransactions[extendedTx.transactionId] = true;
   }
 
-  function _testForwardMessage(
-    ExtendedTransaction memory extendedTx,
-    uint256 requiredConfirmations // TODO: use it or remove
-  ) internal {
+  function _testForwardMessage(ExtendedTransaction memory extendedTx) internal {
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
     vm.expectEmit(true, true, true, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);

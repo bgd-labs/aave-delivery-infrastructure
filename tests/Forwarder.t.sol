@@ -511,7 +511,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     validateEnvelopRegistry(extendedTx)
     validateTransactionRegistry(extendedTx)
   {
-    _testForwardMessage(extendedTx, 0);
+    _testForwardMessage(extendedTx);
   }
 
   function _validateForwardMessageWhenNoAdapterWorking(
@@ -523,13 +523,13 @@ contract ForwarderTest is BaseCCForwarderTest {
     validateEnvelopRegistry(extendedTx)
     validateTransactionRegistry(extendedTx)
   {
-    _testForwardMessage(extendedTx, 0);
+    _testForwardMessage(extendedTx);
   }
 
   function _validateRequiredConfirmations(
     ExtendedTransaction memory extendedTx,
     uint256 requiredConfirmations
   ) internal validateRequiredConfirmationsUsed(extendedTx, requiredConfirmations) {
-    _testForwardMessage(extendedTx, requiredConfirmations);
+    _testForwardMessage(extendedTx);
   }
 }
