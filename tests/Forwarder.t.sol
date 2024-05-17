@@ -357,6 +357,26 @@ contract ForwarderTest is BaseCCForwarderTest {
     _validateRetryTransactionWhenAdaptersNotUnique(extendedTx);
   }
 
+  function test_Shuffle()
+    public
+    enableBridgeAdaptersForPath(1, 5, AdapterSuccessType.SOME_SUCCESS)
+    setRequiredConfirmations(1, 3)
+  {
+    ChainIdBridgeConfig[] memory shuffledBridges = _getShuffledBridgeAdaptersByChain(1);
+    assertEq(
+      shuffledBridges[0].currentChainBridgeAdapter == shuffledBridges[1].currentChainBridgeAdapter,
+      false
+    );
+    assertEq(
+      shuffledBridges[0].currentChainBridgeAdapter == shuffledBridges[2].currentChainBridgeAdapter,
+      false
+    );
+    assertEq(
+      shuffledBridges[1].currentChainBridgeAdapter == shuffledBridges[2].currentChainBridgeAdapter,
+      false
+    );
+  }
+
   // ----------- validations -----------------------
   function _validateRetryTransactionWhenAllAdaptersFail(
     ExtendedTransaction memory extendedTx
@@ -491,7 +511,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     validateEnvelopRegistry(extendedTx)
     validateTransactionRegistry(extendedTx)
   {
-    _testForwardMessage(extendedTx, 0);
+    _testForwardMessage(extendedTx);
   }
 
   function _validateForwardMessageWhenNoAdapterWorking(
@@ -503,13 +523,13 @@ contract ForwarderTest is BaseCCForwarderTest {
     validateEnvelopRegistry(extendedTx)
     validateTransactionRegistry(extendedTx)
   {
-    _testForwardMessage(extendedTx, 0);
+    _testForwardMessage(extendedTx);
   }
 
   function _validateRequiredConfirmations(
     ExtendedTransaction memory extendedTx,
     uint256 requiredConfirmations
   ) internal validateRequiredConfirmationsUsed(extendedTx, requiredConfirmations) {
-    _testForwardMessage(extendedTx, requiredConfirmations);
+    _testForwardMessage(extendedTx);
   }
 }
