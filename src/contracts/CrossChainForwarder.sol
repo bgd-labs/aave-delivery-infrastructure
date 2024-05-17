@@ -168,6 +168,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     // Message can be retried only if it was sent before with exactly the same parameters
     require(isEnvelopeRegistered(encodedEnvelope.id), Errors.ENVELOPE_NOT_PREVIOUSLY_REGISTERED);
 
+    // As envelope has not ben previously sent, we need to get the optimalBandwidth shuffled bridge adapters array again.
     ChainIdBridgeConfig[] memory bridgeAdapters = _getShuffledBridgeAdaptersByChain(
       envelope.destinationChainId
     );
