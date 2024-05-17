@@ -94,9 +94,9 @@ interface ICrossChainForwarder {
     bool indexed allowed
   );
   /**
-   * @notice emitted the optimal bandwidth for a receiver chain gets updated
-   * @param chainId id of the receiver chain that where the optimal bandwidth will be applied to
-   * @param optimalBandwidth address of the bridge adapter added (deployed on current network)
+   * @notice emitted when the optimal bandwidth is updated for a specified receiver chain
+   * @param chainId id of the receiver chain that gets the new optimal bandwidth
+   * @param optimalBandwidth optimal number of adapters to use for sending a message to a receiver chain
    */
   event OptimalBandwidthUpdated(uint256 indexed chainId, uint256 optimalBandwidth);
 
