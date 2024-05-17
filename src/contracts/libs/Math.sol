@@ -24,7 +24,7 @@ library Math {
   ) internal view returns (uint256[] memory) {
     uint256 arrayLength = arrayToShuffle.length;
     for (uint256 i = 0; i < arrayLength; i++) {
-      uint256 j = Math.getPseudoRandom(i) % arrayLength;
+      uint256 j = getPseudoRandom(i) % arrayLength;
       uint256 arrayItem = arrayToShuffle[i];
       arrayToShuffle[i] = arrayToShuffle[j];
       arrayToShuffle[j] = arrayItem;
