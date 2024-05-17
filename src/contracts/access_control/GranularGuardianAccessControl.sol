@@ -76,7 +76,8 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
     address[] memory sendersToApprove,
     address[] memory sendersToRemove,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable,
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external onlyRole(SOLVE_EMERGENCY_ROLE) {
     ICrossChainControllerWithEmergencyMode(CROSS_CHAIN_CONTROLLER).solveEmergency(
       newConfirmations,
@@ -86,7 +87,8 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
       sendersToApprove,
       sendersToRemove,
       forwarderBridgeAdaptersToEnable,
-      forwarderBridgeAdaptersToDisable
+      forwarderBridgeAdaptersToDisable,
+      optimalBandwidthByChain
     );
   }
 

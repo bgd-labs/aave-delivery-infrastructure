@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-library Math {
+library Utils {
   /**
    * @notice method to get a pseudo random number from block timestamp, block number, prevrandao and an entropy value
    * @param entropy number assigned by method caller to give certain entropy to the pseudo random generation
@@ -14,9 +14,14 @@ library Math {
       );
   }
 
-  function generateIndexArray(uint256 number) internal pure returns (uint256[] memory) {
-    uint256[] memory indexArray = new uint256[](number);
-    for (uint256 i = 0; i < number; i++) {
+  /**
+   * @notice method to generate an array of indexes with the specified length [0,1,2,...]
+   * @param length number indicating the size of the array to generate
+   * @return array of numbers with specified length
+   */
+  function generateIndexArray(uint256 length) internal pure returns (uint256[] memory) {
+    uint256[] memory indexArray = new uint256[](length);
+    for (uint256 i = 0; i < length; i++) {
       indexArray[i] = i;
     }
     return indexArray;

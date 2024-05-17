@@ -71,6 +71,7 @@ interface IGranularGuardianAccessControl {
    * @param sendersToRemove list of sender addresses to be removed
    * @param forwarderBridgeAdaptersToEnable list of bridge adapters to be enabled to send messages
    * @param forwarderBridgeAdaptersToDisable list of bridge adapters to be disabled
+   * @param optimalBandwidthByChain array of optimal numbers of bridge adapters to use to send a message to receiver chain
    */
   function solveEmergency(
     ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
@@ -80,7 +81,8 @@ interface IGranularGuardianAccessControl {
     address[] memory sendersToApprove,
     address[] memory sendersToRemove,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable,
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external;
 
   /**

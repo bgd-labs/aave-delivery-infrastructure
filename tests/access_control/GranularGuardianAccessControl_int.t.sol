@@ -7,6 +7,10 @@ import {OwnableWithGuardian, IWithGuardian} from 'solidity-utils/contracts/acces
 import '../BaseTest.sol';
 import {GovernanceV3Polygon} from 'aave-address-book/GovernanceV3Polygon.sol';
 import {MiscPolygon} from 'aave-address-book/MiscPolygon.sol';
+import {CrossChainControllerWithEmergencyModeUpgradeRev3, IReinitialize} from '../../src/contracts/revisions/update_to_rev_3/CrossChainControllerWithEmergencyMode.sol';
+import {TransparentUpgradeableProxy} from 'solidity-utils/contracts/transparent-proxy/TransparentUpgradeableProxy.sol';
+import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
+import {ProxyAdmin} from 'solidity-utils/contracts/transparent-proxy/ProxyAdmin.sol';
 
 contract GranularGuardianAccessControlIntTest is BaseTest {
   bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
@@ -45,7 +49,24 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function setUp() public {
-    vm.createSelectFork('polygon', 56006881);
+    vm.createSelectFork('polygon', 57074188);
+
+    // update ccc to have latest implementation
+    address clEmergencyOracle = IEmergencyConsumer(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+      .getChainlinkEmergencyOracle();
+    address newCCCImpl = address(
+      new CrossChainControllerWithEmergencyModeUpgradeRev3(clEmergencyOracle)
+    );
+
+    hoax(GovernanceV3Polygon.EXECUTOR_LVL_1);
+    ProxyAdmin(MiscPolygon.PROXY_ADMIN).upgradeAndCall(
+      TransparentUpgradeableProxy(payable(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)),
+      newCCCImpl,
+      abi.encodeWithSelector(
+        IReinitialize.initializeRevision.selector,
+        new ICrossChainForwarder.OptimalBandwidthByChain[](0)
+      )
+    );
   }
 
   function test_initialization(
@@ -215,6 +236,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     generateEmergencyState(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
     validateEmergencySolved(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
   {
+    console.log('-----');
     vm.startPrank(solveEmergencyGuardian);
     control.solveEmergency(
       new ICrossChainReceiver.ConfirmationInput[](0),
@@ -224,7 +246,8 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
       new address[](0),
       new address[](0),
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
+      new ICrossChainForwarder.BridgeAdapterToDisable[](0),
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
     vm.stopPrank();
   }
@@ -253,7 +276,8 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
       new address[](0),
       new address[](0),
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
+      new ICrossChainForwarder.BridgeAdapterToDisable[](0),
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
   }
 

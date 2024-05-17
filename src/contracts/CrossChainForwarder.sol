@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {EnumerableSet} from 'openzeppelin-contracts/contracts/utils/structs/EnumerableSet.sol';
 import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 import {Address} from 'solidity-utils/contracts/oz-common/Address.sol';
 
@@ -9,7 +8,7 @@ import {ICrossChainForwarder} from './interfaces/ICrossChainForwarder.sol';
 import {IBaseAdapter} from './adapters/IBaseAdapter.sol';
 import {Transaction, EncodedTransaction, Envelope, EncodedEnvelope, TransactionUtils} from './libs/EncodingUtils.sol';
 import {Errors} from './libs/Errors.sol';
-import {Math} from './libs/Math.sol';
+import {Utils} from './libs/Utils.sol';
 
 /**
  * @title CrossChainForwarder
@@ -19,8 +18,6 @@ import {Math} from './libs/Math.sol';
  * @dev To be able to forward a message, caller needs to be an approved sender.
  */
 contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
-  using EnumerableSet for EnumerableSet.UintSet;
-
   // every message originator sends we put into an envelope and attach a nonce. It increments by one
   uint256 internal _currentEnvelopeNonce;
 
@@ -304,7 +301,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
       return forwarderAdapters;
     }
 
-    uint256[] memory shuffledIndexes = Math.shuffleArray(Math.generateIndexArray(optimalBandwidth));
+    uint256[] memory shuffledIndexes = Utils.shuffleArray(
+      Utils.generateIndexArray(optimalBandwidth)
+    );
 
     ChainIdBridgeConfig[] memory selectedForwarderAdapters = new ChainIdBridgeConfig[](
       optimalBandwidth
