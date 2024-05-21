@@ -17,12 +17,6 @@ interface IZkSyncAdapter {
   function MAILBOX() external view returns (IMailbox);
 
   /**
-   * @notice method to get the ChainLink gas price oracle address
-   * @return address of the ChainLink gas price oracle
-   */
-  function CL_GAS_PRICE_ORACLE() external view returns (IClOracle);
-
-  /**
    * @notice method to get the required l1 to l2 gas per pubdata.
    * @return pubdata gas limit
    * @dev constant defined by zksync network. Should not change frequently

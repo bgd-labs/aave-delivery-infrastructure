@@ -21,9 +21,6 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
   IMailbox public immutable MAILBOX;
 
   /// @inheritdoc IZkSyncAdapter
-  IClOracle public immutable CL_GAS_PRICE_ORACLE;
-
-  /// @inheritdoc IZkSyncAdapter
   uint256 public constant REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT = 800;
 
   /// @inheritdoc IZkSyncAdapter
@@ -37,14 +34,11 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
   constructor(
     address crossChainController,
     address mailBox,
-    address clGasPriceOracle,
     address refundAddress,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'ZkSync native adapter', trustedRemotes) {
     require(mailBox != address(0), Errors.ZK_SYNC_MAILBOX_CANT_BE_ADDRESS_0);
-    require(clGasPriceOracle != address(0), Errors.CL_GAS_PRICE_ORACLE_CANT_BE_ADDRESS_0);
-    CL_GAS_PRICE_ORACLE = IClOracle(clGasPriceOracle);
     MAILBOX = IMailbox(mailBox);
     REFUND_ADDRESS_L2 = refundAddress;
   }
@@ -64,10 +58,8 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
 
     uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
-    (, int256 answer, , , ) = CL_GAS_PRICE_ORACLE.latestRoundData();
-
     uint256 cost = MAILBOX.l2TransactionBaseCost(
-      uint256(answer),
+      block.basefee,
       totalGasLimit,
       REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT
     );

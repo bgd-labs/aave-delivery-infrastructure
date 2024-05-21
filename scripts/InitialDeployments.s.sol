@@ -29,9 +29,10 @@ abstract contract BaseInitialDeployment is BaseScript {
   }
 
   function _execute(DeployerHelpers.Addresses memory addresses) internal override {
-    addresses.create3Factory = CREATE3_FACTORY() == address(0)
-      ? address(new Create3Factory{salt: Constants.CREATE3_FACTORY_SALT}())
-      : CREATE3_FACTORY();
+    //    addresses.create3Factory = CREATE3_FACTORY() == address(0)
+    //      ? address(new Create3Factory{salt: Constants.CREATE3_FACTORY_SALT}())
+    //      : CREATE3_FACTORY();
+    console.logBytes32(keccak256('zksyncCreate2'));
     addresses.proxyFactory = TRANSPARENT_PROXY_FACTORY() == address(0)
       ? address(new TransparentProxyFactory())
       : TRANSPARENT_PROXY_FACTORY();

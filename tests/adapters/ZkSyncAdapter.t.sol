@@ -16,7 +16,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     address crossChainController,
     address originForwarder,
     address mailBox,
-    address clGasPriceOracle,
     address refundAddress,
     uint256 baseGasLimit,
     uint256 originChainId
@@ -27,7 +26,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     _assumeSafeAddress(mailBox);
     _assumeSafeAddress(refundAddress);
     vm.assume(originForwarder != address(0));
-    vm.assume(clGasPriceOracle != address(0));
     vm.assume(originChainId > 0);
 
     IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
@@ -41,7 +39,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     zkSyncAdapter = new ZkSyncAdapter(
       crossChainController,
       mailBox,
-      clGasPriceOracle,
       refundAddress,
       baseGasLimit,
       originConfigs
@@ -56,13 +53,11 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     address originForwarder,
     address refundAddress,
-    uint256 originChainId,
-    address clGasPriceOracle
+    uint256 originChainId
   ) public {
     vm.assume(crossChainController != address(0));
     vm.assume(originForwarder != address(0));
     vm.assume(originChainId > 0);
-    vm.assume(clGasPriceOracle != address(0));
 
     IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
       originForwarder: originForwarder,
@@ -72,51 +67,12 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
     vm.expectRevert(bytes(Errors.ZK_SYNC_MAILBOX_CANT_BE_ADDRESS_0));
-    new ZkSyncAdapter(
-      crossChainController,
-      address(0),
-      clGasPriceOracle,
-      refundAddress,
-      baseGasLimit,
-      originConfigs
-    );
-  }
-
-  function testWrongClOracle(
-    address crossChainController,
-    uint256 baseGasLimit,
-    address originForwarder,
-    address refundAddress,
-    uint256 originChainId,
-    address mailbox
-  ) public {
-    vm.assume(crossChainController != address(0));
-    vm.assume(originForwarder != address(0));
-    vm.assume(originChainId > 0);
-    vm.assume(mailbox != address(0));
-
-    IBaseAdapter.TrustedRemotesConfig memory originConfig = IBaseAdapter.TrustedRemotesConfig({
-      originForwarder: originForwarder,
-      originChainId: originChainId
-    });
-    IBaseAdapter.TrustedRemotesConfig[]
-      memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
-    originConfigs[0] = originConfig;
-    vm.expectRevert(bytes(Errors.CL_GAS_PRICE_ORACLE_CANT_BE_ADDRESS_0));
-    new ZkSyncAdapter(
-      crossChainController,
-      mailbox,
-      address(0),
-      refundAddress,
-      baseGasLimit,
-      originConfigs
-    );
+    new ZkSyncAdapter(crossChainController, address(0), refundAddress, baseGasLimit, originConfigs);
   }
 
   function testInitialize(
     address crossChainController,
     address mailbox,
-    address clGasPriceOracle,
     address originForwarder,
     address refundAddress,
     uint256 baseGasLimit,
@@ -127,7 +83,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       crossChainController,
       originForwarder,
       mailbox,
-      clGasPriceOracle,
       refundAddress,
       baseGasLimit,
       originChainId
@@ -138,7 +93,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
 
   struct Params {
     address mailbox;
-    address clGasPriceOracle;
     address receiver;
     uint256 dstGasLimit;
     address caller;
@@ -147,7 +101,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
   function testForwardMessage(
     address crossChainController,
     address mailbox,
-    address clGasPriceOracle,
     address originForwarder,
     address refundAddress
   )
@@ -156,27 +109,19 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       crossChainController,
       originForwarder,
       mailbox,
-      clGasPriceOracle,
       refundAddress,
       0,
       ChainIds.ETHEREUM
     )
   {
     _testForwardMessage(
-      Params({
-        mailbox: mailbox,
-        clGasPriceOracle: clGasPriceOracle,
-        receiver: address(135961),
-        dstGasLimit: 12,
-        caller: address(12354)
-      })
+      Params({mailbox: mailbox, receiver: address(135961), dstGasLimit: 12, caller: address(12354)})
     );
   }
 
   function testForwardMessageWhenNoValue(
     address crossChainController,
     address mailbox,
-    address clGasPriceOracle,
     address originForwarder,
     address refundAddress,
     uint256 dstGasLimit,
@@ -187,7 +132,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       crossChainController,
       originForwarder,
       mailbox,
-      clGasPriceOracle,
       refundAddress,
       0,
       ChainIds.ETHEREUM
@@ -195,13 +139,12 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
   {
     vm.assume(dstGasLimit < 1 ether);
     vm.assume(receiver != address(0));
-    _testForwardMessageWhenNoValue(mailbox, clGasPriceOracle, receiver, dstGasLimit);
+    _testForwardMessageWhenNoValue(mailbox, receiver, dstGasLimit);
   }
 
   function testForwardMessageWhenChainNotSupported(
     address crossChainController,
     address mailbox,
-    address clGasPriceOracle,
     address originForwarder,
     address refundAddress,
     uint256 baseGasLimit,
@@ -214,7 +157,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       crossChainController,
       originForwarder,
       mailbox,
-      clGasPriceOracle,
       refundAddress,
       baseGasLimit,
       ChainIds.ETHEREUM
@@ -230,7 +172,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
   function testForwardMessageWhenWrongReceiver(
     address crossChainController,
     address mailbox,
-    address clGasPriceOracle,
     address originForwarder,
     address refundAddress,
     uint256 baseGasLimit,
@@ -242,7 +183,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       crossChainController,
       originForwarder,
       mailbox,
-      clGasPriceOracle,
       refundAddress,
       baseGasLimit,
       ChainIds.ETHEREUM
@@ -257,7 +197,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
   function testReceive(
     address crossChainController,
     address mailbox,
-    address clGasPriceOracle,
     address originForwarder,
     bytes memory message
   )
@@ -266,7 +205,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       crossChainController,
       originForwarder,
       mailbox,
-      clGasPriceOracle,
       address(125),
       0,
       ChainIds.ETHEREUM
@@ -289,7 +227,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
   function testReceiveWhenRemoteNotTrusted(
     address crossChainController,
     address mailbox,
-    address clGasPriceOracle,
     address originForwarder,
     address refundAddress,
     address remote
@@ -299,7 +236,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       crossChainController,
       originForwarder,
       mailbox,
-      clGasPriceOracle,
       refundAddress,
       0,
       ChainIds.ETHEREUM
@@ -315,17 +251,11 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
 
   function _testForwardMessageWhenNoValue(
     address mailbox,
-    address clGasPriceOracle,
     address receiver,
     uint256 dstGasLimit
   ) internal {
     bytes memory message = abi.encode('test message');
 
-    vm.mockCall(
-      clGasPriceOracle,
-      abi.encodeWithSelector(IClOracle.latestRoundData.selector),
-      abi.encode(uint80(0), int256(123), 0, 0, uint80(0))
-    );
     vm.mockCall(
       mailbox,
       abi.encodeWithSelector(IMailbox.l2TransactionBaseCost.selector),
@@ -356,11 +286,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
 
     hoax(params.caller, 10 ether);
 
-    vm.mockCall(
-      params.clGasPriceOracle,
-      abi.encodeWithSelector(IClOracle.latestRoundData.selector),
-      abi.encode(uint80(0), int256(123), 0, 0, uint80(0))
-    );
     vm.mockCall(
       params.mailbox,
       abi.encodeWithSelector(IMailbox.l2TransactionBaseCost.selector),

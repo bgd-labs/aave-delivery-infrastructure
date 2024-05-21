@@ -23,8 +23,8 @@ custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
 custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
-custom_zksync := --avoid-contracts=tests/PayloadScripts.t.sol
-custom_zksync-testnet := --avoid-contracts=tests/PayloadScripts.t.sol
+custom_zksync := --avoid-contracts=tests/PayloadScripts.t.sol --zksync
+custom_zksync-testnet := --avoid-contracts=tests/PayloadScripts.t.sol --zksync
 
 # params:
 #  1 - path/file_name
@@ -34,7 +34,7 @@ custom_zksync-testnet := --avoid-contracts=tests/PayloadScripts.t.sol
 #  to use ledger, set LEDGER=true to env
 #  default to testnet deployment, to run production, set PROD=true to env
 define deploy_single_fn
-zkforge script \
+forge script \
  scripts/$(1).s.sol:$(if $(3),$(if $(PROD),$(3),$(3)_testnet),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
  --rpc-url $(if $(PROD),$(2),$(2)-testnet) --broadcast --verify -vvvv \
  $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
@@ -113,6 +113,9 @@ deploy-zkevm-adapters:
 
 deploy-wormhole-adapters:
 	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum celo)
+
+deploy-zksync-adapters:
+	$(call deploy_fn,Adapters/DeployZkSyncAdapter,zksync)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:

@@ -25,7 +25,7 @@ abstract contract BaseAdapterScript is BaseScript {
 
     for (uint256 i = 0; i < remoteNetworks.length; i++) {
       DeployerHelpers.Addresses memory remoteAddresses = _getAddresses(remoteNetworks[i]);
-
+      console.log('chainid', remoteAddresses.chainId);
       trustedRemotes[i] = IBaseAdapter.TrustedRemotesConfig({
         originForwarder: remoteAddresses.crossChainController,
         originChainId: remoteAddresses.chainId
