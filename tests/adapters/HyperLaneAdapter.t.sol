@@ -21,6 +21,7 @@ contract HyperLaneAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
+    vm.assume(crossChainController != tx.origin); // zkVM doesn't support mocking tx.origin
     vm.assume(baseGasLimit < 1e7);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(mailBox);

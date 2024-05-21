@@ -79,3 +79,7 @@ celo={key="${ETHERSCAN_API_KEY_CELO}", chain=42220, utl='https://api.celoscan.io
 celo-testnet={key="${ETHERSCAN_API_KEY_CELO}", chain=44787, url='https://api-alfajores.celoscan.io/api'}
 
 # See more config options https://github.com/gakonst/foundry/tree/master/config
+[fuzz]
+no_zksync_reserved_addresses = true
+[invariant]
+no_zksync_reserved_addresses = true

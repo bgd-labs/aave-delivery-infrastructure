@@ -11,9 +11,9 @@ import {ScrollAdapter, IOpAdapter, IL1MessageQueue, IScrollMessenger} from '../.
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 
 contract ScrollAdapterTest is Test {
-  address public constant ORIGIN_FORWARDER = address(123);
-  address public constant CROSS_CHAIN_CONTROLLER = address(1234);
-  address public constant OVM_CROSS_DOMAIN_MESSENGER = address(12345);
+  address public constant ORIGIN_FORWARDER = address(65536 + 123);
+  address public constant CROSS_CHAIN_CONTROLLER = address(65536 + 1234);
+  address public constant OVM_CROSS_DOMAIN_MESSENGER = address(65536 + 12345);
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
@@ -82,8 +82,9 @@ contract ScrollAdapterTest is Test {
       OVM_CROSS_DOMAIN_MESSENGER,
       fee,
       abi.encodeWithSelector(
-        ICrossDomainMessenger.sendMessage.selector,
+        hex"b2267a7b",
         RECEIVER_CROSS_CHAIN_CONTROLLER,
+        0,
         abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
         SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)
       ),
