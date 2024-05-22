@@ -43,7 +43,7 @@ library DeployerHelpers {
     address zksyncAdapter;
   }
 
-  function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
+  function getPathByChainId(uint256 chainId) internal view returns (string memory) {
     if (chainId == ChainIds.ETHEREUM) {
       return './deployments/cc/mainnet/eth.json';
     } else if (chainId == ChainIds.POLYGON) {

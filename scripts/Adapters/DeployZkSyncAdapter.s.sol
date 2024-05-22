@@ -11,12 +11,11 @@ abstract contract BaseZkSyncAdapter is BaseAdapterScript {
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    console.log('trusted remote', trustedRemotes[0].originForwarder);
-    addresses.zkevmAdapter = address(
+    addresses.zksyncAdapter = address(
       new ZkSyncAdapter(
-        address(1), //addresses.crossChainController,
+        addresses.crossChainController,
         MAILBOX(),
-        address(0),
+        addresses.crossChainController, // refund address
         GET_BASE_GAS_LIMIT(),
         trustedRemotes
       )
@@ -75,9 +74,10 @@ contract Zksync_testnet is BaseZkSyncAdapter {
     return TestNetChainIds.ZK_SYNC_SEPOLIA;
   }
 
-  function REMOTE_NETWORKS() public pure override returns (uint256[] memory) {
+  function REMOTE_NETWORKS() public view override returns (uint256[] memory) {
     uint256[] memory remoteNetworks = new uint256[](1);
     remoteNetworks[0] = TestNetChainIds.ETHEREUM_SEPOLIA;
+    console.log('chainid 1', remoteNetworks[0]);
     return remoteNetworks;
   }
 
