@@ -67,7 +67,7 @@ contract Ethereum_testnet is BaseSendDirectMessage {
   }
 
   function DESTINATION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.POLYGON_MUMBAI;
+    return TestNetChainIds.ZK_SYNC_SEPOLIA;
   }
 }
 

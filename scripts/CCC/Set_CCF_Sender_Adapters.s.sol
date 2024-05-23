@@ -378,11 +378,21 @@ contract Ethereum_testnet is BaseCCFSenderAdapters {
     //    });
 
     // Celo
-    DeployerHelpers.Addresses memory addressesCelo = _getAddresses(TestNetChainIds.CELO_ALFAJORES);
+    //    DeployerHelpers.Addresses memory addressesCelo = _getAddresses(TestNetChainIds.CELO_ALFAJORES);
+    //    bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
+    //      currentChainBridgeAdapter: addresses.wormholeAdapter,
+    //      destinationBridgeAdapter: addressesCelo.wormholeAdapter,
+    //      destinationChainId: addressesCelo.chainId
+    //    });
+
+    //zksync
+    DeployerHelpers.Addresses memory addressesZksync = _getAddresses(
+      TestNetChainIds.ZK_SYNC_SEPOLIA
+    );
     bridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: addresses.wormholeAdapter,
-      destinationBridgeAdapter: addressesCelo.wormholeAdapter,
-      destinationChainId: addressesCelo.chainId
+      currentChainBridgeAdapter: addresses.zksyncAdapter,
+      destinationBridgeAdapter: addressesZksync.zksyncAdapter,
+      destinationChainId: addressesZksync.chainId
     });
     return bridgeAdaptersToEnable;
   }
