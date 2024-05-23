@@ -3,23 +3,40 @@ pragma solidity ^0.8.0;
 
 import './BaseAdapterScript.sol';
 import {ZkSyncAdapter} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.sol';
+import {ZkSyncAdapterTestnet} from '../contract_extensions/ZkSyncAdapterTestnet.sol';
 
 abstract contract BaseZkSyncAdapter is BaseAdapterScript {
   function MAILBOX() public view virtual returns (address);
+
+  function TESTNET() public view virtual returns (bool) {
+    return false;
+  }
 
   function _deployAdapter(
     DeployerHelpers.Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override {
-    addresses.zksyncAdapter = address(
-      new ZkSyncAdapter(
-        addresses.crossChainController,
-        MAILBOX(),
-        addresses.crossChainController, // refund address
-        GET_BASE_GAS_LIMIT(),
-        trustedRemotes
-      )
-    );
+    if (TESTNET()) {
+      addresses.zksyncAdapter = address(
+        new ZkSyncAdapterTestnet(
+          addresses.crossChainController,
+          MAILBOX(),
+          addresses.crossChainController, // refund address
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
+      );
+    } else {
+      addresses.zksyncAdapter = address(
+        new ZkSyncAdapter(
+          addresses.crossChainController,
+          MAILBOX(),
+          addresses.crossChainController, // refund address
+          GET_BASE_GAS_LIMIT(),
+          trustedRemotes
+        )
+      );
+    }
   }
 }
 
@@ -50,6 +67,10 @@ contract Ethereum_testnet is BaseZkSyncAdapter {
 
   function MAILBOX() public pure override returns (address) {
     return 0x2eD8eF54a16bBF721a318bd5a5C0F39Be70eaa65;
+  }
+
+  function TESTNET() public pure override returns (bool) {
+    return true;
   }
 }
 
@@ -83,5 +104,9 @@ contract Zksync_testnet is BaseZkSyncAdapter {
 
   function MAILBOX() public pure override returns (address) {
     return 0x2eD8eF54a16bBF721a318bd5a5C0F39Be70eaa65;
+  }
+
+  function TESTNET() public pure override returns (bool) {
+    return true;
   }
 }
