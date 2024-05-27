@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-
+// Modified from commit https://github.com/axelarnetwork/axelar-gmp-sdk-solidity/commit/269a8980e12a9a0b81da59b32f98c3c41024ea4e
 pragma solidity ^0.8.0;
 
 /**
  * @title IAxelarGasService Interface
  * @notice This is an interface for the AxelarGasService contract which manages gas payments
  * and refunds for cross-chain communication on the Axelar network.
- * @dev This interface inherits IUpgradable
  */
 interface IAxelarGasService {
   /**

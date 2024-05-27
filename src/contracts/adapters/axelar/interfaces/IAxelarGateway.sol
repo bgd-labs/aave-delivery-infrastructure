@@ -9,9 +9,10 @@ interface IAxelarGateway {
     bytes calldata payload
   ) external;
 
-  /**********************\
-  |* External Functions *|
-  \**********************/
-
-  function execute(bytes calldata input) external;
+  function validateContractCall(
+    bytes32 commandId,
+    string calldata sourceChain,
+    string calldata sourceAddress,
+    bytes32 payloadHash
+  ) external returns (bool);
 }

@@ -6,25 +6,23 @@ import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {ChainIds} from '../../libs/ChainIds.sol';
 import {Errors} from '../../libs/Errors.sol';
-
-library StringUtils {
-  function eq(string memory a, string memory b) internal pure returns (bool) {
-    return bytes(a).length == bytes(b).length && keccak256(bytes(a)) == keccak256(bytes(b));
-  }
-}
+import {IAxelarExecutable} from './interfaces/IAxelarExecutable.sol';
+import {Strings} from 'openzeppelin-contracts/contracts/utils/Strings.sol';
 
 /**
- * @title AxekarAdapter
+ * @title AxelarAdapter
  * @author BGD Labs
  * @notice Axelar bridge adapter. Used to send and receive messages cross chain
  * @dev it uses the eth balance of CrossChainController contract to pay for message bridging as the method to bridge
         is called via delegate call
  */
-contract AxelarAdapter is BaseAdapter, IAxelarAdapter {
-  using StringUtils for string;
+contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
+  using Strings for string;
 
+  /// @inheritdoc IAxelarAdapter
   IAxelarGateway public immutable AXELAR_GATEWAY;
 
+  /// @inheritdoc IAxelarAdapter
   IAxelarGasService public immutable AXELAR_GAS_SERVICE;
 
   /**
@@ -56,14 +54,14 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter {
     bytes calldata message
   ) external returns (address, uint256) {
     string memory nativeChainId = axelarInfraToNativeChainId(destinationChainId);
-    require(!nativeChainId.eq(''), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
+    require(!nativeChainId.equal(''), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
     uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
     uint256 gasEstimate = AXELAR_GAS_SERVICE.estimateGasFee(
       nativeChainId,
-      receiver,
+      Strings.toHexString(receiver),
       message,
       totalGasLimit,
       new bytes(0)
@@ -74,19 +72,41 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter {
     AXELAR_GAS_SERVICE.payGas{value: gasEstimate}(
       address(this),
       nativeChainId,
-      receiver,
+      Strings.toHexString(receiver),
       message,
       totalGasLimit,
       true,
       address(this),
       new bytes(0)
     );
-    AXELAR_GATEWAY.callContract(nativeChainId, receiver, message);
+    AXELAR_GATEWAY.callContract(nativeChainId, Strings.toHexString(receiver), message);
 
     return (address(AXELAR_GATEWAY), 0);
   }
 
-  // TODO: not clear on what the receiving method should be like
+  /// @inheritdoc IAxelarExecutable
+  function execute(
+    bytes32 commandId,
+    string calldata sourceChain,
+    string calldata sourceAddress,
+    bytes calldata payload
+  ) external {
+    bytes32 payloadHash = keccak256(payload);
+
+    require(
+      AXELAR_GATEWAY.validateContractCall(commandId, sourceChain, sourceAddress, payloadHash),
+      Errors.INVALID_AXELAR_GATEWAY_CONTRACT_CALL
+    );
+
+    uint256 originChainId = axelarNativeToInfraChainId(sourceChain);
+    address srcAddress = address(bytes20(bytes(sourceAddress)));
+    require(
+      _trustedRemotes[originChainId] == srcAddress && srcAddress != address(0),
+      Errors.REMOTE_NOT_TRUSTED
+    );
+
+    _registerReceivedMessage(payload, originChainId);
+  }
 
   /// @inheritdoc IBaseAdapter
   function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
@@ -102,25 +122,25 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter {
   function axelarNativeToInfraChainId(
     string memory nativeChainId
   ) public pure virtual returns (uint256) {
-    if (nativeChainId.eq('Ethereum')) {
+    if (nativeChainId.equal('Ethereum')) {
       return ChainIds.ETHEREUM;
-    } else if (nativeChainId.eq('Avalanche')) {
+    } else if (nativeChainId.equal('Avalanche')) {
       return ChainIds.AVALANCHE;
-    } else if (nativeChainId.eq('Polygon')) {
+    } else if (nativeChainId.equal('Polygon')) {
       return ChainIds.POLYGON;
-    } else if (nativeChainId.eq('arbitrum')) {
+    } else if (nativeChainId.equal('arbitrum')) {
       return ChainIds.ARBITRUM;
-    } else if (nativeChainId.eq('optimism')) {
+    } else if (nativeChainId.equal('optimism')) {
       return ChainIds.OPTIMISM;
-    } else if (nativeChainId.eq('base')) {
+    } else if (nativeChainId.equal('base')) {
       return ChainIds.BASE;
-    } else if (nativeChainId.eq('binance')) {
+    } else if (nativeChainId.equal('binance')) {
       return ChainIds.BNB;
-    } else if (nativeChainId.eq('scroll')) {
+    } else if (nativeChainId.equal('scroll')) {
       return ChainIds.SCROLL;
-    } else if (nativeChainId.eq('celo')) {
+    } else if (nativeChainId.equal('celo')) {
       return ChainIds.CELO;
-    } else if (nativeChainId.eq('Fantom')) {
+    } else if (nativeChainId.equal('Fantom')) {
       return ChainIds.FANTOM;
     } else {
       return 0;

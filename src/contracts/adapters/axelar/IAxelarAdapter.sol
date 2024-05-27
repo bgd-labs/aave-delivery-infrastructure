@@ -24,7 +24,7 @@ interface IAxelarAdapter {
 
   /**
    * @notice method to get infrastructure chain id from bridge native chain id
-   * @param bridgeChainId bridge native chain id
+   * @param nativeChainId bridge native chain id
    */
   function axelarNativeToInfraChainId(string memory nativeChainId) external returns (uint256);
 
