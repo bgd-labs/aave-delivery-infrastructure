@@ -55,26 +55,35 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter {
     uint256 destinationChainId,
     bytes calldata message
   ) external returns (address, uint256) {
-    // TODO: transform to native chain ids
+    string memory nativeChainId = axelarInfraToNativeChainId(destinationChainId);
+    require(!nativeChainId.eq(''), Errors.DESTINATION_CHAIN_ID_NOT_SUPPORTED);
+    require(receiver != address(0), Errors.RECEIVER_NOT_SET);
+
+    uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
+
     uint256 gasEstimate = AXELAR_GAS_SERVICE.estimateGasFee(
-      destinationChain,
-      destinationAddress,
-      payload,
-      GAS_LIMIT,
+      nativeChainId,
+      receiver,
+      message,
+      totalGasLimit,
       new bytes(0)
     );
 
+    require(gasEstimate <= address(this).balance, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
+
     AXELAR_GAS_SERVICE.payGas{value: gasEstimate}(
       address(this),
-      destinationChain,
-      destinationAddress,
-      payload,
-      GAS_LIMIT,
+      nativeChainId,
+      receiver,
+      message,
+      totalGasLimit,
       true,
-      msg.sender,
+      address(this),
       new bytes(0)
     );
-    AXELAR_GATEWAY.callContract(destinationChain, destinationAddress, payload);
+    AXELAR_GATEWAY.callContract(nativeChainId, receiver, message);
+
+    return (address(AXELAR_GATEWAY), 0);
   }
 
   // TODO: not clear on what the receiving method should be like
