@@ -210,7 +210,7 @@ deploy-base-adapters-test:
 	$(call deploy_fn,Adapters/DeployCBaseAdapter,ethereum)
 
 deploy-zksync-adapters-test:
-	$(call deploy_fn,Adapters/DeployZkSyncAdapter,zksync)
+	$(call deploy_fn,Adapters/DeployZkSyncAdapter,ethereum)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
@@ -247,7 +247,7 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,zksync)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
