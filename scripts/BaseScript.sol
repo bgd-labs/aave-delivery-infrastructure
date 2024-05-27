@@ -17,6 +17,7 @@ library DeployerHelpers {
 
   struct Addresses {
     address arbAdapter;
+    address axelarAdapter;
     address baseAdapter;
     address ccipAdapter;
     uint256 chainId;
@@ -129,7 +130,8 @@ library DeployerHelpers {
       zkevmAdapter: abi.decode(persistedJson.parseRaw('.zkevmAdapter'), (address)),
       gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address)),
       scrollAdapter: abi.decode(persistedJson.parseRaw('.scrollAdapter'), (address)),
-      wormholeAdapter: abi.decode(persistedJson.parseRaw('.wormholeAdapter'), (address))
+      wormholeAdapter: abi.decode(persistedJson.parseRaw('.wormholeAdapter'), (address)),
+      axelarAdapter: abi.decode(persistedJson.parseRaw('.axelarAdapter'), (address))
     });
 
     return addresses;
@@ -138,6 +140,7 @@ library DeployerHelpers {
   function encodeJson(string memory path, Addresses memory addresses, Vm vm) internal {
     string memory json = 'addresses';
     json.serialize('arbAdapter', addresses.arbAdapter);
+    json.serialize('axelarAdapter', addresses.axelarAdapter);
     json.serialize('baseAdapter', addresses.baseAdapter);
     json.serialize('ccipAdapter', addresses.ccipAdapter);
     json.serialize('chainId', addresses.chainId);

@@ -493,7 +493,7 @@ contract Scroll_testnet is BaseSetCCRAdapters {
     DeployerHelpers.Addresses memory addresses
   ) public pure override returns (address[] memory) {
     address[] memory receiverBridgeAdaptersToAllow = new address[](1);
-    receiverBridgeAdaptersToAllow[0] = addresses.scrollAdapter;
+    receiverBridgeAdaptersToAllow[0] = addresses.axelarAdapter;
 
     return receiverBridgeAdaptersToAllow;
   }

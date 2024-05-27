@@ -38,7 +38,7 @@ gnosis-testnet="${RPC_GNOSIS_TESTNET}"
 zkevm="${RPC_ZKEVM}"
 zkevm-testnet="${RPC_ZKEVM_TESTNET}"
 scroll="${RPC_SCROLL}"
-scroll-testnet="${RPC_SCROLL_TESTNET}"
+scroll-testnet="${RPC_SCROLL_SEPOLIA}"
 celo="${RPC_CELO}"
 celo-testnet="${RPC_CELO_ALFAJORES}"
 
