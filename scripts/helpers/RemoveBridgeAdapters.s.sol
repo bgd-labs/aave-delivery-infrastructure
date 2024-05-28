@@ -158,13 +158,9 @@ contract Ethereum_testnet is BaseRemoveBridgeAdapters {
     chainIds[0] = TestNetChainIds.ZK_SYNC_SEPOLIA;
 
     ICrossChainForwarder.BridgeAdapterToDisable[]
-      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](2);
+      memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
     bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0xd9009969C4E104c4cDAd18EF07CCE8bf8d3055b9,
-      chainIds: chainIds
-    });
-    bridgeAdapters[1] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0x830D41ae15E757EAa464110DbeEee85Db32268F0,
+      bridgeAdapter: 0x3e2E392307BBeE24Fdd100E98247De4fE44714F3,
       chainIds: chainIds
     });
     return bridgeAdapters;

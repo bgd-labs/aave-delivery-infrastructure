@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
+import 'forge-std/console.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
-import {ZkSyncAdapter, IZkSyncAdapter, IMailbox, IClOracle, IBaseAdapter, AddressAliasHelper} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.sol';
+import {ZkSyncAdapter, IZkSyncAdapter, IBridgehub, IBaseAdapter, AddressAliasHelper} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.sol';
 import {BaseAdapterTest} from './BaseAdapterTest.sol';
 
 contract ZkSyncAdapterTest is BaseAdapterTest {
@@ -48,6 +49,12 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
 
   function setUp() public {}
 
+  function testUndoAlias() public {
+    address aliased = 0x91Bbb474eE7E3a04A4eE77bE874bcCEaA01b342a;
+    address unaliased = AddressAliasHelper.undoL1ToL2Alias(aliased);
+    console.log('unaliased', unaliased);
+  }
+
   function testWrongZkSyncMailbox(
     address crossChainController,
     uint256 baseGasLimit,
@@ -66,7 +73,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     IBaseAdapter.TrustedRemotesConfig[]
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
-    vm.expectRevert(bytes(Errors.ZK_SYNC_MAILBOX_CANT_BE_ADDRESS_0));
+    vm.expectRevert(bytes(Errors.ZK_SYNC_BRIDGEHUB_CANT_BE_ADDRESS_0));
     new ZkSyncAdapter(crossChainController, address(0), refundAddress, baseGasLimit, originConfigs);
   }
 
@@ -258,13 +265,13 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
 
     vm.mockCall(
       mailbox,
-      abi.encodeWithSelector(IMailbox.l2TransactionBaseCost.selector),
+      abi.encodeWithSelector(IBridgehub.l2TransactionBaseCost.selector),
       abi.encode(10)
     );
     vm.mockCall(
       mailbox,
       10,
-      abi.encodeWithSelector(IMailbox.requestL2Transaction.selector),
+      abi.encodeWithSelector(IBridgehub.requestL2TransactionDirect.selector),
       abi.encode(bytes32('test'))
     );
     vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
@@ -288,13 +295,13 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
 
     vm.mockCall(
       params.mailbox,
-      abi.encodeWithSelector(IMailbox.l2TransactionBaseCost.selector),
+      abi.encodeWithSelector(IBridgehub.l2TransactionBaseCost.selector),
       abi.encode(10)
     );
     vm.mockCall(
       params.mailbox,
       10,
-      abi.encodeWithSelector(IMailbox.requestL2Transaction.selector),
+      abi.encodeWithSelector(IBridgehub.requestL2TransactionDirect.selector),
       abi.encode(bytes32('test'))
     );
     (bool success, bytes memory returnData) = address(zkSyncAdapter).delegatecall(

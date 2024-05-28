@@ -12,7 +12,7 @@ abstract contract BaseSendDirectMessage is BaseScript {
   }
 
   function getGasLimit() public view virtual returns (uint256) {
-    return 150_000;
+    return 300_000;
   }
 
   function getMessage() public view virtual returns (bytes memory) {

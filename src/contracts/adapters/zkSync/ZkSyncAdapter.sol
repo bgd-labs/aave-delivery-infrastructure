@@ -5,7 +5,7 @@ import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {AddressAliasHelper} from './libs/AddressAliasHelper.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {ChainIds} from '../../libs/ChainIds.sol';
-import {IZkSyncAdapter, IMailbox, IClOracle} from './IZkSyncAdapter.sol';
+import {IZkSyncAdapter, IBridgehub} from './IZkSyncAdapter.sol';
 
 /**
  * @title ZkSyncAdapter
@@ -18,7 +18,7 @@ import {IZkSyncAdapter, IMailbox, IClOracle} from './IZkSyncAdapter.sol';
  */
 contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
   /// @inheritdoc IZkSyncAdapter
-  IMailbox public immutable MAILBOX;
+  IBridgehub public immutable BRIDGEHUB;
 
   /// @inheritdoc IZkSyncAdapter
   uint256 public constant REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT = 800;
@@ -33,13 +33,13 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
    */
   constructor(
     address crossChainController,
-    address mailBox,
+    address bridgehub,
     address refundAddress,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'ZkSync native adapter', trustedRemotes) {
-    require(mailBox != address(0), Errors.ZK_SYNC_MAILBOX_CANT_BE_ADDRESS_0);
-    MAILBOX = IMailbox(mailBox);
+    require(bridgehub != address(0), Errors.ZK_SYNC_BRIDGEHUB_CANT_BE_ADDRESS_0);
+    BRIDGEHUB = IBridgehub(bridgehub);
     REFUND_ADDRESS_L2 = refundAddress;
   }
 
@@ -58,8 +58,9 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
 
     uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
-    uint256 cost = MAILBOX.l2TransactionBaseCost(
-      block.basefee,
+    uint256 cost = BRIDGEHUB.l2TransactionBaseCost(
+      destinationChainId,
+      uint256(tx.gasprice),
       totalGasLimit,
       REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT
     );
@@ -71,17 +72,21 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
       message
     );
 
-    bytes32 canonicalTxHash = MAILBOX.requestL2Transaction{value: cost}(
-      receiver,
-      0,
-      destinationCalldata,
-      totalGasLimit,
-      REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT,
-      new bytes[](0),
-      REFUND_ADDRESS_L2 // TODO: is it correct to pass l2 address? Should it be aliased?
+    bytes32 canonicalTxHash = BRIDGEHUB.requestL2TransactionDirect{value: cost}(
+      IBridgehub.L2TransactionRequestDirect({
+        chainId: destinationChainId,
+        mintValue: cost,
+        l2Contract: receiver,
+        l2Value: 0,
+        l2Calldata: destinationCalldata,
+        l2GasLimit: totalGasLimit,
+        l2GasPerPubdataByteLimit: REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT,
+        factoryDeps: new bytes[](0),
+        refundRecipient: REFUND_ADDRESS_L2
+      })
     );
 
-    return (address(MAILBOX), uint256(canonicalTxHash));
+    return (address(BRIDGEHUB), uint256(canonicalTxHash));
   }
 
   /// @inheritdoc IZkSyncAdapter

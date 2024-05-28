@@ -6,7 +6,7 @@ import {ZkSyncAdapter} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.s
 import {ZkSyncAdapterTestnet} from '../contract_extensions/ZkSyncAdapterTestnet.sol';
 
 abstract contract BaseZkSyncAdapter is BaseAdapterScript {
-  function MAILBOX() public view virtual returns (address);
+  function BRIDGEHUB() public view virtual returns (address);
 
   function TESTNET() public view virtual returns (bool) {
     return false;
@@ -22,7 +22,7 @@ abstract contract BaseZkSyncAdapter is BaseAdapterScript {
       addresses.zksyncAdapter = address(
         new ZkSyncAdapterTestnet(
           addresses.crossChainController,
-          MAILBOX(),
+          BRIDGEHUB(),
           REFUND_ADDRESS(),
           GET_BASE_GAS_LIMIT(),
           trustedRemotes
@@ -32,7 +32,7 @@ abstract contract BaseZkSyncAdapter is BaseAdapterScript {
       addresses.zksyncAdapter = address(
         new ZkSyncAdapter(
           addresses.crossChainController,
-          MAILBOX(),
+          BRIDGEHUB(),
           REFUND_ADDRESS(),
           GET_BASE_GAS_LIMIT(),
           trustedRemotes
@@ -57,8 +57,8 @@ contract Ethereum is BaseZkSyncAdapter {
     return remoteNetworks;
   }
 
-  function MAILBOX() public pure override returns (address) {
-    return 0x32400084C286CF3E17e7B677ea9583e60a000324;
+  function BRIDGEHUB() public pure override returns (address) {
+    return 0x32400084C286CF3E17e7B677ea9583e60a000324; // TODO: REPLACE WITH CORRECT ADDRESS WHEN DEPLOYED TO MAINNET
   }
 }
 
@@ -79,8 +79,8 @@ contract Ethereum_testnet is BaseZkSyncAdapter {
     return remoteNetworks;
   }
 
-  function MAILBOX() public pure override returns (address) {
-    return 0x9A6DE0f62Aa270A8bCB1e2610078650D539B1Ef9;
+  function BRIDGEHUB() public pure override returns (address) {
+    return 0x35A54c8C757806eB6820629bc82d90E056394C92;
   }
 
   function TESTNET() public pure override returns (bool) {
@@ -103,8 +103,8 @@ contract Zksync is BaseZkSyncAdapter {
     return remoteNetworks;
   }
 
-  function MAILBOX() public pure override returns (address) {
-    return 0x32400084C286CF3E17e7B677ea9583e60a000324;
+  function BRIDGEHUB() public pure override returns (address) {
+    return 0x32400084C286CF3E17e7B677ea9583e60a000324; // TODO: REPLACE WITH CORRECT ADDRESS WHEN DEPLOYED TO MAINNET
   }
 }
 
@@ -123,8 +123,8 @@ contract Zksync_testnet is BaseZkSyncAdapter {
     return remoteNetworks;
   }
 
-  function MAILBOX() public pure override returns (address) {
-    return 0x9A6DE0f62Aa270A8bCB1e2610078650D539B1Ef9;
+  function BRIDGEHUB() public pure override returns (address) {
+    return 0x9A6DE0f62Aa270A8bCB1e2610078650D539B1Ef9; // TODO: REPLACE WITH CORRECT ADDRESS WHEN DEPLOYED TO MAINNET
   }
 
   function TESTNET() public pure override returns (bool) {

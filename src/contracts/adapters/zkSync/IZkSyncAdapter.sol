@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IMailbox} from './interfaces/IMailbox.sol';
-import {IClOracle} from './interfaces/IClOracle.sol';
+import {IBridgehub} from './interfaces/IBridgehub.sol';
 
 /**
  * @title IZkSyncAdapter
@@ -11,10 +10,10 @@ import {IClOracle} from './interfaces/IClOracle.sol';
  */
 interface IZkSyncAdapter {
   /**
-   * @notice method to get the MAILBOX address
-   * @return address of the MAILBOX
+   * @notice method to get the BRIDGEHUB address
+   * @return address of the BRIDGEHUB
    */
-  function MAILBOX() external view returns (IMailbox);
+  function BRIDGEHUB() external view returns (IBridgehub);
 
   /**
    * @notice method to get the required l1 to l2 gas per pubdata.
