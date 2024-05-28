@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import 'forge-std/console.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
+import {Transaction, Envelope, EncodedEnvelope, EncodedTransaction, TransactionUtils} from '../../src/contracts/libs/EncodingUtils.sol';
 import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ZkSyncAdapter, IZkSyncAdapter, IBridgehub, IBaseAdapter, AddressAliasHelper} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.sol';
@@ -254,6 +255,36 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     vm.expectRevert(bytes(Errors.REMOTE_NOT_TRUSTED));
 
     zkSyncAdapter.receiveMessage(abi.encode('test message'));
+  }
+
+  function test_receiveMessage() public {
+    vm.createSelectFork('https://sepolia.era.zksync.dev', 2588826);
+    //    bytes memory message = abi.encode('test message');
+    console.log('chainid', block.chainid);
+    bytes
+      memory message = hex'0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000006d603081563784db3f83ef1f65cc389d94365ac90000000000000000000000003676a657f22ea4a6eb3a51da7233a37e8d6049670000000000000000000000000000000000000000000000000000000000aa36a7000000000000000000000000000000000000000000000000000000000000012c00000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000013736f6d652072616e646f6d206d65737361676500000000000000000000000000';
+    console.logBytes(message);
+    console.log(
+      'adapter origin chain id',
+      ZkSyncAdapter(0x013D88537bFdb7984700D44a8c0427D13d352D90).getOriginChainId()
+    );
+
+    Transaction memory transaction = TransactionUtils.decode(message);
+    Envelope memory envelope = transaction.getEnvelope();
+
+    console.log(
+      'conditional',
+      envelope.originChainId == 11155111 && envelope.destinationChainId == block.chainid
+    );
+
+    //    hoax(0x91Bbb474eE7E3a04A4eE77bE874bcCEaA01b342a);
+    //    ZkSyncAdapter(0x013D88537bFdb7984700D44a8c0427D13d352D90).receiveMessage(message);
+
+    hoax(0x013D88537bFdb7984700D44a8c0427D13d352D90);
+    ICrossChainReceiver(0x77430FCd47F62A9706CAca6300563c6B27885F5F).receiveCrossChainMessage(
+      message,
+      11155111
+    );
   }
 
   function _testForwardMessageWhenNoValue(
