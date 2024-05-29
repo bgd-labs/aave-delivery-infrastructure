@@ -61,19 +61,19 @@ contract AxelarAdapterTestnet is AxelarAdapter {
     uint256 infraChainId
   ) public pure override returns (string memory) {
     if (infraChainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
-      return 'Ethereum';
+      return 'ethereum-sepolia';
     } else if (infraChainId == TestNetChainIds.AVALANCHE_FUJI) {
       return 'Avalanche';
     } else if (infraChainId == TestNetChainIds.POLYGON_MUMBAI) {
       return 'Polygon';
     } else if (infraChainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
-      return 'arbitrum';
+      return 'arbitrum-sepolia';
     } else if (infraChainId == TestNetChainIds.OPTIMISM_SEPOLIA) {
-      return 'optimism';
+      return 'optimism-sepolia';
     } else if (infraChainId == TestNetChainIds.FANTOM_TESTNET) {
       return 'Fantom';
     } else if (infraChainId == TestNetChainIds.BASE_SEPOLIA) {
-      return 'base';
+      return 'base-sepolia';
     } else if (infraChainId == TestNetChainIds.SCROLL_SEPOLIA) {
       return 'scroll';
     } else if (infraChainId == TestNetChainIds.BNB_TESTNET) {

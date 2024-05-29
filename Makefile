@@ -205,7 +205,7 @@ deploy-base-adapters-test:
 	$(call deploy_fn,Adapters/DeployCBaseAdapter,ethereum)
 
 deploy-axelar-adapters-test:
-	$(call deploy_fn,Adapters/DeployAxelarAdapter,scroll)
+	$(call deploy_fn,Adapters/DeployAxelarAdapter,ethereum scroll)
 
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
@@ -242,13 +242,13 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,celo)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,scroll)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,ethereum)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,scroll)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum)

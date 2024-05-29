@@ -108,16 +108,6 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
     _registerReceivedMessage(payload, originChainId);
   }
 
-  /// @inheritdoc IBaseAdapter
-  function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
-    return nativeChainId;
-  }
-
-  /// @inheritdoc IBaseAdapter
-  function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
-    return infraChainId;
-  }
-
   /// @inheritdoc IAxelarAdapter
   function axelarNativeToInfraChainId(
     string memory nativeChainId
