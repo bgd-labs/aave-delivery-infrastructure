@@ -25,7 +25,7 @@ custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdev
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
 custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 custom_zksync := --avoid-contracts=tests/PayloadScripts.t.sol --zksync
-custom_zksync-testnet := --avoid-contracts=tests/PayloadScripts.t.sol --zksync
+custom_zksync-testnet := --legacy --avoid-contracts=tests/PayloadScripts.t.sol --zksync
 
 # params:
 #  1 - path/file_name
@@ -272,3 +272,6 @@ deploy-ccc-revision-and-update:
 
 deploy-ccc-update-payload:
 	$(call deploy_fn,helpers/UpdateCCCImpl_Payload,celo)
+
+deploy-mock-receiver:
+	$(call deploy_fn,helpers/mocks/Deploy_Mock_Receiver,zksync)
