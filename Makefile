@@ -18,7 +18,7 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 custom_ethereum := --with-gas-price 45000000000 # 53 gwei
-custom_ethereum-testnet := --legacy
+custom_ethereum-testnet := --with-gas-price 60000000000 --legacy
 custom_polygon :=  --with-gas-price 190000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
@@ -242,7 +242,7 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,scroll)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum)
 
 send-direct-message:
 	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)

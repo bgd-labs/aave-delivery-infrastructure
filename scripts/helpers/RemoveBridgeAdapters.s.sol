@@ -170,7 +170,7 @@ contract Ethereum_testnet is BaseRemoveBridgeAdapters {
     //      chainIds: chainIdsCCIP
     //    });
     bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0xC1251cca0116E5f3733220921B853B0a73e0Dd3c,
+      bridgeAdapter: 0x26332e84e77C2Ce130D4B426a8633173a32399Df,
       chainIds: chainIds
     });
     //    bridgeAdapters[2] = ICrossChainForwarder.BridgeAdapterToDisable({

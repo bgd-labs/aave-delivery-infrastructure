@@ -89,7 +89,7 @@ contract Ethereum_testnet is BaseAxelarAdapter {
 
 contract Scroll_testnet is BaseAxelarAdapter {
   function AXELAR_GATEWAY() public pure override returns (address) {
-    return 0xBF62ef1486468a6bd26Dd669C06db43dEd5B849B;
+    return 0xe432150cce91c13a887f7D836923d5597adD8E31;
   }
 
   function AXELAR_GAS_SERVICE() public pure override returns (address) {
