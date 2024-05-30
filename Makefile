@@ -25,7 +25,7 @@ custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdev
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
 custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
 custom_zksync := --avoid-contracts=tests/PayloadScripts.t.sol --zksync
-custom_zksync-testnet := --legacy --avoid-contracts=tests/PayloadScripts.t.sol --zksync
+custom_zksync-testnet := --legacy --avoid-contracts=tests/PayloadScripts.t.sol --zksync --with-gas-price 100000000
 
 # params:
 #  1 - path/file_name
