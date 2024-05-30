@@ -13,30 +13,20 @@ library ArbAdapterDeploymentHelper {
   }
 
   function getAdapterCode(ArbAdapterArgs memory arbArgs) internal pure returns (bytes memory) {
-    if (arbArgs.baseArgs.isTestnet) {
-      return
-        abi.encodePacked(
-          type(ArbitrumAdapterTestnet).creationCode,
-          abi.encode(
-            arbArgs.baseArgs.crossChainController,
-            arbArgs.inbox,
-            arbArgs.destinationCCC,
-            arbArgs.baseArgs.providerGasLimit,
-            arbArgs.baseArgs.trustedRemotes
-          )
-        );
-    } else {
-      return
-        abi.encodePacked(
-          type(ArbAdapter).creationCode,
-          abi.encode(
-            arbArgs.baseArgs.crossChainController,
-            arbArgs.inbox,
-            arbArgs.destinationCCC,
-            arbArgs.baseArgs.providerGasLimit,
-            arbArgs.baseArgs.trustedRemotes
-          )
-        );
-    }
+    bytes memory creationCode = arbArgs.baseArgs.isTestnet
+      ? type(ArbitrumAdapterTestnet).creationCode
+      : type(ArbAdapter).creationCode;
+
+    return
+      abi.encodePacked(
+        creationCode,
+        abi.encode(
+          arbArgs.baseArgs.crossChainController,
+          arbArgs.inbox,
+          arbArgs.destinationCCC,
+          arbArgs.baseArgs.providerGasLimit,
+          arbArgs.baseArgs.trustedRemotes
+        )
+      );
   }
 }
