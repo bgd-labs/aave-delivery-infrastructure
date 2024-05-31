@@ -280,36 +280,41 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     bytes32 txId = TransactionUtils.getId(transaction);
     bytes32 envelopeId = EnvelopeUtils.getId(envelope);
 
+    address crossChainReceiver = 0x77430FCd47F62A9706CAca6300563c6B27885F5F;
+    address zkSyncAdapter = 0x013D88537bFdb7984700D44a8c0427D13d352D90;
     // config checks
-    bool allowed = ICrossChainReceiver(0x77430FCd47F62A9706CAca6300563c6B27885F5F)
-      .isReceiverBridgeAdapterAllowed(0x013D88537bFdb7984700D44a8c0427D13d352D90, 11155111);
+    bool allowed = ICrossChainReceiver(crossChainReceiver).isReceiverBridgeAdapterAllowed(
+      zkSyncAdapter,
+      11155111
+    );
     assertEq(allowed, true);
 
     // call adapter contract with real tx data
-    hoax(0x91Bbb474eE7E3a04A4eE77bE874bcCEaA01b342a); // aliased origin
+    hoax(0x91Bbb474eE7E3a04A4eE77bE874bcCEaA01b342a); // aliased origin of 0x80Aab474ee7e3A04A4ee77Be874bCCEAA01B2319 (crossChainController on sepolia)
     vm.expectEmit(true, true, true, true);
     emit TransactionReceived(
       txId,
       envelopeId,
       envelope.originChainId,
       transaction,
-      0x013D88537bFdb7984700D44a8c0427D13d352D90,
+      zkSyncAdapter,
       1
     );
     vm.expectEmit(true, true, true, true);
     emit TestWorked(envelope.origin, envelope.originChainId, envelope.message);
     vm.expectEmit(true, true, true, true);
     emit EnvelopeDeliveryAttempted(envelopeId, envelope, true);
-    ZkSyncAdapter(0x013D88537bFdb7984700D44a8c0427D13d352D90).receiveMessage(message);
+    ZkSyncAdapter(zkSyncAdapter).receiveMessage(message);
 
     // check state after tx
-    bool received = ICrossChainReceiver(0x77430FCd47F62A9706CAca6300563c6B27885F5F)
-      .isTransactionReceivedByAdapter(txId, 0x013D88537bFdb7984700D44a8c0427D13d352D90);
+    bool received = ICrossChainReceiver(crossChainReceiver).isTransactionReceivedByAdapter(
+      txId,
+      zkSyncAdapter
+    );
     assertEq(received, true);
 
-    ICrossChainReceiver.EnvelopeState state = ICrossChainReceiver(
-      0x77430FCd47F62A9706CAca6300563c6B27885F5F
-    ).getEnvelopeState(envelopeId);
+    ICrossChainReceiver.EnvelopeState state = ICrossChainReceiver(crossChainReceiver)
+      .getEnvelopeState(envelopeId);
     assertEq(uint256(state), 2);
   }
 
