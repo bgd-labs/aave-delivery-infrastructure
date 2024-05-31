@@ -7,7 +7,7 @@ import {ArbitrumAdapterTestnet} from '../contract_extensions/ArbitrumAdapter.sol
 
 library ArbAdapterDeploymentHelper {
   struct ArbAdapterArgs {
-    BaseAdapterStructs.BaseAdapterArgs baseArgs;
+    BaseAdapterArgs baseArgs;
     address inbox;
     address destinationCCC;
   }
