@@ -476,3 +476,24 @@ contract Celo_testnet is BaseSetCCRConfirmations {
     return chainIds;
   }
 }
+
+contract Zksync_testnet is BaseSetCCRConfirmations {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.ZK_SYNC_SEPOLIA;
+  }
+
+  function getConfirmationsByChainIds()
+    public
+    virtual
+    override
+    returns (ConfirmationsByChain[] memory)
+  {
+    ConfirmationsByChain[] memory chainIds = new ConfirmationsByChain[](1);
+    chainIds[0] = ConfirmationsByChain({
+      chainId: TestNetChainIds.ETHEREUM_SEPOLIA,
+      confirmations: 1
+    });
+
+    return chainIds;
+  }
+}

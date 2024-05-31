@@ -141,3 +141,9 @@ contract Celo_testnet is BaseMockDestination {
     return TestNetChainIds.CELO_ALFAJORES;
   }
 }
+
+contract Zksync_testnet is BaseMockDestination {
+  function TRANSACTION_NETWORK() public pure virtual override returns (uint256) {
+    return TestNetChainIds.ZK_SYNC_SEPOLIA;
+  }
+}

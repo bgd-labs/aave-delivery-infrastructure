@@ -406,6 +406,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     validateTransactionNonceIncrement
     validateTransactionRegistry(extendedTx)
   {
+    _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
     UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[
       extendedTx.envelope.destinationChainId
     ];

@@ -41,9 +41,10 @@ library DeployerHelpers {
     address scrollAdapter;
     address wormholeAdapter;
     address zkevmAdapter;
+    address zksyncAdapter;
   }
 
-  function getPathByChainId(uint256 chainId) internal pure returns (string memory) {
+  function getPathByChainId(uint256 chainId) internal view returns (string memory) {
     if (chainId == ChainIds.ETHEREUM) {
       return './deployments/cc/mainnet/eth.json';
     } else if (chainId == ChainIds.POLYGON) {
@@ -68,6 +69,8 @@ library DeployerHelpers {
       return './deployments/cc/mainnet/scroll.json';
     } else if (chainId == ChainIds.CELO) {
       return './deployments/cc/mainnet/celo.json';
+    } else if (chainId == ChainIds.ZK_SYNC) {
+      return './deployments/cc/mainnet/zksync.json';
     }
     if (chainId == TestNetChainIds.ETHEREUM_SEPOLIA) {
       return './deployments/cc/testnet/sep.json';
@@ -93,6 +96,8 @@ library DeployerHelpers {
       return './deployments/cc/testnet/scroll_sepolia.json';
     } else if (chainId == TestNetChainIds.CELO_ALFAJORES) {
       return './deployments/cc/testnet/celo_alfajores.json';
+    } else if (chainId == TestNetChainIds.ZK_SYNC_SEPOLIA) {
+      return './deployments/cc/testnet/zksync_sep.json';
     } else {
       revert('chain id is not supported');
     }
@@ -129,7 +134,8 @@ library DeployerHelpers {
       zkevmAdapter: abi.decode(persistedJson.parseRaw('.zkevmAdapter'), (address)),
       gnosisAdapter: abi.decode(persistedJson.parseRaw('.gnosisAdapter'), (address)),
       scrollAdapter: abi.decode(persistedJson.parseRaw('.scrollAdapter'), (address)),
-      wormholeAdapter: abi.decode(persistedJson.parseRaw('.wormholeAdapter'), (address))
+      wormholeAdapter: abi.decode(persistedJson.parseRaw('.wormholeAdapter'), (address)),
+      zksyncAdapter: abi.decode(persistedJson.parseRaw('.zksyncAdapter'), (address))
     });
 
     return addresses;
@@ -161,7 +167,8 @@ library DeployerHelpers {
     json.serialize('sameChainAdapter', addresses.sameChainAdapter);
     json.serialize('scrollAdapter', addresses.scrollAdapter);
     json.serialize('wormholeAdapter', addresses.wormholeAdapter);
-    json = json.serialize('zkevmAdapter', addresses.zkevmAdapter);
+    json.serialize('zkevmAdapter', addresses.zkevmAdapter);
+    json = json.serialize('zksyncAdapter', addresses.zksyncAdapter);
     vm.writeJson(json, path);
   }
 }

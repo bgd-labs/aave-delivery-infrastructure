@@ -18,11 +18,14 @@ BASE_KEY = --private-key ${PRIVATE_KEY}
 
 
 custom_ethereum := --with-gas-price 45000000000 # 53 gwei
+custom_ethereum-testnet := --legacy
 custom_polygon :=  --with-gas-price 190000000000 # 560 gwei
 custom_avalanche := --with-gas-price 27000000000 # 27 gwei
 custom_metis-testnet := --legacy --verifier-url https://goerli.explorer.metisdevops.link/api/
 custom_metis := --verifier-url  https://api.routescan.io/v2/network/mainnet/evm/1088/etherscan
 custom_scroll-testnet := --legacy --with-gas-price 1000000000 # 1 gwei
+custom_zksync := --avoid-contracts=tests/PayloadScripts.t.sol --zksync
+custom_zksync-testnet := --legacy --avoid-contracts=tests/PayloadScripts.t.sol --zksync --with-gas-price 100000000
 
 # params:
 #  1 - path/file_name
@@ -112,6 +115,9 @@ deploy-zkevm-adapters:
 deploy-wormhole-adapters:
 	$(call deploy_fn,Adapters/DeployWormholeAdapter,ethereum celo)
 
+deploy-zksync-adapters:
+	$(call deploy_fn,Adapters/DeployZkSyncAdapter,ethereum zksync)
+
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters:
 	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
@@ -157,11 +163,11 @@ deploy-full:
 
 # Deploy Proxy Factories on all networks
 deploy-proxy-factory-test:
-	$(call deploy_fn,InitialDeployments,base)
+	$(call deploy_fn,InitialDeployments,zksync)
 
 # Deploy Cross Chain Infra on all networks
 deploy-cross-chain-infra-test:
-	$(call deploy_fn,CCC/Deploy_CCC,ethereum)
+	$(call deploy_fn,CCC/Deploy_CCC,zksync)
 
 ## Deploy CCIP bridge adapters on all networks
 deploy-ccip-bridge-adapters-test:
@@ -203,17 +209,20 @@ deploy-metis-adapters-test:
 deploy-base-adapters-test:
 	$(call deploy_fn,Adapters/DeployCBaseAdapter,ethereum)
 
+deploy-zksync-adapters-test:
+	$(call deploy_fn,Adapters/DeployZkSyncAdapter,ethereum)
+
 ## Set sender bridge dapters. Only eth pol avax are needed as other networks will only receive
 set-ccf-sender-adapters-test:
-	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,avalanche)
+	$(call deploy_fn,CCC/Set_CCF_Sender_Adapters,ethereum)
 
 # Set the bridge adapters allowed to receive messages
 set-ccr-receiver-adapters-test:
-	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,celo)
+	$(call deploy_fn,CCC/Set_CCR_Receivers_Adapters,zksync)
 
 # Sets the required confirmations
 set-ccr-confirmations-test:
-	$(call deploy_fn,CCC/Set_CCR_Confirmations,ethereum)
+	$(call deploy_fn,CCC/Set_CCR_Confirmations,zksync)
 
 # Funds CCC
 fund-crosschain-test:
@@ -238,13 +247,13 @@ deploy-full-test:
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------- HELPER SCRIPTS ---------------------------------------------------------
 remove-bridge-adapters:
-	$(call deploy_fn,helpers/RemoveBridgeAdapters,celo)
+	$(call deploy_fn,helpers/RemoveBridgeAdapters,ethereum)
 
 send-direct-message:
-	$(call deploy_fn,helpers/Send_Direct_CCMessage,avalanche)
+	$(call deploy_fn,helpers/Send_Direct_CCMessage,ethereum)
 
 deploy_mock_destination:
-	$(call deploy_fn,helpers/Deploy_Mock_destination,ethereum)
+	$(call deploy_fn,helpers/Deploy_Mock_destination,zksync)
 
 set-approved-ccf-senders:
 	$(call deploy_fn,helpers/Set_Approved_Senders,ethereum)
@@ -266,3 +275,6 @@ deploy-ccc-revision-and-update:
 
 deploy-ccc-update-payload:
 	$(call deploy_fn,helpers/UpdateCCCImpl_Payload,celo)
+
+deploy-mock-receiver:
+	$(call deploy_fn,helpers/mocks/Deploy_Mock_Receiver,zksync)

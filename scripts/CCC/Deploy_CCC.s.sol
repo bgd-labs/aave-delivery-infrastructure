@@ -221,3 +221,9 @@ contract Celo_testnet is BaseCCCNetworkDeployment {
     return TestNetChainIds.CELO_ALFAJORES;
   }
 }
+
+contract Zksync_testnet is BaseCCCNetworkDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return TestNetChainIds.ZK_SYNC_SEPOLIA;
+  }
+}
