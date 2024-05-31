@@ -42,7 +42,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
   ) internal view returns (ArbAdapterDeploymentHelper.ArbAdapterArgs memory) {
     require(crossChainController != address(0), 'CCC needs to be deployed');
 
-    DeployerHelpers.Addresses memory remoteAddresses;
+    Addresses memory remoteAddresses;
     if (isTestnet()) {
       if (TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA) {
         remoteAddresses = _getAddresses(TestNetChainIds.ARBITRUM_SEPOLIA);
@@ -77,7 +77,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
   }
 
   function _deployAdapter(
-    DeployerHelpers.Addresses memory addresses,
+    Addresses memory addresses,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override returns (address) {
     ArbAdapterDeploymentHelper.ArbAdapterArgs memory constructorArgs = _getConstructorArgs(
