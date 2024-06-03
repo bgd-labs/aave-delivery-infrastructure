@@ -40,4 +40,18 @@ library Utils {
     }
     return arrayToShuffle;
   }
+
+  function shuffleArray2(
+    uint256[] memory arrayToShuffle,
+    uint256 optimalBandwidth
+  ) internal view returns (uint256[] memory) {
+    uint256 arrayLength = arrayToShuffle.length;
+    for (uint256 i = 0; i < optimalBandwidth; i++) {
+      uint256 j = getPseudoRandom(i) % arrayLength;
+      uint256 arrayItem = arrayToShuffle[i];
+      arrayToShuffle[i] = arrayToShuffle[j];
+      arrayToShuffle[j] = arrayItem;
+    }
+    return arrayToShuffle;
+  }
 }
