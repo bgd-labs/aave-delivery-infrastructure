@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import '../src/contracts/CrossChainForwarder.sol';
 import './BaseTest.sol';
 import {FailingAdapter} from './mocks/FailingAdapter.sol';
+import {SuccessAdapter} from './mocks/SuccessAdapter.sol';
 
 contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
   address internal constant CROSS_CHAIN_CONTROLLER = address(123029525691); // can be hardcoded as its not consequential to testing
@@ -65,6 +66,12 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     return address(new FailingAdapter(trustedRemotes));
   }
 
+  function _deploySuccessAdapter() internal returns (address) {
+    SuccessAdapter.TrustedRemotesConfig[]
+      memory trustedRemotes = new SuccessAdapter.TrustedRemotesConfig[](0);
+    return address(new SuccessAdapter(trustedRemotes));
+  }
+
   modifier enableBridgeAdaptersForPath(
     uint256 destinationChainId,
     uint256 numberOfAdapters,
@@ -79,7 +86,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         adaptersType == AdapterSuccessType.ALL_SUCCESS ||
         (adaptersType == AdapterSuccessType.SOME_SUCCESS && i % 2 == 0)
       ) {
-        currentChainBridgeAdapter = address(uint160(uint(keccak256(abi.encodePacked(i)))));
+        currentChainBridgeAdapter = _deploySuccessAdapter(); //address(uint160(uint(keccak256(abi.encodePacked(i)))));
         _adapterSuccess[currentChainBridgeAdapter] = true;
       } else {
         currentChainBridgeAdapter = _deployFailingAdapter();
@@ -211,7 +218,6 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
 
     for (uint256 i = 0; i < bridgeAdapters.length; i++) {
       if (_adapterSuccess[bridgeAdapters[i].currentChainBridgeAdapter]) {
-        console.log('adapter mocked', bridgeAdapters[i].currentChainBridgeAdapter);
         vm.mockCall(
           bridgeAdapters[i].currentChainBridgeAdapter,
           abi.encodeWithSelector(IBaseAdapter.forwardMessage.selector),

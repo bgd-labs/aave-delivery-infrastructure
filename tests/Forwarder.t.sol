@@ -348,13 +348,18 @@ contract ForwarderTest is BaseCCForwarderTest {
       j++
     ) {
       if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success == false
+        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success == true
       ) {
         failedAdaptersCounter++;
       }
     }
 
     address[] memory bridgeAdaptersToRetry = new address[](failedAdaptersCounter);
+    ICrossChainForwarder.ChainIdBridgeConfig[]
+      memory bridgeAdaptersToRetryConfig = new ICrossChainForwarder.ChainIdBridgeConfig[](
+        failedAdaptersCounter
+      );
+
     uint256 index = 0;
     for (
       uint256 k = 0;
@@ -362,43 +367,32 @@ contract ForwarderTest is BaseCCForwarderTest {
       k++
     ) {
       if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success == false
+        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success == true
       ) {
-        bridgeAdaptersToRetry[index++] = _currentlyUsedAdaptersByChain[
+        bridgeAdaptersToRetry[index] = _currentlyUsedAdaptersByChain[
           extendedTx.envelope.destinationChainId
         ][k].bridgeAdapterConfig.currentChainBridgeAdapter;
-        _adapterSuccess[
-          _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k]
-            .bridgeAdapterConfig
-            .currentChainBridgeAdapter
-        ] = true;
+        bridgeAdaptersToRetryConfig[index] = _currentlyUsedAdaptersByChain[
+          extendedTx.envelope.destinationChainId
+        ][k].bridgeAdapterConfig;
+        index++;
       }
     }
 
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
 
-    UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[
-      extendedTx.envelope.destinationChainId
-    ];
-    for (uint256 i = 0; i < usedAdapters.length; i++) {
-      console.log('adapter', usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter);
-
-      if (usedAdapters[i].success == false) {
-        vm.expectEmit(true, true, true, true);
-        emit TransactionForwardingAttempted(
-          extendedTx.transactionId,
-          extendedTx.envelopeId,
-          extendedTx.transactionEncoded,
-          extendedTx.envelope.destinationChainId,
-          usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter,
-          usedAdapters[i].bridgeAdapterConfig.destinationBridgeAdapter,
-          true,
-          bytes('')
-        );
-      }
-    }
-    for (uint256 i = 0; i < bridgeAdaptersToRetry.length; i++) {
-      console.log('retry adapters', bridgeAdaptersToRetry[i]);
+    for (uint256 i = 0; i < bridgeAdaptersToRetryConfig.length; i++) {
+      vm.expectEmit(true, true, true, true);
+      emit TransactionForwardingAttempted(
+        extendedTx.transactionId,
+        extendedTx.envelopeId,
+        extendedTx.transactionEncoded,
+        extendedTx.envelope.destinationChainId,
+        bridgeAdaptersToRetryConfig[i].currentChainBridgeAdapter,
+        bridgeAdaptersToRetryConfig[i].destinationBridgeAdapter,
+        true,
+        hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+      );
     }
     this.retryTransaction(extendedTx.transactionEncoded, GAS_LIMIT, bridgeAdaptersToRetry);
   }
