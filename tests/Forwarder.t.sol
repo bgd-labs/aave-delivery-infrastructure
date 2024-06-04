@@ -381,6 +381,8 @@ contract ForwarderTest is BaseCCForwarderTest {
       extendedTx.envelope.destinationChainId
     ];
     for (uint256 i = 0; i < usedAdapters.length; i++) {
+      console.log('adapter', usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter);
+
       if (usedAdapters[i].success == false) {
         vm.expectEmit(true, true, true, true);
         emit TransactionForwardingAttempted(
@@ -394,6 +396,9 @@ contract ForwarderTest is BaseCCForwarderTest {
           bytes('')
         );
       }
+    }
+    for (uint256 i = 0; i < bridgeAdaptersToRetry.length; i++) {
+      console.log('retry adapters', bridgeAdaptersToRetry[i]);
     }
     this.retryTransaction(extendedTx.transactionEncoded, GAS_LIMIT, bridgeAdaptersToRetry);
   }

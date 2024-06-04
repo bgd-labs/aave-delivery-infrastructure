@@ -211,6 +211,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
 
     for (uint256 i = 0; i < bridgeAdapters.length; i++) {
       if (_adapterSuccess[bridgeAdapters[i].currentChainBridgeAdapter]) {
+        console.log('adapter mocked', bridgeAdapters[i].currentChainBridgeAdapter);
         vm.mockCall(
           bridgeAdapters[i].currentChainBridgeAdapter,
           abi.encodeWithSelector(IBaseAdapter.forwardMessage.selector),
