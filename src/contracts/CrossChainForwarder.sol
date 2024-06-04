@@ -303,7 +303,8 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     }
 
     uint256[] memory shuffledIndexes = Utils.shuffleArray(
-      Utils.generateIndexArray(forwarderAdapters.length)
+      Utils.generateIndexArray(forwarderAdapters.length),
+      optimalBandwidth
     );
 
     ChainIdBridgeConfig[] memory selectedForwarderAdapters = new ChainIdBridgeConfig[](

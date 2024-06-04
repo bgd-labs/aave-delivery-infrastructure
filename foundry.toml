@@ -9,7 +9,7 @@ remappings = [
   'hyperlane-monorepo/=lib/hyperlane-monorepo/solidity/contracts/',
   '@openzeppelin/=lib/openzeppelin-contracts/'
 ]
-
+evm_version = 'shanghai'
 fs_permissions = [{ access = "read-write", path = "./"}]
 
 solc = "0.8.19"
