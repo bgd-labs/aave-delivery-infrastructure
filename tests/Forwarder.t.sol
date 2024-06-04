@@ -301,7 +301,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     _validateRetryTransactionWhenAdaptersNotUnique(extendedTx);
   }
 
-  // ----------- validations -----------------------
+  // ----------- validations ----------------------
   function _validateRetryTransactionWhenAllAdaptersFail(
     ExtendedTransaction memory extendedTx
   ) internal {
