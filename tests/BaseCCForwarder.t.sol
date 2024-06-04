@@ -86,7 +86,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         adaptersType == AdapterSuccessType.ALL_SUCCESS ||
         (adaptersType == AdapterSuccessType.SOME_SUCCESS && i % 2 == 0)
       ) {
-        currentChainBridgeAdapter = _deploySuccessAdapter(); //address(uint160(uint(keccak256(abi.encodePacked(i)))));
+        currentChainBridgeAdapter = _deploySuccessAdapter();
         _adapterSuccess[currentChainBridgeAdapter] = true;
       } else {
         currentChainBridgeAdapter = _deployFailingAdapter();
