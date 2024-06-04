@@ -418,7 +418,7 @@ contract ForwarderTest is BaseCCForwarderTest {
         usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter,
         usedAdapters[i].bridgeAdapterConfig.destinationBridgeAdapter,
         usedAdapters[i].success,
-        usedAdapters[i].returnData
+        hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
       );
     }
     bytes32 transactionId = this.retryEnvelope(extendedTx.envelope, GAS_LIMIT);

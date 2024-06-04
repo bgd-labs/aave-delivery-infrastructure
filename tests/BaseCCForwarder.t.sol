@@ -96,8 +96,10 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         uint160(uint(keccak256(abi.encodePacked(i + numberOfAdapters + 1))))
       );
 
+      bytes
+        memory empty = hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       bytes memory returnData = _adapterSuccess[currentChainBridgeAdapter]
-        ? bytes('')
+        ? empty
         : abi.encodeWithSignature('Error(string)', 'error message');
 
       UsedAdapter memory usedBridgeAdapter = UsedAdapter({
@@ -181,11 +183,19 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
 
   function _testForwardMessage(ExtendedTransaction memory extendedTx) internal {
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
-    vm.expectEmit(true, true, true, true);
-    emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
+    bool successEmitted;
+
     UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[
       extendedTx.envelope.destinationChainId
     ];
+
+    for (uint256 i = 0; i < usedAdapters.length; i++) {
+      if (usedAdapters[i].success == true && !successEmitted) {
+        vm.expectEmit(true, true, true, true);
+        emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
+        successEmitted = true;
+      }
+    }
     for (uint256 i = 0; i < usedAdapters.length; i++) {
       vm.expectEmit(true, true, true, true);
       emit TransactionForwardingAttempted(
