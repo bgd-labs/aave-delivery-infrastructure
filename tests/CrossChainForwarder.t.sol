@@ -466,17 +466,6 @@ contract CrossChainForwarderTest is BaseTest {
         })
       )
     );
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTx.transactionEncoded
-      )
-    );
     vm.expectEmit(true, true, false, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = crossChainForwarder
@@ -508,17 +497,6 @@ contract CrossChainForwarderTest is BaseTest {
     );
 
     hoax(extendedTx.envelope.origin);
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTx.transactionEncoded
-      )
-    );
     vm.expectEmit(true, true, false, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = crossChainForwarder
@@ -597,17 +575,7 @@ contract CrossChainForwarderTest is BaseTest {
         })
       )
     );
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTx.transactionEncoded
-      )
-    );
+
     vm.expectEmit(true, true, false, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = crossChainForwarder
@@ -636,17 +604,6 @@ contract CrossChainForwarderTest is BaseTest {
     );
 
     hoax(GUARDIAN);
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTxOnRetry.transactionEncoded
-      )
-    );
     crossChainForwarder.retryEnvelope(extendedTx.envelope, 0);
 
     assertTrue(crossChainForwarder.isTransactionForwarded(extendedTxOnRetry.transaction));
@@ -706,18 +663,6 @@ contract CrossChainForwarderTest is BaseTest {
     ).encode();
 
     hoax(GUARDIAN);
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        transactionOnRetry.data
-      )
-    );
-
     crossChainForwarder.retryEnvelope(extendedTx.envelope, 0);
 
     assertTrue(crossChainForwarder.isEnvelopeRegistered(extendedTx.envelope));

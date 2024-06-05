@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import '../src/contracts/CrossChainForwarder.sol';
 import './BaseTest.sol';
 import {FailingAdapter} from './mocks/FailingAdapter.sol';
+import {SuccessAdapter} from './mocks/SuccessAdapter.sol';
 
 contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
   address internal constant CROSS_CHAIN_CONTROLLER = address(123029525691); // can be hardcoded as its not consequential to testing
@@ -66,6 +67,12 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     return address(new FailingAdapter(trustedRemotes));
   }
 
+  function _deploySuccessAdapter() internal returns (address) {
+    SuccessAdapter.TrustedRemotesConfig[]
+      memory trustedRemotes = new SuccessAdapter.TrustedRemotesConfig[](0);
+    return address(new SuccessAdapter(trustedRemotes));
+  }
+
   modifier enableBridgeAdaptersForPath(
     uint256 destinationChainId,
     uint256 numberOfAdapters,
@@ -80,7 +87,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         adaptersType == AdapterSuccessType.ALL_SUCCESS ||
         (adaptersType == AdapterSuccessType.SOME_SUCCESS && i % 2 == 0)
       ) {
-        currentChainBridgeAdapter = address(uint160(uint(keccak256(abi.encodePacked(i)))));
+        currentChainBridgeAdapter = _deploySuccessAdapter();
         _adapterSuccess[currentChainBridgeAdapter] = true;
       } else {
         currentChainBridgeAdapter = _deployFailingAdapter();
@@ -90,8 +97,10 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         uint160(uint(keccak256(abi.encodePacked(i + numberOfAdapters + 1))))
       );
 
+      bytes
+        memory empty = hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
       bytes memory returnData = _adapterSuccess[currentChainBridgeAdapter]
-        ? bytes('')
+        ? empty
         : abi.encodeWithSignature('Error(string)', 'error message');
 
       UsedAdapter memory usedBridgeAdapter = UsedAdapter({
@@ -210,12 +219,18 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
 
   function _testForwardMessage(ExtendedTransaction memory extendedTx) internal {
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
-    vm.expectEmit(true, true, true, true);
-    emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
+    bool successEmitted;
+
     UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[
       extendedTx.envelope.destinationChainId
     ];
-
+    for (uint256 i = 0; i < usedAdapters.length; i++) {
+      if (usedAdapters[i].success == true && !successEmitted) {
+        vm.expectEmit(true, true, true, true);
+        emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
+        successEmitted = true;
+      }
+    }
     ChainIdBridgeConfig[] memory shuffledAdapters = _getShuffledBridgeAdaptersByChain(
       extendedTx.envelope.destinationChainId
     );
