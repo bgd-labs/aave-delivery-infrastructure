@@ -40,11 +40,11 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
     return address(0);
   }
 
-  function _getConstructorArgs(
-    address transactionNetworkCCC,
+  function _getAdapterByteCode(
+    address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal view returns (ArbAdapterDeploymentHelper.ArbAdapterArgs memory) {
-    require(transactionNetworkCCC != address(0), 'CCC needs to be deployed');
+  ) internal override returns (bytes memory) {
+    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
 
     require(trustedRemotes.length == 1, 'Arb adapter can only have one remote');
     if (
@@ -55,10 +55,10 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
       require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
     }
 
-    return
-      ArbAdapterDeploymentHelper.ArbAdapterArgs({
+    ArbAdapterDeploymentHelper.ArbAdapterArgs memory constructorArgs = ArbAdapterDeploymentHelper
+      .ArbAdapterArgs({
         baseArgs: BaseAdapterArgs({
-          crossChainController: transactionNetworkCCC,
+          crossChainController: currentNetworkCCC,
           providerGasLimit: PROVIDER_GAS_LIMIT(),
           trustedRemotes: trustedRemotes,
           isTestnet: isTestnet()
@@ -66,21 +66,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
         inbox: INBOX(),
         destinationCCC: DESTINATION_CCC()
       });
-  }
 
-  function _deployAdapter(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (address) {
-    ArbAdapterDeploymentHelper.ArbAdapterArgs memory constructorArgs = _getConstructorArgs(
-      currentNetworkCCC,
-      trustedRemotes
-    );
-
-    return
-      Create2Utils.create2Deploy(
-        keccak256(abi.encode(SALT())),
-        ArbAdapterDeploymentHelper.getAdapterCode(constructorArgs)
-      );
+    return ArbAdapterDeploymentHelper.getAdapterCode(constructorArgs);
   }
 }
