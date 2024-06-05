@@ -258,6 +258,9 @@ deploy_mock_ccc:
 send-message-via-adapter:
 	$(call deploy_fn,helpers/Send_Message_Via_Adapter,ethereum)
 
+deploy_ccc_granular_guardian:
+	$(call deploy_fn,helpers/Send_Message_Via_Adapter,avalanche, polygon, binance, gnosis)
+
 deploy-ccc-revision-and-update:
 	$(call deploy_fn,CCC/UpdateCCC,ethereum)
 

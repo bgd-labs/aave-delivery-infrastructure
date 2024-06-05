@@ -17,6 +17,7 @@ struct Addresses {
   address crossChainControllerImpl;
   address emergencyRegistry;
   address gnosisAdapter;
+  address granularCCCGuardian;
   address guardian;
   address hlAdapter;
   address lzAdapter;
@@ -31,7 +32,6 @@ struct Addresses {
   address scrollAdapter;
   address wormholeAdapter;
   address zkevmAdapter;
-  address zksyncAdapter;
 }
 
 abstract contract BaseScript is Script {
