@@ -1,0 +1,51 @@
+
+
+Mutations:
+---------
+1. DETECTED
+By: 
+Changed file: CrossChainForwarder.sol ==> CrossChainForwarder-1.sol
+The change: CrossChainForwarder.sol:114:
+   orig:
+    uint256 envelopeNonce = _currentEnvelopeNonce++;
+   mutant:
+    uint256 envelopeNonce = _currentEnvelopeNonce;
+
+
+2. DETECTED
+By: inv_every_forwarded_TX_contains_registered_EV
+Changed file: CrossChainForwarder.sol ==> CrossChainForwarder-2.sol
+The change: CrossChainForwarder.sol:126:
+   orig:
+    _registeredEnvelopes[encodedEnvelope.id] = true;
+   mutant:
+    _registeredEnvelopes[encodedEnvelope.id] = false;
+
+
+3. UNDETECTED
+By: 
+Changed file: CrossChainForwarder.sol ==> CrossChainForwarder-3.sol
+The change: CrossChainForwarder.sol:157:
+   orig:
+      envelope.destinationChainId
+   mutant:
+        0
+
+4. DETECTED
+By: inv_TXnonce_less_than_curr_nonce (and more)
+Changed file: CrossChainForwarder.sol ==> CrossChainForwarder-4.sol
+The change: CrossChainForwarder.sol:163:
+   orig:
+      Transaction({nonce: _currentTransactionNonce++, encodedEnvelope: encodedEnvelope.data})
+   mutant:
+      Transaction({nonce: _currentTransactionNonce, encodedEnvelope: encodedEnvelope.data})
+
+
+5. UNDETECTED
+By: 
+Changed file: CrossChainForwarder.sol ==> CrossChainForwarder-5.sol
+The change: CrossChainForwarder.sol:201:
+   orig:
+    for (uint256 i = 0; i < bridgeAdaptersToRetry.length; i++) {
+   mutant:
+    for (uint256 i = 0; i < 1; i++) {
