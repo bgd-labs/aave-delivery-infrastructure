@@ -36,22 +36,22 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
     return address(0);
   }
 
+  function DESTINATION_CCC() internal view virtual returns (address) {
+    return address(0);
+  }
+
   function _getConstructorArgs(
     address transactionNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal view returns (ArbAdapterDeploymentHelper.ArbAdapterArgs memory) {
     require(transactionNetworkCCC != address(0), 'CCC needs to be deployed');
 
-    RemoteCCC[] memory remoteCrossChainControllers = REMOTE_CCC_BY_NETWORK();
-    require(remoteCrossChainControllers.length == 1, 'Arb adapter can only have one remote');
+    require(trustedRemotes.length == 1, 'Arb adapter can only have one remote');
     if (
       TRANSACTION_NETWORK() == ChainIds.ETHEREUM ||
       TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA
     ) {
-      require(
-        remoteCrossChainControllers[0].crossChainController != address(0),
-        'Arbitrum CCC must be deployed'
-      );
+      require(DESTINATION_CCC() != address(0), 'Arbitrum CCC must be deployed');
       require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
     }
 
@@ -64,7 +64,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
           isTestnet: isTestnet()
         }),
         inbox: INBOX(),
-        destinationCCC: remoteCrossChainControllers[0].crossChainController
+        destinationCCC: DESTINATION_CCC()
       });
   }
 
