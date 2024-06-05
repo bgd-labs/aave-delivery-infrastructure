@@ -37,51 +37,43 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
   }
 
   function _getConstructorArgs(
-    address crossChainController,
+    address transactionNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal view returns (ArbAdapterDeploymentHelper.ArbAdapterArgs memory) {
-    require(crossChainController != address(0), 'CCC needs to be deployed');
+    require(transactionNetworkCCC != address(0), 'CCC needs to be deployed');
 
-    Addresses memory remoteAddresses;
-    if (isTestnet()) {
-      if (TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA) {
-        remoteAddresses = _getAddresses(TestNetChainIds.ARBITRUM_SEPOLIA);
-        require(
-          remoteAddresses.crossChainController != address(0),
-          'Arbitrum CCC must be deployed'
-        );
-        require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
-      }
-    } else {
-      if (TRANSACTION_NETWORK() == ChainIds.ETHEREUM) {
-        remoteAddresses = _getAddresses(ChainIds.ARBITRUM);
-        require(
-          remoteAddresses.crossChainController != address(0),
-          'Arbitrum CCC must be deployed'
-        );
-        require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
-      }
+    RemoteCCC[] memory remoteCrossChainControllers = REMOTE_CCC_BY_NETWORK();
+    require(remoteCrossChainControllers.length == 1, 'Arb adapter can only have one remote');
+    if (
+      TRANSACTION_NETWORK() == ChainIds.ETHEREUM ||
+      TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA
+    ) {
+      require(
+        remoteCrossChainControllers[0].crossChainController != address(0),
+        'Arbitrum CCC must be deployed'
+      );
+      require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
     }
 
     return
       ArbAdapterDeploymentHelper.ArbAdapterArgs({
         baseArgs: BaseAdapterArgs({
-          crossChainController: crossChainController,
+          crossChainController: transactionNetworkCCC,
           providerGasLimit: PROVIDER_GAS_LIMIT(),
           trustedRemotes: trustedRemotes,
           isTestnet: isTestnet()
         }),
         inbox: INBOX(),
-        destinationCCC: remoteAddresses.crossChainController
+        destinationCCC: remoteCrossChainControllers[0].crossChainController
       });
   }
 
   function _deployAdapter(
-    Addresses memory addresses,
+    address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal override returns (address) {
     ArbAdapterDeploymentHelper.ArbAdapterArgs memory constructorArgs = _getConstructorArgs(
-      addresses.crossChainController,
+      currentNetworkCCC,
       trustedRemotes
     );
 

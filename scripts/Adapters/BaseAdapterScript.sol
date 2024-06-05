@@ -11,8 +11,13 @@ struct BaseAdapterArgs {
   bool isTestnet;
 }
 
+struct RemoteCCC {
+  uint256 chainId;
+  address crossChainController;
+}
+
 abstract contract BaseAdapterScript is BaseScript {
-  function REMOTE_NETWORKS() internal view virtual returns (uint256[] memory);
+  function REMOTE_CCC_BY_NETWORK() internal view virtual returns (RemoteCCC[] memory);
 
   function PROVIDER_GAS_LIMIT() internal view virtual returns (uint256) {
     return 0;
@@ -27,23 +32,23 @@ abstract contract BaseAdapterScript is BaseScript {
   }
 
   function _deployAdapter(
-    Addresses memory addresses,
+    address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal virtual returns (address);
 
   function _getTrustedRemotes() internal view returns (IBaseAdapter.TrustedRemotesConfig[] memory) {
-    uint256[] memory remoteNetworks = REMOTE_NETWORKS();
+    RemoteCCC[] memory remoteCrossChainControllers = REMOTE_CCC_BY_NETWORK();
+
     // generate trusted trustedRemotes
     IBaseAdapter.TrustedRemotesConfig[]
-      memory trustedRemotes = new IBaseAdapter.TrustedRemotesConfig[](remoteNetworks.length);
+      memory trustedRemotes = new IBaseAdapter.TrustedRemotesConfig[](
+        remoteCrossChainControllers.length
+      );
 
-    for (uint256 i = 0; i < remoteNetworks.length; i++) {
-      // fetch remote addresses
-      Addresses memory remoteAddresses = _getAddresses(remoteNetworks[i]);
-
+    for (uint256 i = 0; i < remoteCrossChainControllers.length; i++) {
       trustedRemotes[i] = IBaseAdapter.TrustedRemotesConfig({
-        originForwarder: remoteAddresses.crossChainController,
-        originChainId: remoteNetworks[i]
+        originForwarder: remoteCrossChainControllers[i].crossChainController,
+        originChainId: remoteCrossChainControllers[i].chainId
       });
     }
     return trustedRemotes;
