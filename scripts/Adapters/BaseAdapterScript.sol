@@ -31,10 +31,19 @@ abstract contract BaseAdapterScript is BaseScript {
     return false;
   }
 
+  function _getAdapterByteCode(
+    address currentNetworkCCC,
+    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+  ) internal view virtual returns (bytes memory);
+
   function _deployAdapter(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal virtual returns (address);
+  ) internal view returns (address) {
+    bytes memory adapterCode = _getAdapterByteCode(currentNetworkCCC, trustedRemotes);
+
+    return Create2Utils.create2Deploy(keccak256(abi.encode(SALT())), adapterCode);
+  }
 
   function _getTrustedRemotes() internal view returns (IBaseAdapter.TrustedRemotesConfig[] memory) {
     RemoteCCC[] memory remoteCrossChainControllers = REMOTE_CCC_BY_NETWORK();
