@@ -19,7 +19,7 @@ library CCCImplDeploymentHelper {
 }
 
 abstract contract BaseCCCDeploy is BaseScript {
-  function CL_EMERGENCY_ORACLE() public view virtual returns (address) {
+  function CL_EMERGENCY_ORACLE() internal view virtual returns (address) {
     return address(0);
   }
 
