@@ -11,10 +11,8 @@ library GranularGuardianDeploymentHelper {
   ) internal pure returns (bytes memory) {
     return
       abi.encodePacked(
-        (
-          type(GranularGuardianAccessControl).creationCode,
-          abi.encode(initialGuardians, crossChainController)
-        )
+        type(GranularGuardianAccessControl).creationCode,
+        abi.encode(initialGuardians, crossChainController)
       );
   }
 }
