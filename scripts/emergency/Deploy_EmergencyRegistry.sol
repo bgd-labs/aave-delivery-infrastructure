@@ -12,7 +12,7 @@ library EmergencyRegistryDeploymentHelper {
 }
 
 abstract contract BaseDeployEmergencyMode is BaseScript {
-  function OWNER() public view virtual returns (address) {
+  function OWNER() internal view virtual returns (address) {
     return address(msg.sender);
   }
 
