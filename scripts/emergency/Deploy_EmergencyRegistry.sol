@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {EmergencyRegistry} from '../../src/contracts/emergency/EmergencyRegistry.sol';
 import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
-import './BaseScript.sol';
+import '../BaseScript.sol';
 
 library EmergencyRegistryDeploymentHelper {
   function getEmergencyRegistryCode() internal pure returns (bytes memory) {
