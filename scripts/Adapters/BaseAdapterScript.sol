@@ -39,7 +39,7 @@ abstract contract BaseAdapterScript is BaseScript {
   function _deployAdapter(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal view returns (address) {
+  ) internal returns (address) {
     bytes memory adapterCode = _getAdapterByteCode(currentNetworkCCC, trustedRemotes);
 
     return Create2Utils.create2Deploy(keccak256(abi.encode(SALT())), adapterCode);
