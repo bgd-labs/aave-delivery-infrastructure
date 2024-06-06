@@ -40,7 +40,7 @@ abstract contract BaseCCIPAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (bytes memory) {
+  ) internal view override returns (bytes memory) {
     require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(CCIP_ROUTER() != address(0), 'Invalid CCIP Router');
     require(LINK_TOKEN() != address(0), 'Invalid Link Token');

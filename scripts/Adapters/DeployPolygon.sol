@@ -44,7 +44,7 @@ abstract contract BasePolygonAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (bytes memory) {
+  ) internal view override returns (bytes memory) {
     require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(FX_TUNNEL() != address(0), 'Invalid fx tunnel');
 

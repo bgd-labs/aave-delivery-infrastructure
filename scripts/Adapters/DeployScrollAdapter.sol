@@ -41,7 +41,7 @@ abstract contract BaseScrollAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (bytes memory) {
+  ) internal view override returns (bytes memory) {
     require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(OVM() != address(0), 'Invalid OVM');
 

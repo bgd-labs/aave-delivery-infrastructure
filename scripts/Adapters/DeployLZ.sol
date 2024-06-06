@@ -35,7 +35,7 @@ abstract contract BaseLZAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (bytes memory) {
+  ) internal view override returns (bytes memory) {
     require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(LZ_ENDPOINT() != address(0), 'Invalid LZ Endpoint');
 

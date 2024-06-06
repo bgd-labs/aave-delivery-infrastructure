@@ -43,7 +43,7 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (bytes memory) {
+  ) internal view override returns (bytes memory) {
     require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(DESTINATION_CCC() != address(0), 'Invalid Destination CCC');
     require(WORMHOLE_RELAYER() != address(0), 'Wormhole relayer can not be 0');

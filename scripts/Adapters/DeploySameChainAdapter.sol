@@ -15,7 +15,7 @@ abstract contract BaseSameChainAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     address,
     IBaseAdapter.TrustedRemotesConfig[] memory
-  ) internal override returns (bytes memory) {
+  ) internal view override returns (bytes memory) {
     return SameChainAdapterDeploymentHelper.getAdapterCode();
   }
 }

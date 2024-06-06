@@ -47,7 +47,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (bytes memory) {
+  ) internal view override returns (bytes memory) {
     require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
 
     require(trustedRemotes.length == 1, 'Arb adapter can only have one remote');
