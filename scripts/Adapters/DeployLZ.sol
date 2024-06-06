@@ -47,7 +47,7 @@ abstract contract BaseLZAdapter is BaseAdapterScript {
           trustedRemotes: trustedRemotes,
           isTestnet: isTestnet()
         }),
-        ccipRouter: LZ_ENDPOINT()
+        lzEndpoint: LZ_ENDPOINT()
       });
 
     return LZAdapterDeploymentHelper.getAdapterCode(constructorArgs);
