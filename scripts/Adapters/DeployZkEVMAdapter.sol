@@ -40,7 +40,7 @@ library ZKEVMAdapterDeploymentHelper {
 }
 
 contract BaseZKEVMAdapter is BaseAdapterScript {
-  function ZK_EVM_BRIDGE() public view virtual returns (address);
+  function ZK_EVM_BRIDGE() internal view virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,

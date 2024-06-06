@@ -30,7 +30,7 @@ library OpAdapterDeploymentHelper {
 }
 
 abstract contract BaseOpAdapter is BaseAdapterScript {
-  function OVM() public view virtual returns (address);
+  function OVM() internal view virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,

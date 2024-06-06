@@ -34,11 +34,11 @@ library WormholeAdapterDeploymentHelper {
 }
 
 abstract contract BaseWormholeAdapter is BaseAdapterScript {
-  function WORMHOLE_RELAYER() public view virtual returns (address);
+  function WORMHOLE_RELAYER() internal view virtual returns (address);
 
   /// @dev for now we will need to deploy one adapter for every path (one remote network) because of the refunding on
   /// destination ccc
-  function DESTINATION_CCC() public view virtual returns (address);
+  function DESTINATION_CCC() internal view virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,

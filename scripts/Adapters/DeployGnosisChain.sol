@@ -30,7 +30,7 @@ library GnosisAdapterDeploymentHelper {
 }
 
 abstract contract BaseGnosisChainAdapter is BaseAdapterScript {
-  function GNOSIS_AMB_BRIDGE() public pure virtual returns (address);
+  function GNOSIS_AMB_BRIDGE() internal pure virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,

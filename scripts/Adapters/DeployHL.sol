@@ -27,7 +27,7 @@ library HLAdapterDeploymentHelper {
 }
 
 abstract contract BaseHLAdapter is BaseAdapterScript {
-  function HL_MAIL_BOX() public view virtual returns (address);
+  function HL_MAIL_BOX() internal view virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,

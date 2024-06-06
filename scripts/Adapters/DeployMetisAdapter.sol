@@ -30,9 +30,9 @@ library MetisAdapterDeploymentHelper {
 }
 
 abstract contract BaseMetisAdapter is BaseAdapterScript {
-  function OVM() public view virtual returns (address);
+  function OVM() internal view virtual returns (address);
 
-  function PROVIDER_GAS_LIMIT() public view virtual override returns (uint256) {
+  function PROVIDER_GAS_LIMIT() internal view virtual override returns (uint256) {
     return 150_000;
   }
 

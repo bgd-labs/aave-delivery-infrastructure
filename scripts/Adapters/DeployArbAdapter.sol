@@ -40,7 +40,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
     return address(0);
   }
 
-  function PROVIDER_GAS_LIMIT() public view virtual override returns (uint256) {
+  function PROVIDER_GAS_LIMIT() internal view virtual override returns (uint256) {
     return 150_000;
   }
 

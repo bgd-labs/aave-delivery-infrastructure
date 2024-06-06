@@ -33,9 +33,9 @@ library CCIPAdapterDeploymentHelper {
 
 // configs can be found here: https://docs.chain.link/ccip/supported-networks/v1_2_0/mainnet#bnb-mainnet
 abstract contract BaseCCIPAdapter is BaseAdapterScript {
-  function CCIP_ROUTER() public view virtual returns (address);
+  function CCIP_ROUTER() internal view virtual returns (address);
 
-  function LINK_TOKEN() public view virtual returns (address);
+  function LINK_TOKEN() internal view virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,

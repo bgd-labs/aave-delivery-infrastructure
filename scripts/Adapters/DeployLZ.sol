@@ -30,7 +30,7 @@ library LZAdapterDeploymentHelper {
 }
 
 abstract contract BaseLZAdapter is BaseAdapterScript {
-  function LZ_ENDPOINT() public view virtual returns (address);
+  function LZ_ENDPOINT() internal view virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,

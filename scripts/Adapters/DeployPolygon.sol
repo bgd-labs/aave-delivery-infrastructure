@@ -39,7 +39,7 @@ library PolygonAdapterDeploymentHelper {
 }
 
 abstract contract BasePolygonAdapter is BaseAdapterScript {
-  function FX_TUNNEL() public pure virtual returns (address);
+  function FX_TUNNEL() internal pure virtual returns (address);
 
   function _getAdapterByteCode(
     address currentNetworkCCC,
