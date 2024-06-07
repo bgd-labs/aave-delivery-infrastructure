@@ -6,7 +6,7 @@ import {IPolygonAdapter} from './IPolygonAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {IFxMessageProcessor} from './interfaces/IFxMessageProcessor.sol';
-import {IFxTunnel} from './tunnel/interfaces/IFxTunnel.sol';
+import {IFxTunnel} from './interfaces/IFxTunnel.sol';
 
 /**
  * @title PolygonAdapter
