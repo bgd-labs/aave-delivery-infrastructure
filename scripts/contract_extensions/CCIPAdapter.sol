@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {TestNetChainIds} from './TestNetChainIds.sol';
+import {TestNetChainIds} from 'aave-helpers/ChainIds.sol';
 import {CCIPAdapter} from '../../src/contracts/adapters/ccip/CCIPAdapter.sol';
 import {BaseAdapter, IBaseAdapter} from '../../src/contracts/adapters/BaseAdapter.sol';
 
@@ -31,7 +31,7 @@ contract CCIPAdapterTestnet is CCIPAdapter {
     } else if (nativeChainId == uint64(14767482510784806043)) {
       return TestNetChainIds.AVALANCHE_FUJI;
     } else if (nativeChainId == uint64(12532609583862916517)) {
-      return TestNetChainIds.POLYGON_MUMBAI;
+      return TestNetChainIds.POLYGON_AMOY;
     } else if (nativeChainId == uint64(13264668187771770619)) {
       return TestNetChainIds.BNB_TESTNET;
     }
@@ -44,7 +44,7 @@ contract CCIPAdapterTestnet is CCIPAdapter {
       return uint64(16015286601757825753);
     } else if (infraChainId == TestNetChainIds.AVALANCHE_FUJI) {
       return uint64(14767482510784806043);
-    } else if (infraChainId == TestNetChainIds.POLYGON_MUMBAI) {
+    } else if (infraChainId == TestNetChainIds.POLYGON_AMOY) {
       return uint64(12532609583862916517);
     } else if (infraChainId == TestNetChainIds.BNB_TESTNET) {
       return uint64(13264668187771770619);

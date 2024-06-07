@@ -7,7 +7,7 @@ import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol
 import {OptionsBuilder} from './libs/OptionsBuilder.sol';
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {ILayerZeroAdapter, ILayerZeroEndpointV2} from './ILayerZeroAdapter.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../libs/Errors.sol';
 
 /**
