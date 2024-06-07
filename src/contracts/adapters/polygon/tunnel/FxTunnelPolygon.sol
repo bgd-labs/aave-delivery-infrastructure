@@ -8,7 +8,7 @@ import {IFxTunnel} from './interfaces/IFxTunnel.sol';
 /**
  * @title FxTunnelPolygon
  * @author BGD Labs
- * @notice The Polygon FxTunnel implementation for arbitrary two-way message passing 
+ * @notice The Polygon FxTunnel implementation for arbitrary two-way message passing
  * between Polygon and Ethereum.
  */
 contract FxTunnelPolygon is FxBaseChildTunnel, IFxTunnel {
@@ -19,8 +19,8 @@ contract FxTunnelPolygon is FxBaseChildTunnel, IFxTunnel {
 
   /// @inheritdoc IFxTunnel
   function sendMessage(address receiver, bytes calldata message) external override {
-    bytes memory encodedMesage = abi.encode(msg.sender, receiver, message);
-    _sendMessageToRoot(encodedMesage);
+    bytes memory encodedMessage = abi.encode(msg.sender, receiver, message);
+    _sendMessageToRoot(encodedMessage);
   }
 
   function _processMessageFromRoot(
