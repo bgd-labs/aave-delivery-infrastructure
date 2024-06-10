@@ -7,7 +7,7 @@ import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol
 import {OptionsBuilder} from './libs/OptionsBuilder.sol';
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {ILayerZeroAdapter, ILayerZeroEndpointV2} from './ILayerZeroAdapter.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../libs/Errors.sol';
 
 /**
@@ -29,14 +29,14 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
 
   /**
    * @notice constructor for the Layer Zero adapter
-   * @param lzEndpoint address of the layer zero endpoint on the current chain where adapter is deployed
    * @param crossChainController address of the contract that manages cross chain infrastructure
+   * @param lzEndpoint address of the layer zero endpoint on the current chain where adapter is deployed
    * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes array of objects with chain id and origin addresses which will be allowed to send messages to this adapter
    */
   constructor(
-    address lzEndpoint,
     address crossChainController,
+    address lzEndpoint,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'LayerZero adapter', trustedRemotes) {
