@@ -9,7 +9,7 @@ pragma solidity ^0.8.0;
 interface IFxTunnel {
   /**
    * @notice Sends a message to the receiver via the connected root or child tunnel.
-   * 
+   *
    * @param receiver The receiver address on the paired chain.
    * @param message The raw message to send to the receiver on the paired chain.
    */
