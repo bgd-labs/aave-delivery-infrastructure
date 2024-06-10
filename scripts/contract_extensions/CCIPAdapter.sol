@@ -30,7 +30,7 @@ contract CCIPAdapterTestnet is CCIPAdapter {
       return TestNetChainIds.ETHEREUM_SEPOLIA;
     } else if (nativeChainId == uint64(14767482510784806043)) {
       return TestNetChainIds.AVALANCHE_FUJI;
-    } else if (nativeChainId == uint64(12532609583862916517)) {
+    } else if (nativeChainId == uint64(16281711391670634445)) {
       return TestNetChainIds.POLYGON_AMOY;
     } else if (nativeChainId == uint64(13264668187771770619)) {
       return TestNetChainIds.BNB_TESTNET;
