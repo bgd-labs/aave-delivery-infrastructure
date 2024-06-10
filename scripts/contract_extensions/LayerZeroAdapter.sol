@@ -60,7 +60,7 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
     } else if (infraChainId == TestNetChainIds.OPTIMISM_SEPOLIA) {
       return 40232;
     } else if (infraChainId == TestNetChainIds.POLYGON_AMOY) {
-      return 40109;
+      return 40267;
     } else if (infraChainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
       return 40231;
     } else if (infraChainId == TestNetChainIds.FANTOM_TESTNET) {
