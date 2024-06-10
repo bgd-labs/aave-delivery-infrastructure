@@ -24,13 +24,11 @@ abstract contract BaseDeployGranularGuardian is BaseScript {
 
   function SOLVE_EMERGENCY_GUARDIAN() internal view virtual returns (address);
 
-  function CROSS_CHAIN_CONTROLLER() internal view virtual returns (address);
-
   function SALT() internal view virtual returns (string memory) {
     return 'a.DI GranularGuardian';
   }
 
-  function _deployGranularGuardian() internal returns (address) {
+  function _deployGranularGuardian(address crossChainController) internal returns (address) {
     IGranularGuardianAccessControl.InitialGuardians
       memory initialGuardians = IGranularGuardianAccessControl.InitialGuardians({
         defaultAdmin: DEFAULT_ADMIN(),
@@ -40,7 +38,7 @@ abstract contract BaseDeployGranularGuardian is BaseScript {
 
     bytes memory ggCode = GranularGuardianDeploymentHelper.getGranularGuardianCode(
       initialGuardians,
-      CROSS_CHAIN_CONTROLLER()
+      crossChainController
     );
 
     return Create2Utils.create2Deploy(keccak256(abi.encode(SALT())), ggCode);
