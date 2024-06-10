@@ -9,7 +9,7 @@ library ArbAdapterDeploymentHelper {
   struct ArbAdapterArgs {
     BaseAdapterArgs baseArgs;
     address inbox;
-    address destinationCCC;
+    address refundAddress;
   }
 
   function getAdapterCode(ArbAdapterArgs memory arbArgs) internal pure returns (bytes memory) {
@@ -23,7 +23,7 @@ library ArbAdapterDeploymentHelper {
         abi.encode(
           arbArgs.baseArgs.crossChainController,
           arbArgs.inbox,
-          arbArgs.destinationCCC,
+          arbArgs.refundAddress,
           arbArgs.baseArgs.providerGasLimit,
           arbArgs.baseArgs.trustedRemotes
         )
@@ -36,7 +36,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
     return address(0);
   }
 
-  function DESTINATION_CCC() internal view virtual returns (address) {
+  function REFUND_ADDRESS() internal view virtual returns (address) {
     return address(0);
   }
 
@@ -52,7 +52,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
       TRANSACTION_NETWORK() == ChainIds.ETHEREUM ||
       TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA
     ) {
-      require(DESTINATION_CCC() != address(0), 'Arbitrum CCC must be deployed');
+      require(REFUND_ADDRESS() != address(0), 'Arbitrum CCC must be deployed');
       require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
     }
 
@@ -61,7 +61,7 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
         ArbAdapterDeploymentHelper.ArbAdapterArgs({
           baseArgs: baseArgs,
           inbox: INBOX(),
-          destinationCCC: DESTINATION_CCC()
+          refundAddress: REFUND_ADDRESS()
         })
       );
   }
