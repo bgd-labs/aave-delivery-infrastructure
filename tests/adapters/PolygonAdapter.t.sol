@@ -3,12 +3,12 @@ pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 import {PolygonAdapterEthereum} from '../../src/contracts/adapters/polygon/PolygonAdapterEthereum.sol';
 import {PolygonAdapterPolygon} from '../../src/contracts/adapters/polygon/PolygonAdapterPolygon.sol';
-import {IFxTunnel} from '../../src/contracts/adapters/polygon/tunnel/interfaces/IFxTunnel.sol';
+import {IFxTunnel} from '../../src/contracts/adapters/polygon/interfaces/IFxTunnel.sol';
 
 contract PolygonAdapterTest is Test {
   address public constant ORIGIN_FORWARDER = address(123);
