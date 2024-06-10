@@ -37,7 +37,7 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
   function WORMHOLE_RELAYER() internal view virtual returns (address);
 
   /// @dev for now we will need to deploy one adapter for every path (one remote network) because of the refunding on
-  /// destination ccc
+  /// destination
   function REFUND_ADDRESS() internal view virtual returns (address);
 
   function _getAdapterByteCode(
