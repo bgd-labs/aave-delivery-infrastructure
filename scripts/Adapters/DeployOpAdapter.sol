@@ -33,23 +33,14 @@ abstract contract BaseOpAdapter is BaseAdapterScript {
   function OVM() internal view virtual returns (address);
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
     require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(OVM() != address(0), 'Invalid OVM');
 
-    OpAdapterDeploymentHelper.OpAdapterArgs memory constructorArgs = OpAdapterDeploymentHelper
-      .OpAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        ovm: OVM()
-      });
-
-    return OpAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      OpAdapterDeploymentHelper.getAdapterCode(
+        OpAdapterDeploymentHelper.OpAdapterArgs({baseArgs: baseArgs, ovm: OVM()})
+      );
   }
 }

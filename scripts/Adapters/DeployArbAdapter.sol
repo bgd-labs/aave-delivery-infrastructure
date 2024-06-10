@@ -45,12 +45,11 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
   }
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
+    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
 
-    require(trustedRemotes.length == 1, 'Arb adapter can only have one remote');
+    require(baseArgs.trustedRemotes.length == 1, 'Arb adapter can only have one remote');
     if (
       TRANSACTION_NETWORK() == ChainIds.ETHEREUM ||
       TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA
@@ -59,18 +58,13 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
       require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
     }
 
-    ArbAdapterDeploymentHelper.ArbAdapterArgs memory constructorArgs = ArbAdapterDeploymentHelper
-      .ArbAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        inbox: INBOX(),
-        destinationCCC: DESTINATION_CCC()
-      });
-
-    return ArbAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      ArbAdapterDeploymentHelper.getAdapterCode(
+        ArbAdapterDeploymentHelper.ArbAdapterArgs({
+          baseArgs: baseArgs,
+          inbox: INBOX(),
+          destinationCCC: DESTINATION_CCC()
+        })
+      );
   }
 }

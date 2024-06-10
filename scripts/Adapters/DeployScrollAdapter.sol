@@ -39,23 +39,14 @@ abstract contract BaseScrollAdapter is BaseAdapterScript {
   }
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
+    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
     require(OVM() != address(0), 'Invalid OVM');
 
-    ScrollAdapterDeploymentHelper.ScrollAdapterArgs
-      memory constructorArgs = ScrollAdapterDeploymentHelper.ScrollAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        ovm: OVM()
-      });
-
-    return ScrollAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      ScrollAdapterDeploymentHelper.getAdapterCode(
+        ScrollAdapterDeploymentHelper.ScrollAdapterArgs({baseArgs: baseArgs, ovm: OVM()})
+      );
   }
 }
