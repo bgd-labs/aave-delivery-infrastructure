@@ -45,7 +45,7 @@ contract CCIPAdapterTestnet is CCIPAdapter {
     } else if (infraChainId == TestNetChainIds.AVALANCHE_FUJI) {
       return uint64(14767482510784806043);
     } else if (infraChainId == TestNetChainIds.POLYGON_AMOY) {
-      return uint64(12532609583862916517);
+      return uint64(16281711391670634445);
     } else if (infraChainId == TestNetChainIds.BNB_TESTNET) {
       return uint64(13264668187771770619);
     }
