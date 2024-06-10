@@ -3,10 +3,10 @@ pragma solidity ^0.8.0;
 
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {IArbAdapter} from './IArbAdapter.sol';
-import {IInbox} from 'nitro-contracts/bridge/IInbox.sol';
-import {AddressAliasHelper} from 'nitro-contracts/libraries/AddressAliasHelper.sol';
+import {IInbox} from './interfaces/IInbox.sol';
+import {AddressAliasHelper} from './libs/AddressAliasHelper.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 
 /**
  * @title ArbAdapter
