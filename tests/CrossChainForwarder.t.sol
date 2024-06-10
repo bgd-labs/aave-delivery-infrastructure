@@ -9,7 +9,7 @@ import {ILayerZeroEndpointV2} from '../src/contracts/adapters/layerZero/interfac
 import {CrossChainForwarder, ICrossChainForwarder} from '../src/contracts/CrossChainForwarder.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
 import {LayerZeroAdapter, ILayerZeroAdapter, MessagingFee, MessagingReceipt} from '../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
-import {ChainIds} from '../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {Transaction, EncodedTransaction, Envelope} from '../src/contracts/libs/EncodingUtils.sol';
 import {BaseTest} from './BaseTest.sol';

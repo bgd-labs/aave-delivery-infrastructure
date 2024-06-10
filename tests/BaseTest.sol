@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {ChainIds} from '../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Transaction, EncodedTransaction, Envelope, EncodedEnvelope} from '../src/contracts/libs/EncodingUtils.sol';
 import {ICrossChainForwarder} from '../src/contracts/interfaces/ICrossChainForwarder.sol';
 import {ICrossChainReceiver} from '../src/contracts/interfaces/ICrossChainReceiver.sol';

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {TestNetChainIds} from './TestNetChainIds.sol';
+import {TestNetChainIds} from 'aave-helpers/ChainIds.sol';
 import {PolygonAdapterBase} from '../../src/contracts/adapters/polygon/PolygonAdapterBase.sol';
 import {IPolygonAdapter} from '../../src/contracts/adapters/polygon/IPolygonAdapter.sol';
 
@@ -20,12 +20,12 @@ contract PolygonAdapterMumbai is PolygonAdapterBase {
 
   /// @inheritdoc IPolygonAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
-    return chainId == TestNetChainIds.ETHEREUM_GOERLI;
+    return chainId == TestNetChainIds.ETHEREUM_SEPOLIA;
   }
 
   /// @inheritdoc IPolygonAdapter
   function getOriginChainId() public pure override returns (uint256) {
-    return TestNetChainIds.ETHEREUM_GOERLI;
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
   }
 }
 
@@ -44,11 +44,11 @@ contract PolygonAdapterGoerli is PolygonAdapterBase {
 
   /// @inheritdoc IPolygonAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
-    return chainId == TestNetChainIds.POLYGON_MUMBAI;
+    return chainId == TestNetChainIds.POLYGON_AMOY;
   }
 
   /// @inheritdoc IPolygonAdapter
   function getOriginChainId() public pure override returns (uint256) {
-    return TestNetChainIds.POLYGON_MUMBAI;
+    return TestNetChainIds.POLYGON_AMOY;
   }
 }
