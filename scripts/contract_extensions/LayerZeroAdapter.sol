@@ -32,7 +32,7 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
       return TestNetChainIds.AVALANCHE_FUJI;
     } else if (nativeChainId == 40232) {
       return TestNetChainIds.OPTIMISM_SEPOLIA;
-    } else if (nativeChainId == 40109) {
+    } else if (nativeChainId == 40267) {
       return TestNetChainIds.POLYGON_AMOY;
     } else if (nativeChainId == 40231) {
       return TestNetChainIds.ARBITRUM_SEPOLIA;
