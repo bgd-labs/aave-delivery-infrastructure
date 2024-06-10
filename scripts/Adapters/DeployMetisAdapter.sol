@@ -37,23 +37,13 @@ abstract contract BaseMetisAdapter is BaseAdapterScript {
   }
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(OVM() != address(0), 'Invalid OVM');
 
-    MetisAdapterDeploymentHelper.MetisAdapterArgs
-      memory constructorArgs = MetisAdapterDeploymentHelper.MetisAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        ovm: OVM()
-      });
-
-    return MetisAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      MetisAdapterDeploymentHelper.getAdapterCode(
+        MetisAdapterDeploymentHelper.MetisAdapterArgs({baseArgs: baseArgs, ovm: OVM()})
+      );
   }
 }

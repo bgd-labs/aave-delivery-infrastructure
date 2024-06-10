@@ -33,23 +33,16 @@ abstract contract BaseGnosisChainAdapter is BaseAdapterScript {
   function GNOSIS_AMB_BRIDGE() internal pure virtual returns (address);
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(GNOSIS_AMB_BRIDGE() != address(0), 'Invalid AMB BRIDGE Router');
 
-    GnosisAdapterDeploymentHelper.GnosisAdapterArgs
-      memory constructorArgs = GnosisAdapterDeploymentHelper.GnosisAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        ambBridge: GNOSIS_AMB_BRIDGE()
-      });
-
-    return GnosisAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      GnosisAdapterDeploymentHelper.getAdapterCode(
+        GnosisAdapterDeploymentHelper.GnosisAdapterArgs({
+          baseArgs: baseArgs,
+          ambBridge: GNOSIS_AMB_BRIDGE()
+        })
+      );
   }
 }

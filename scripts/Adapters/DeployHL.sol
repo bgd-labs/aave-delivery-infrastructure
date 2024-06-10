@@ -30,23 +30,13 @@ abstract contract BaseHLAdapter is BaseAdapterScript {
   function HL_MAIL_BOX() internal view virtual returns (address);
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(HL_MAIL_BOX() != address(0), 'Invalid HL MailBox');
 
-    HLAdapterDeploymentHelper.HLAdapterArgs memory constructorArgs = HLAdapterDeploymentHelper
-      .HLAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        mailBox: HL_MAIL_BOX()
-      });
-
-    return HLAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      HLAdapterDeploymentHelper.getAdapterCode(
+        HLAdapterDeploymentHelper.HLAdapterArgs({baseArgs: baseArgs, mailBox: HL_MAIL_BOX()})
+      );
   }
 }

@@ -41,25 +41,18 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
   function DESTINATION_CCC() internal view virtual returns (address);
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(DESTINATION_CCC() != address(0), 'Invalid Destination CCC');
     require(WORMHOLE_RELAYER() != address(0), 'Wormhole relayer can not be 0');
 
-    WormholeAdapterDeploymentHelper.WormholeAdapterArgs
-      memory constructorArgs = WormholeAdapterDeploymentHelper.WormholeAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        wormholeRelayer: WORMHOLE_RELAYER(),
-        destinationCCC: DESTINATION_CCC()
-      });
-
-    return WormholeAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      WormholeAdapterDeploymentHelper.getAdapterCode(
+        WormholeAdapterDeploymentHelper.WormholeAdapterArgs({
+          baseArgs: baseArgs,
+          wormholeRelayer: WORMHOLE_RELAYER(),
+          destinationCCC: DESTINATION_CCC()
+        })
+      );
   }
 }
