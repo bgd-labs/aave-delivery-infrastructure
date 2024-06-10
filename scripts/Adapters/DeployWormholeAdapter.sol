@@ -43,7 +43,7 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(REFUND_ADDRESS() != address(0), 'Invalid Destination CCC');
+    require(REFUND_ADDRESS() != address(0), 'Invalid refund address');
     require(WORMHOLE_RELAYER() != address(0), 'Wormhole relayer can not be 0');
 
     return
