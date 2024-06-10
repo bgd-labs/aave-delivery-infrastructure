@@ -19,7 +19,7 @@ library PolygonAdapterDeploymentHelper {
     // For now we dont have polygon testnets as we only have goerli implemented which should no longer be suported
     if (chainId == ChainIds.ETHEREUM) {
       creationCode = type(PolygonAdapterEthereum).creationCode;
-    } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
+    } else if (chainId == ChainIds.POLYGON) {
       creationCode = type(PolygonAdapterPolygon).creationCode;
     } else {
       revert('wrong chain id');
