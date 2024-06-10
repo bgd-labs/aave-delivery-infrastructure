@@ -9,7 +9,7 @@ library WormholeAdapterDeploymentHelper {
   struct WormholeAdapterArgs {
     BaseAdapterArgs baseArgs;
     address wormholeRelayer;
-    address destinationCCC;
+    address refundAddress;
   }
 
   function getAdapterCode(
@@ -25,7 +25,7 @@ library WormholeAdapterDeploymentHelper {
         abi.encode(
           wormholeArgs.baseArgs.crossChainController,
           wormholeArgs.wormholeRelayer,
-          wormholeArgs.destinationCCC,
+          wormholeArgs.refundAddress,
           wormholeArgs.baseArgs.providerGasLimit,
           wormholeArgs.baseArgs.trustedRemotes
         )
@@ -38,12 +38,12 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
 
   /// @dev for now we will need to deploy one adapter for every path (one remote network) because of the refunding on
   /// destination ccc
-  function DESTINATION_CCC() internal view virtual returns (address);
+  function REFUND_ADDRESS() internal view virtual returns (address);
 
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(DESTINATION_CCC() != address(0), 'Invalid Destination CCC');
+    require(REFUND_ADDRESS() != address(0), 'Invalid Destination CCC');
     require(WORMHOLE_RELAYER() != address(0), 'Wormhole relayer can not be 0');
 
     return
@@ -51,7 +51,7 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
         WormholeAdapterDeploymentHelper.WormholeAdapterArgs({
           baseArgs: baseArgs,
           wormholeRelayer: WORMHOLE_RELAYER(),
-          destinationCCC: DESTINATION_CCC()
+          refundAddress: REFUND_ADDRESS()
         })
       );
   }
