@@ -45,7 +45,6 @@ abstract contract BaseZKEVMAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
     require(ZK_EVM_BRIDGE() != address(0), 'Invalid zkevm bridge');
 
     return

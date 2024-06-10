@@ -47,8 +47,6 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
-
     require(baseArgs.trustedRemotes.length == 1, 'Arb adapter can only have one remote');
     if (
       TRANSACTION_NETWORK() == ChainIds.ETHEREUM ||

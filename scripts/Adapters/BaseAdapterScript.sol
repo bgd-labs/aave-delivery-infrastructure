@@ -39,6 +39,8 @@ abstract contract BaseAdapterScript is BaseScript {
     address currentNetworkCCC,
     IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
   ) internal returns (address) {
+    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
+
     bytes memory adapterCode = _getAdapterByteCode(
       BaseAdapterArgs({
         crossChainController: currentNetworkCCC,

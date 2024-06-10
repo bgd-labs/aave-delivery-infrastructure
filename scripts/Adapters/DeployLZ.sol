@@ -35,7 +35,6 @@ abstract contract BaseLZAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
     require(LZ_ENDPOINT() != address(0), 'Invalid LZ Endpoint');
 
     return

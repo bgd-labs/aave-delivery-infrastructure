@@ -43,7 +43,6 @@ abstract contract BaseWormholeAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
     require(DESTINATION_CCC() != address(0), 'Invalid Destination CCC');
     require(WORMHOLE_RELAYER() != address(0), 'Wormhole relayer can not be 0');
 

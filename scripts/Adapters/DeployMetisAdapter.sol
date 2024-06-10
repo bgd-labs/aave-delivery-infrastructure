@@ -39,7 +39,6 @@ abstract contract BaseMetisAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(OVM() != address(0), 'Invalid OVM');
 
     return

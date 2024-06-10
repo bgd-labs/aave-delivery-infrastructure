@@ -40,7 +40,6 @@ abstract contract BaseCCIPAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
     require(CCIP_ROUTER() != address(0), 'Invalid CCIP Router');
     require(LINK_TOKEN() != address(0), 'Invalid Link Token');
 

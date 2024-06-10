@@ -36,7 +36,6 @@ abstract contract BaseCBAdapter is BaseAdapterScript {
     BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
     require(OVM() != address(0), 'Invalid OVM address');
-    require(baseArgs.crossChainController != address(0), 'CCC needs to be deployed');
     require(baseArgs.trustedRemotes.length == 1, 'Adapter can only have one remote');
 
     return
