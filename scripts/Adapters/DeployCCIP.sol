@@ -38,25 +38,18 @@ abstract contract BaseCCIPAdapter is BaseAdapterScript {
   function LINK_TOKEN() internal view virtual returns (address);
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(CCIP_ROUTER() != address(0), 'Invalid CCIP Router');
     require(LINK_TOKEN() != address(0), 'Invalid Link Token');
 
-    CCIPAdapterDeploymentHelper.CCIPAdapterArgs memory constructorArgs = CCIPAdapterDeploymentHelper
-      .CCIPAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        ccipRouter: CCIP_ROUTER(),
-        linkToken: LINK_TOKEN()
-      });
-
-    return CCIPAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      CCIPAdapterDeploymentHelper.getAdapterCode(
+        CCIPAdapterDeploymentHelper.CCIPAdapterArgs({
+          baseArgs: baseArgs,
+          ccipRouter: CCIP_ROUTER(),
+          linkToken: LINK_TOKEN()
+        })
+      );
   }
 }

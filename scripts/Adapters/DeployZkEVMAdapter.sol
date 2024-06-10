@@ -43,23 +43,17 @@ abstract contract BaseZKEVMAdapter is BaseAdapterScript {
   function ZK_EVM_BRIDGE() internal view virtual returns (address);
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(ZK_EVM_BRIDGE() != address(0), 'Invalid zkevm bridge');
 
-    ZKEVMAdapterDeploymentHelper.ZKEVMAdapterArgs
-      memory constructorArgs = ZKEVMAdapterDeploymentHelper.ZKEVMAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
+    return
+      ZKEVMAdapterDeploymentHelper.getAdapterCode(
+        ZKEVMAdapterDeploymentHelper.ZKEVMAdapterArgs({
+          baseArgs: baseArgs,
+          zkEVMBridge: ZK_EVM_BRIDGE()
         }),
-        zkEVMBridge: ZK_EVM_BRIDGE()
-      });
-
-    return ZKEVMAdapterDeploymentHelper.getAdapterCode(constructorArgs, TRANSACTION_NETWORK());
+        TRANSACTION_NETWORK()
+      );
   }
 }

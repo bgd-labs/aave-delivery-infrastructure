@@ -19,7 +19,7 @@ library PolygonAdapterDeploymentHelper {
     // For now we dont have polygon testnets as we only have goerli implemented which should no longer be suported
     if (chainId == ChainIds.ETHEREUM) {
       creationCode = type(PolygonAdapterEthereum).creationCode;
-    } else if (chainId == ChainIds.POLYGON_ZK_EVM) {
+    } else if (chainId == ChainIds.POLYGON) {
       creationCode = type(PolygonAdapterPolygon).creationCode;
     } else {
       revert('wrong chain id');
@@ -42,23 +42,17 @@ abstract contract BasePolygonAdapter is BaseAdapterScript {
   function FX_TUNNEL() internal pure virtual returns (address);
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
     require(FX_TUNNEL() != address(0), 'Invalid fx tunnel');
 
-    PolygonAdapterDeploymentHelper.PolygonAdapterArgs
-      memory constructorArgs = PolygonAdapterDeploymentHelper.PolygonAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
+    return
+      PolygonAdapterDeploymentHelper.getAdapterCode(
+        PolygonAdapterDeploymentHelper.PolygonAdapterArgs({
+          baseArgs: baseArgs,
+          fxTunnel: FX_TUNNEL()
         }),
-        fxTunnel: FX_TUNNEL()
-      });
-
-    return PolygonAdapterDeploymentHelper.getAdapterCode(constructorArgs, TRANSACTION_NETWORK());
+        TRANSACTION_NETWORK()
+      );
   }
 }

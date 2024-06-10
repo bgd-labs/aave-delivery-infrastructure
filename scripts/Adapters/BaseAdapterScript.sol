@@ -32,15 +32,22 @@ abstract contract BaseAdapterScript is BaseScript {
   }
 
   function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
+    BaseAdapterArgs memory baseArgs
   ) internal view virtual returns (bytes memory);
 
-  function _deployAdapter(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal returns (address) {
-    bytes memory adapterCode = _getAdapterByteCode(currentNetworkCCC, trustedRemotes);
+  function _deployAdapter(address currentNetworkCCC) internal returns (address) {
+    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
+
+    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes = _getTrustedRemotes();
+
+    bytes memory adapterCode = _getAdapterByteCode(
+      BaseAdapterArgs({
+        crossChainController: currentNetworkCCC,
+        providerGasLimit: PROVIDER_GAS_LIMIT(),
+        trustedRemotes: trustedRemotes,
+        isTestnet: isTestnet()
+      })
+    );
 
     return Create2Utils.create2Deploy(keccak256(abi.encode(SALT())), adapterCode);
   }

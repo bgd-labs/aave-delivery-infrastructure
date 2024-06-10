@@ -13,9 +13,8 @@ library SameChainAdapterDeploymentHelper {
 
 abstract contract BaseSameChainAdapter is BaseAdapterScript {
   function _getAdapterByteCode(
-    address,
-    IBaseAdapter.TrustedRemotesConfig[] memory
-  ) internal pure override returns (bytes memory) {
+    BaseAdapterArgs memory
+  ) internal view override returns (bytes memory) {
     return SameChainAdapterDeploymentHelper.getAdapterCode();
   }
 }
