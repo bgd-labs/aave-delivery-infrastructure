@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {TestNetChainIds} from './TestNetChainIds.sol';
+import {TestNetChainIds} from 'aave-helpers/ChainIds.sol';
 import {IArbAdapter, ArbAdapter} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
 
 /**
@@ -24,11 +24,11 @@ contract ArbitrumAdapterTestnet is ArbAdapter {
 
   /// @inheritdoc IArbAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
-    return chainId == TestNetChainIds.ARBITRUM_GOERLI;
+    return chainId == TestNetChainIds.ARBITRUM_SEPOLIA;
   }
 
   /// @inheritdoc IArbAdapter
   function getOriginChainId() public pure override returns (uint256) {
-    return TestNetChainIds.ETHEREUM_GOERLI;
+    return TestNetChainIds.ETHEREUM_SEPOLIA;
   }
 }

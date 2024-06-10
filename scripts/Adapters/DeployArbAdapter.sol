@@ -9,7 +9,7 @@ library ArbAdapterDeploymentHelper {
   struct ArbAdapterArgs {
     BaseAdapterArgs baseArgs;
     address inbox;
-    address destinationCCC;
+    address refundAddress;
   }
 
   function getAdapterCode(ArbAdapterArgs memory arbArgs) internal pure returns (bytes memory) {
@@ -23,7 +23,7 @@ library ArbAdapterDeploymentHelper {
         abi.encode(
           arbArgs.baseArgs.crossChainController,
           arbArgs.inbox,
-          arbArgs.destinationCCC,
+          arbArgs.refundAddress,
           arbArgs.baseArgs.providerGasLimit,
           arbArgs.baseArgs.trustedRemotes
         )
@@ -36,37 +36,33 @@ abstract contract BaseDeployArbAdapter is BaseAdapterScript {
     return address(0);
   }
 
-  function DESTINATION_CCC() internal view virtual returns (address) {
+  function REFUND_ADDRESS() internal view virtual returns (address) {
     return address(0);
   }
 
-  function _getAdapterByteCode(
-    address currentNetworkCCC,
-    IBaseAdapter.TrustedRemotesConfig[] memory trustedRemotes
-  ) internal override returns (bytes memory) {
-    require(currentNetworkCCC != address(0), 'CCC needs to be deployed');
+  function PROVIDER_GAS_LIMIT() internal view virtual override returns (uint256) {
+    return 150_000;
+  }
 
-    require(trustedRemotes.length == 1, 'Arb adapter can only have one remote');
+  function _getAdapterByteCode(
+    BaseAdapterArgs memory baseArgs
+  ) internal view override returns (bytes memory) {
+    require(baseArgs.trustedRemotes.length == 1, 'Arb adapter can only have one remote');
     if (
       TRANSACTION_NETWORK() == ChainIds.ETHEREUM ||
       TRANSACTION_NETWORK() == TestNetChainIds.ETHEREUM_SEPOLIA
     ) {
-      require(DESTINATION_CCC() != address(0), 'Arbitrum CCC must be deployed');
+      require(REFUND_ADDRESS() != address(0), 'Arbitrum CCC must be deployed');
       require(INBOX() != address(0), 'Arbitrum inbox can not be 0');
     }
 
-    ArbAdapterDeploymentHelper.ArbAdapterArgs memory constructorArgs = ArbAdapterDeploymentHelper
-      .ArbAdapterArgs({
-        baseArgs: BaseAdapterArgs({
-          crossChainController: currentNetworkCCC,
-          providerGasLimit: PROVIDER_GAS_LIMIT(),
-          trustedRemotes: trustedRemotes,
-          isTestnet: isTestnet()
-        }),
-        inbox: INBOX(),
-        destinationCCC: DESTINATION_CCC()
-      });
-
-    return ArbAdapterDeploymentHelper.getAdapterCode(constructorArgs);
+    return
+      ArbAdapterDeploymentHelper.getAdapterCode(
+        ArbAdapterDeploymentHelper.ArbAdapterArgs({
+          baseArgs: baseArgs,
+          inbox: INBOX(),
+          refundAddress: REFUND_ADDRESS()
+        })
+      );
   }
 }
