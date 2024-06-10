@@ -59,22 +59,15 @@ All the information about setup of the project and deployments can be found [HER
 | <div style="display: flex; align-items: center;"><img src="./docs/networks/celo.svg" alt="Celo" style="max-width: 25px; margin-right: 5px;"><p style="text-align: center;">Celo</p></div>                | -                                                                                                                      | [0x91b21900E91CD302EBeD05E45D8f270ddAED944d](https://gnosisscan.io/address/0x91b21900E91CD302EBeD05E45D8f270ddAED944d)                                                                                                                        |
 
 
-
-
-
-
-
-
 <br>
 
-## Security
-
+## Changelog
+### V1
 The following security procedures have been applied:
 - Extensive testing and internal review by the BGD Labs team.
   - [Tests suite](./tests/).
 
 - We have engaged [Emanuele Ricci](https://twitter.com/stermi) as external security partner in middle stages of the project, with outstanding results. This procedure was focused on non-biased modelling of the system in terms of flows and any kind of security problem and/or state inconsistency, keeping a tight feedback loop with the development team.
-
 
 - Extensive properties checking (formal verification) procedure by [Certora](https://www.certora.com/), a security service provider of the Aave DAO.
   - [Report](./security/certora/Formal%20Verification%20Report%20of%20Aave%20Delivery%20Infrastructure.md).
@@ -84,7 +77,26 @@ The following security procedures have been applied:
   - [Reports](./security/sp).
   - [Test suite](https://github.com/sigp/aave-public-tests/tree/main/aave-delivery-infrastructure/tests).
 
+- Maintenance Proposals:
+  - [Update a.DI implementation and CCIP adapters](https://vote.onaave.com/proposal/?proposalId=56&ipfsHash=0xfd641d22acacbcc09b476a08bb21c127dfc6d53b511bc7dc022135387159e3fd)
+  - [Native bridge adapters update](https://vote.onaave.com/proposal/?proposalId=70&ipfsHash=0xe49d4ab826f1db54eda94e9d5ff536cb80d09ea4f0d6d36829f2626c95cac5f1)
+  - [LayerZero bridge adapter update to V2](https://vote.onaave.com/proposal/?proposalId=83&ipfsHash=0x309c9f0c885674230940e60b2a8e6fba9a226483d9117ba916ef72d4e3bd013f)
+  - [Hyperlane bridge adapter update to V3](https://vote.onaave.com/proposal/?proposalId=92&ipfsHash=0xb1cc692a9f2bed0923862de7ff7e603805f38b1b9da844a9977db9dec966b93e)
+
 <br>
+
+### V1.1
+The V1.1 update consists on adding a shuffling mechanism to CCC and the addition of a new Granular guardian contract. A more in debth explanation can be found [here](https://governance.aave.com/t/bgd-a-di-aave-delivery-infrastructure-v1-1/17838)
+
+- Extensive properties checking (formal verification) procedure by [Certora](https://www.certora.com/) can be found here:
+  - Granular Guardian:
+    - [Report](security/certora/reports/Granular-Guardian-Access-Control.pdf)
+  - Shuffling:
+    - [Report]()
+    - [Properties](./security/certora/properties)
+
+
+
 
 ## License
 
