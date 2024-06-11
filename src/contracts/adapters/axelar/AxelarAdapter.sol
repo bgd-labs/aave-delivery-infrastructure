@@ -28,16 +28,16 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
 
   /**
    * @notice constructor for the Axelar adapter
+   * @param crossChainController address of the contract that manages cross chain infrastructure
    * @param gateway address of the axelar gateway endpoint on the current chain where adapter is deployed
    * @param gasService address of the axelar gas service endpoint on the current chain where adapter is deployed
-   * @param crossChainController address of the contract that manages cross chain infrastructure
    * @param providerGasLimit base gas limit used by the bridge adapter
    * @param trustedRemotes array of objects with chain id and origin addresses which will be allowed to send messages to this adapter
    */
   constructor(
+    address crossChainController,
     address gateway,
     address gasService,
-    address crossChainController,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'Axelar adapter', trustedRemotes) {

@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 import {ZkEVMAdapterEthereum} from '../../src/contracts/adapters/zkEVM/ZkEVMAdapterEthereum.sol';

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {TestNetChainIds} from './TestNetChainIds.sol';
+import {TestNetChainIds} from 'aave-helpers/ChainIds.sol';
 import {GnosisChainAdapter} from '../../src/contracts/adapters/gnosisChain/GnosisChainAdapter.sol';
 import {BaseAdapter, IBaseAdapter} from '../../src/contracts/adapters/BaseAdapter.sol';
 
