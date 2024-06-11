@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {IAxelarAdapter, IAxelarGateway, IAxelarGasService} from './IAxelarAdapter.sol';
 import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {IAxelarExecutable} from './interfaces/IAxelarExecutable.sol';
 import {Strings} from 'openzeppelin-contracts/contracts/utils/Strings.sol';
@@ -101,6 +101,7 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
 
     uint256 originChainId = axelarNativeToInfraChainId(sourceChain);
     address srcAddress = StringToAddress.stringToAddress(sourceAddress);
+
     require(
       _trustedRemotes[originChainId] == srcAddress && srcAddress != address(0),
       Errors.REMOTE_NOT_TRUSTED

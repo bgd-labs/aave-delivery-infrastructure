@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {TestNetChainIds} from './TestNetChainIds.sol';
+import {TestNetChainIds} from 'aave-helpers/ChainIds.sol';
 import {IAxelarAdapter, AxelarAdapter, Strings} from '../../src/contracts/adapters/axelar/AxelarAdapter.sol';
 
 /**
@@ -35,8 +35,6 @@ contract AxelarAdapterTestnet is AxelarAdapter {
       return TestNetChainIds.ETHEREUM_SEPOLIA;
     } else if (nativeChainId.equal('Avalanche')) {
       return TestNetChainIds.AVALANCHE_FUJI;
-    } else if (nativeChainId.equal('Polygon')) {
-      return TestNetChainIds.POLYGON_MUMBAI;
     } else if (nativeChainId.equal('arbitrum-sepolia')) {
       return TestNetChainIds.ARBITRUM_SEPOLIA;
     } else if (nativeChainId.equal('optimism-sepolia')) {
@@ -64,8 +62,6 @@ contract AxelarAdapterTestnet is AxelarAdapter {
       return 'ethereum-sepolia';
     } else if (infraChainId == TestNetChainIds.AVALANCHE_FUJI) {
       return 'Avalanche';
-    } else if (infraChainId == TestNetChainIds.POLYGON_MUMBAI) {
-      return 'Polygon';
     } else if (infraChainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
       return 'arbitrum-sepolia';
     } else if (infraChainId == TestNetChainIds.OPTIMISM_SEPOLIA) {
