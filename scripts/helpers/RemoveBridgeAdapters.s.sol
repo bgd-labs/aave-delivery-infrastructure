@@ -88,7 +88,7 @@ contract Scroll is BaseRemoveBridgeAdapters {
     ICrossChainForwarder.BridgeAdapterToDisable[]
       memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
     bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0xFf8C72bE9bE0Fe889e04BBFdA7D83f78dE7A5E64,
+      bridgeAdapter: 0xaC63bf65e85188cC1B61de2b28FBD3b63De2B52b,
       chainIds: chainIds
     });
     return bridgeAdapters;
@@ -124,7 +124,7 @@ contract Ethereum is BaseRemoveBridgeAdapters {
     ICrossChainForwarder.BridgeAdapterToDisable[]
       memory bridgeAdapters = new ICrossChainForwarder.BridgeAdapterToDisable[](1);
     bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0xFf8C72bE9bE0Fe889e04BBFdA7D83f78dE7A5E64,
+      bridgeAdapter: 0xE62C947ebb6eF0441f92B582c216d3b920fc33ae,
       chainIds: chainIds
     });
     return bridgeAdapters;
@@ -170,7 +170,7 @@ contract Ethereum_testnet is BaseRemoveBridgeAdapters {
     //      chainIds: chainIdsCCIP
     //    });
     bridgeAdapters[0] = ICrossChainForwarder.BridgeAdapterToDisable({
-      bridgeAdapter: 0x26332e84e77C2Ce130D4B426a8633173a32399Df,
+      bridgeAdapter: 0xE62C947ebb6eF0441f92B582c216d3b920fc33ae,
       chainIds: chainIds
     });
     //    bridgeAdapters[2] = ICrossChainForwarder.BridgeAdapterToDisable({
@@ -418,7 +418,7 @@ contract Scroll_testnet is BaseRemoveBridgeAdapters {
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[]
       memory bridgeAdapters = new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](1);
     bridgeAdapters[0] = ICrossChainReceiver.ReceiverBridgeAdapterConfigInput({
-      bridgeAdapter: 0xaf850c735bc19712B93d613831CAb710C095B202,
+      bridgeAdapter: 0xaC63bf65e85188cC1B61de2b28FBD3b63De2B52b,
       chainIds: chainIds
     });
 

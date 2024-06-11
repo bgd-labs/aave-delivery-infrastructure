@@ -8,6 +8,7 @@ import {ChainIds} from '../../libs/ChainIds.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {IAxelarExecutable} from './interfaces/IAxelarExecutable.sol';
 import {Strings} from 'openzeppelin-contracts/contracts/utils/Strings.sol';
+import {StringToAddress} from './libs/StringToAddress.sol';
 
 /**
  * @title AxelarAdapter
@@ -99,7 +100,7 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
     );
 
     uint256 originChainId = axelarNativeToInfraChainId(sourceChain);
-    address srcAddress = address(bytes20(bytes(sourceAddress)));
+    address srcAddress = StringToAddress.stringToAddress(sourceAddress);
     require(
       _trustedRemotes[originChainId] == srcAddress && srcAddress != address(0),
       Errors.REMOTE_NOT_TRUSTED
