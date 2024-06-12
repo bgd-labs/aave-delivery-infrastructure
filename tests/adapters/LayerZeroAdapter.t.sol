@@ -34,8 +34,8 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     originConfigs[0] = originConfig;
 
     layerZeroAdapter = new LayerZeroAdapter(
-      lzEndpoint,
       crossChainController,
+      lzEndpoint,
       baseGasLimit,
       originConfigs
     );
@@ -63,7 +63,7 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     originConfigs[0] = originConfig;
 
     vm.expectRevert(bytes(Errors.INVALID_LZ_ENDPOINT));
-    new LayerZeroAdapter(address(0), crossChainController, baseGasLimit, originConfigs);
+    new LayerZeroAdapter(crossChainController, address(0), baseGasLimit, originConfigs);
   }
 
   function testInit(
