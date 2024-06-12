@@ -3,13 +3,14 @@ pragma solidity ^0.8.0;
 
 library Utils {
   /**
-   * @notice method to get a pseudo random number from block number, prevrandao and an entropy value
+   * @notice method to get a pseudo random number from previous block number, blockHash of the previous block number and an entropy value
    * @param entropy number assigned by method caller to give certain entropy to the pseudo random generation
    * @return a pseudo random number
    * @dev As this method does not offer real randomness, evaluate appropriately its usage.
    */
   function getPseudoRandom(uint256 entropy) internal view returns (uint256) {
-    return uint256(keccak256(abi.encodePacked(block.number - 1, block.prevrandao, entropy)));
+    uint256 blockNumber = block.number - 1;
+    return uint256(keccak256(abi.encodePacked(blockNumber, blockhash(blockNumber), entropy)));
   }
 
   /**
