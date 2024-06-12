@@ -31,6 +31,13 @@ abstract contract BaseAdapterScript is BaseScript {
     return false;
   }
 
+  function _computeAdapterAddress(address currentNetworkCCC) internal view returns (address) {
+    bytes memory adapterCode = _getAdapterByteCode(currentNetworkCCC);
+    bytes32 salt = keccak256(abi.encode(SALT()));
+
+    return Create2Utils.computeCreate2Address(salt, adapterCode);
+  }
+
   function _getAdapterByteCode(address currentNetworkCCC) internal view returns (bytes memory) {
     return
       _getAdapterByteCode(
