@@ -13,15 +13,9 @@ contract AxelarAdapterTestnet is AxelarAdapter {
 
   /**
    * @notice constructor for the Axelar adapter
-   * @param baseArgs adapter base arguments
-   * @param gateway address of the axelar gateway endpoint on the current chain where adapter is deployed
-   * @param gasService address of the axelar gas service endpoint on the current chain where adapter is deployed
+   * @param axelarArgs adapter base arguments
    */
-  constructor(
-    BaseAdapterArgs memory baseArgs,
-    address gateway,
-    address gasService
-  ) AxelarAdapter(baseArgs, gateway, gasService) {}
+  constructor(IAxelarAdapter.AxelarAdapterArgs memory axelarArgs) AxelarAdapter(axelarArgs) {}
 
   /// @inheritdoc IAxelarAdapter
   function axelarNativeToInfraChainId(

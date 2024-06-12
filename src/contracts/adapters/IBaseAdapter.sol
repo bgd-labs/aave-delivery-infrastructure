@@ -10,18 +10,6 @@ import {IBaseCrossChainController} from '../interfaces/IBaseCrossChainController
  */
 interface IBaseAdapter {
   /**
-   * @notice Adapter constructor base arguments
-   * @param crossChainController address of the contract that manages cross chain infrastructure
-   * @param providerGasLimit base gas limit used by the bridge adapter
-   * @param trustedRemotes array of objects with chain id and origin addresses which will be allowed to send messages to this adapter
-   */
-  struct BaseAdapterArgs {
-    address crossChainController;
-    uint256 providerGasLimit;
-    TrustedRemotesConfig[] trustedRemotes;
-  }
-
-  /**
    * @notice emitted when a trusted remote is set
    * @param originChainId id of the chain where the trusted remote is from
    * @param originForwarder address of the contract that will send the messages

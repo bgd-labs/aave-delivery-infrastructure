@@ -40,13 +40,13 @@ contract AxelarAdapterTest is BaseAdapterTest {
     originConfigs[0] = originConfig;
 
     axelarAdapter = new AxelarAdapter(
-      IBaseAdapter.BaseAdapterArgs({
+      IAxelarAdapter.AxelarAdapterArgs({
         crossChainController: crossChainController,
         providerGasLimit: baseGasLimit,
-        trustedRemotes: originConfigs
-      }),
-      axelarGateway,
-      axelarGasService
+        trustedRemotes: originConfigs,
+        gateway: axelarGateway,
+        gasService: axelarGasService
+      })
     );
     _;
   }
@@ -72,14 +72,16 @@ contract AxelarAdapterTest is BaseAdapterTest {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    IBaseAdapter.BaseAdapterArgs memory baseArgs = IBaseAdapter.BaseAdapterArgs({
+    IAxelarAdapter.AxelarAdapterArgs memory baseArgs = IAxelarAdapter.AxelarAdapterArgs({
       crossChainController: crossChainController,
       providerGasLimit: baseGasLimit,
-      trustedRemotes: originConfigs
+      trustedRemotes: originConfigs,
+      gateway: address(0),
+      gasService: axelarGasService
     });
 
     vm.expectRevert(bytes(Errors.INVALID_AXELAR_GATEWAY));
-    new AxelarAdapter(baseArgs, address(0), axelarGasService);
+    new AxelarAdapter(baseArgs);
   }
 
   function testWrongAxelarGasService(
@@ -102,14 +104,16 @@ contract AxelarAdapterTest is BaseAdapterTest {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
 
-    IBaseAdapter.BaseAdapterArgs memory baseArgs = IBaseAdapter.BaseAdapterArgs({
+    IAxelarAdapter.AxelarAdapterArgs memory baseArgs = IAxelarAdapter.AxelarAdapterArgs({
       crossChainController: crossChainController,
       providerGasLimit: baseGasLimit,
-      trustedRemotes: originConfigs
+      trustedRemotes: originConfigs,
+      gateway: axelarGateway,
+      gasService: address(0)
     });
 
     vm.expectRevert(bytes(Errors.INVALID_AXELAR_GAS_SERVICE));
-    new AxelarAdapter(baseArgs, axelarGateway, address(0));
+    new AxelarAdapter(baseArgs);
   }
 
   function testInitialize(

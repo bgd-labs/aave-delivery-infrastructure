@@ -23,13 +23,13 @@ library AxelarAdapterDeploymentHelper {
       abi.encodePacked(
         creationCode,
         abi.encode(
-          IBaseAdapter.BaseAdapterArgs({
+          IAxelarAdapter.AxelarAdapterArgs({
             crossChainController: axelarArgs.baseArgs.crossChainController,
             providerGasLimit: axelarArgs.baseArgs.providerGasLimit,
-            trustedRemotes: axelarArgs.baseArgs.trustedRemotes
-          }),
-          axelarArgs.axelarGateway,
-          axelarArgs.axelarGasService
+            trustedRemotes: axelarArgs.baseArgs.trustedRemotes,
+            gateway: axelarArgs.axelarGateway,
+            gasService: axelarArgs.axelarGasService
+          })
         )
       );
   }

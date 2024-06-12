@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {IAxelarAdapter, IAxelarGateway, IAxelarGasService} from './IAxelarAdapter.sol';
+import {IAxelarAdapter, IAxelarGateway, IAxelarGasService, IBaseAdapter} from './IAxelarAdapter.sol';
 import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
-import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
+import {BaseAdapter} from '../BaseAdapter.sol';
 import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {IAxelarExecutable} from './interfaces/IAxelarExecutable.sol';
@@ -28,26 +28,22 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
 
   /**
    * @notice constructor for the Axelar adapter
-   * @param baseArgs adapter base arguments
-   * @param gateway address of the axelar gateway endpoint on the current chain where adapter is deployed
-   * @param gasService address of the axelar gas service endpoint on the current chain where adapter is deployed
+   * @param axelarArgs adapter base arguments
    */
   constructor(
-    BaseAdapterArgs memory baseArgs,
-    address gateway,
-    address gasService
+    AxelarAdapterArgs memory axelarArgs
   )
     BaseAdapter(
-      baseArgs.crossChainController,
-      baseArgs.providerGasLimit,
+      axelarArgs.crossChainController,
+      axelarArgs.providerGasLimit,
       'Axelar adapter',
-      baseArgs.trustedRemotes
+      axelarArgs.trustedRemotes
     )
   {
-    require(gateway != address(0), Errors.INVALID_AXELAR_GATEWAY);
-    require(gasService != address(0), Errors.INVALID_AXELAR_GAS_SERVICE);
-    AXELAR_GATEWAY = IAxelarGateway(gateway);
-    AXELAR_GAS_SERVICE = IAxelarGasService(gasService);
+    require(axelarArgs.gateway != address(0), Errors.INVALID_AXELAR_GATEWAY);
+    require(axelarArgs.gasService != address(0), Errors.INVALID_AXELAR_GAS_SERVICE);
+    AXELAR_GATEWAY = IAxelarGateway(axelarArgs.gateway);
+    AXELAR_GAS_SERVICE = IAxelarGasService(axelarArgs.gasService);
   }
 
   /// @inheritdoc IBaseAdapter
