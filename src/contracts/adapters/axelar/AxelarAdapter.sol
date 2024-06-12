@@ -28,19 +28,22 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
 
   /**
    * @notice constructor for the Axelar adapter
-   * @param crossChainController address of the contract that manages cross chain infrastructure
+   * @param baseArgs adapter base arguments
    * @param gateway address of the axelar gateway endpoint on the current chain where adapter is deployed
    * @param gasService address of the axelar gas service endpoint on the current chain where adapter is deployed
-   * @param providerGasLimit base gas limit used by the bridge adapter
-   * @param trustedRemotes array of objects with chain id and origin addresses which will be allowed to send messages to this adapter
    */
   constructor(
-    address crossChainController,
+    BaseAdapterArgs memory baseArgs,
     address gateway,
-    address gasService,
-    uint256 providerGasLimit,
-    TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, 'Axelar adapter', trustedRemotes) {
+    address gasService
+  )
+    BaseAdapter(
+      baseArgs.crossChainController,
+      baseArgs.providerGasLimit,
+      'Axelar adapter',
+      baseArgs.trustedRemotes
+    )
+  {
     require(gateway != address(0), Errors.INVALID_AXELAR_GATEWAY);
     require(gasService != address(0), Errors.INVALID_AXELAR_GAS_SERVICE);
     AXELAR_GATEWAY = IAxelarGateway(gateway);
@@ -166,5 +169,15 @@ contract AxelarAdapter is BaseAdapter, IAxelarAdapter, IAxelarExecutable {
     } else {
       return '';
     }
+  }
+
+  /// @inheritdoc IBaseAdapter
+  function nativeToInfraChainId(uint256) public pure override returns (uint256) {
+    revert('Use axelarNativeToInfraChainId instead');
+  }
+
+  /// @inheritdoc IBaseAdapter
+  function infraToNativeChainId(uint256) public pure override returns (uint256) {
+    revert('Use axelarInfraToNativeChainId instead');
   }
 }

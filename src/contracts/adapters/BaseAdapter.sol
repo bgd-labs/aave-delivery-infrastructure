@@ -55,14 +55,10 @@ abstract contract BaseAdapter is IBaseAdapter {
   }
 
   /// @inheritdoc IBaseAdapter
-  function nativeToInfraChainId(uint256 nativeChainId) public view virtual returns (uint256) {
-    return nativeChainId;
-  }
+  function nativeToInfraChainId(uint256 nativeChainId) public view virtual returns (uint256);
 
   /// @inheritdoc IBaseAdapter
-  function infraToNativeChainId(uint256 infraChainId) public view virtual returns (uint256) {
-    return infraChainId;
-  }
+  function infraToNativeChainId(uint256 infraChainId) public view virtual returns (uint256);
 
   /// @inheritdoc IBaseAdapter
   function setupPayments() external virtual {}

@@ -40,11 +40,13 @@ contract AxelarAdapterTest is BaseAdapterTest {
     originConfigs[0] = originConfig;
 
     axelarAdapter = new AxelarAdapter(
-      crossChainController,
+      IBaseAdapter.BaseAdapterArgs({
+        crossChainController: crossChainController,
+        providerGasLimit: baseGasLimit,
+        trustedRemotes: originConfigs
+      }),
       axelarGateway,
-      axelarGasService,
-      baseGasLimit,
-      originConfigs
+      axelarGasService
     );
     _;
   }
@@ -69,14 +71,15 @@ contract AxelarAdapterTest is BaseAdapterTest {
     IBaseAdapter.TrustedRemotesConfig[]
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
+
+    IBaseAdapter.BaseAdapterArgs memory baseArgs = IBaseAdapter.BaseAdapterArgs({
+      crossChainController: crossChainController,
+      providerGasLimit: baseGasLimit,
+      trustedRemotes: originConfigs
+    });
+
     vm.expectRevert(bytes(Errors.INVALID_AXELAR_GATEWAY));
-    new AxelarAdapter(
-      crossChainController,
-      address(0),
-      axelarGasService,
-      baseGasLimit,
-      originConfigs
-    );
+    new AxelarAdapter(baseArgs, address(0), axelarGasService);
   }
 
   function testWrongAxelarGasService(
@@ -98,8 +101,15 @@ contract AxelarAdapterTest is BaseAdapterTest {
     IBaseAdapter.TrustedRemotesConfig[]
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
+
+    IBaseAdapter.BaseAdapterArgs memory baseArgs = IBaseAdapter.BaseAdapterArgs({
+      crossChainController: crossChainController,
+      providerGasLimit: baseGasLimit,
+      trustedRemotes: originConfigs
+    });
+
     vm.expectRevert(bytes(Errors.INVALID_AXELAR_GAS_SERVICE));
-    new AxelarAdapter(crossChainController, axelarGateway, address(0), baseGasLimit, originConfigs);
+    new AxelarAdapter(baseArgs, axelarGateway, address(0));
   }
 
   function testInitialize(

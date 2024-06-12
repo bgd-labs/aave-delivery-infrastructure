@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {AxelarAdapter, IAxelarAdapter} from '../../src/contracts/adapters/axelar/AxelarAdapter.sol';
+import {AxelarAdapter, IAxelarAdapter, IBaseAdapter} from '../../src/contracts/adapters/axelar/AxelarAdapter.sol';
 import {AxelarAdapterTestnet} from '../contract_extensions/AxelarAdapter.sol';
 import './BaseAdapterScript.sol';
 
@@ -23,11 +23,13 @@ library AxelarAdapterDeploymentHelper {
       abi.encodePacked(
         creationCode,
         abi.encode(
-          axelarArgs.baseArgs.crossChainController,
+          IBaseAdapter.BaseAdapterArgs({
+            crossChainController: axelarArgs.baseArgs.crossChainController,
+            providerGasLimit: axelarArgs.baseArgs.providerGasLimit,
+            trustedRemotes: axelarArgs.baseArgs.trustedRemotes
+          }),
           axelarArgs.axelarGateway,
-          axelarArgs.axelarGasService,
-          axelarArgs.baseArgs.providerGasLimit,
-          axelarArgs.baseArgs.trustedRemotes
+          axelarArgs.axelarGasService
         )
       );
   }
