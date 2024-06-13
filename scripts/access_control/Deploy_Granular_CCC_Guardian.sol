@@ -24,7 +24,7 @@ abstract contract BaseDeployGranularGuardian is BaseScript {
 
   function SOLVE_EMERGENCY_GUARDIAN() internal view virtual returns (address);
 
-  function SALT() internal view virtual returns (string memory) {
+  function SALT() internal pure override returns (string memory) {
     return 'a.DI GranularGuardian';
   }
 
@@ -41,6 +41,6 @@ abstract contract BaseDeployGranularGuardian is BaseScript {
       crossChainController
     );
 
-    return Create2Utils.create2Deploy(keccak256(abi.encode(SALT())), ggCode);
+    return _deployByteCode(ggCode);
   }
 }

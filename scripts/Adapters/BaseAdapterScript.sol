@@ -23,7 +23,7 @@ abstract contract BaseAdapterScript is BaseScript {
     return 0;
   }
 
-  function SALT() internal view virtual returns (string memory) {
+  function SALT() internal view override returns (string memory) {
     return 'a.DI Adapter';
   }
 
@@ -59,7 +59,7 @@ abstract contract BaseAdapterScript is BaseScript {
 
     bytes memory adapterCode = _getAdapterByteCode(currentNetworkCCC);
 
-    return Create2Utils.create2Deploy(keccak256(abi.encode(SALT())), adapterCode);
+    return _deployByteCode(adapterCode);
   }
 
   function _getTrustedRemotes() internal view returns (IBaseAdapter.TrustedRemotesConfig[] memory) {
