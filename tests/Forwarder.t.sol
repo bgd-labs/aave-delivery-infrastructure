@@ -367,7 +367,7 @@ contract ForwarderTest is BaseCCForwarderTest {
       k++
     ) {
       if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success == true
+        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success
       ) {
         bridgeAdaptersToRetry[index] = _currentlyUsedAdaptersByChain[
           extendedTx.envelope.destinationChainId
