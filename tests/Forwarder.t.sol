@@ -348,7 +348,7 @@ contract ForwarderTest is BaseCCForwarderTest {
       j++
     ) {
       if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success == true
+        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success
       ) {
         failedAdaptersCounter++;
       }
