@@ -30,6 +30,6 @@ abstract contract BaseCCCDeploy is BaseScript {
   function _deployCCCImpl() internal returns (address) {
     bytes memory cccCode = CCCImplDeploymentHelper.getCCCImplCode(CL_EMERGENCY_ORACLE());
 
-    return _deployByteCode(cccCode);
+    return _deployByteCode(cccCode, SALT());
   }
 }

@@ -41,6 +41,6 @@ abstract contract BaseDeployGranularGuardian is BaseScript {
       crossChainController
     );
 
-    return _deployByteCode(ggCode);
+    return _deployByteCode(ggCode, SALT());
   }
 }

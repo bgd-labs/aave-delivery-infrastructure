@@ -22,6 +22,6 @@ abstract contract BaseDeployEmergencyMode is BaseScript {
 
   function _deployEmergencyRegistry() internal returns (address) {
     bytes memory erCode = EmergencyRegistryDeploymentHelper.getEmergencyRegistryCode();
-    return _deployByteCode(erCode);
+    return _deployByteCode(erCode, SALT());
   }
 }

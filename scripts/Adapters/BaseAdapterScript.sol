@@ -59,7 +59,7 @@ abstract contract BaseAdapterScript is BaseScript {
 
     bytes memory adapterCode = _getAdapterByteCode(currentNetworkCCC);
 
-    return _deployByteCode(adapterCode);
+    return _deployByteCode(adapterCode, SALT());
   }
 
   function _getTrustedRemotes() internal view returns (IBaseAdapter.TrustedRemotesConfig[] memory) {
