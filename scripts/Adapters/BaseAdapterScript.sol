@@ -23,7 +23,7 @@ abstract contract BaseAdapterScript is BaseScript {
     return 0;
   }
 
-  function SALT() internal view override returns (string memory) {
+  function SALT() internal view virtual returns (string memory) {
     return 'a.DI Adapter';
   }
 

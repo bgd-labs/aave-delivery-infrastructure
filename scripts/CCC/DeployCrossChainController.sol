@@ -23,7 +23,7 @@ abstract contract BaseCCCDeploy is BaseScript {
     return address(0);
   }
 
-  function SALT() internal pure override returns (string memory) {
+  function SALT() internal pure virtual returns (string memory) {
     return 'a.DI CrossChainController';
   }
 

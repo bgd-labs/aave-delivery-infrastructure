@@ -24,7 +24,7 @@ abstract contract BaseDeployGranularGuardian is BaseScript {
 
   function SOLVE_EMERGENCY_GUARDIAN() internal view virtual returns (address);
 
-  function SALT() internal pure override returns (string memory) {
+  function SALT() internal pure virtual returns (string memory) {
     return 'a.DI GranularGuardian';
   }
 
