@@ -16,12 +16,12 @@ abstract contract BaseDeployEmergencyMode is BaseScript {
     return address(msg.sender);
   }
 
-  function SALT() internal pure override returns (string memory) {
+  function SALT() internal pure virtual returns (string memory) {
     return 'a.DI EmergencyRegistry';
   }
 
   function _deployEmergencyRegistry() internal returns (address) {
     bytes memory erCode = EmergencyRegistryDeploymentHelper.getEmergencyRegistryCode();
-    return _deployByteCode(erCode);
+    return _deployByteCode(erCode, SALT());
   }
 }

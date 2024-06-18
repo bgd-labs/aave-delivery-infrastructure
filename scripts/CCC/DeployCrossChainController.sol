@@ -23,13 +23,13 @@ abstract contract BaseCCCDeploy is BaseScript {
     return address(0);
   }
 
-  function SALT() internal pure override returns (string memory) {
+  function SALT() internal pure virtual returns (string memory) {
     return 'a.DI CrossChainController';
   }
 
   function _deployCCCImpl() internal returns (address) {
     bytes memory cccCode = CCCImplDeploymentHelper.getCCCImplCode(CL_EMERGENCY_ORACLE());
 
-    return _deployByteCode(cccCode);
+    return _deployByteCode(cccCode, SALT());
   }
 }
