@@ -86,6 +86,29 @@ interface IGranularGuardianAccessControl {
   ) external;
 
   /**
+   * @notice method to solve an emergency on a CrossChainController with Revision 2 or older interface. This method is only callable by the accounts holding the SOLVE_EMERGENCY_ROLE role
+   * @param newConfirmations number of confirmations necessary for a message to be routed to destination
+   * @param newValidityTimestamp timestamp in seconds indicating the point to where not confirmed messages will be
+   *        invalidated.
+   * @param receiverBridgeAdaptersToAllow list of bridge adapter addresses to be allowed to receive messages
+   * @param receiverBridgeAdaptersToDisallow list of bridge adapter addresses to be disallowed
+   * @param sendersToApprove list of addresses to be approved as senders
+   * @param sendersToRemove list of sender addresses to be removed
+   * @param forwarderBridgeAdaptersToEnable list of bridge adapters to be enabled to send messages
+   * @param forwarderBridgeAdaptersToDisable list of bridge adapters to be disabled
+   */
+  function solveEmergencyRev2(
+    ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
+    ICrossChainReceiver.ValidityTimestampInput[] memory newValidityTimestamp,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToDisallow,
+    address[] memory sendersToApprove,
+    address[] memory sendersToRemove,
+    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
+    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+  ) external;
+
+  /**
    * @notice method to update the CrossChainController guardian when this contract has been set as guardian
    */
   function updateGuardian(address newCrossChainControllerGuardian) external;

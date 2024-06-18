@@ -93,6 +93,29 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
   }
 
   /// @inheritdoc IGranularGuardianAccessControl
+  function solveEmergencyRev2(
+    ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
+    ICrossChainReceiver.ValidityTimestampInput[] memory newValidityTimestamp,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToDisallow,
+    address[] memory sendersToApprove,
+    address[] memory sendersToRemove,
+    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
+    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+  ) external onlyRole(SOLVE_EMERGENCY_ROLE) {
+    ICrossChainControllerWithEmergencyMode(CROSS_CHAIN_CONTROLLER).solveEmergency(
+      newConfirmations,
+      newValidityTimestamp,
+      receiverBridgeAdaptersToAllow,
+      receiverBridgeAdaptersToDisallow,
+      sendersToApprove,
+      sendersToRemove,
+      forwarderBridgeAdaptersToEnable,
+      forwarderBridgeAdaptersToDisable
+    );
+  }
+
+  /// @inheritdoc IGranularGuardianAccessControl
   function updateGuardian(
     address newCrossChainControllerGuardian
   ) external onlyRole(DEFAULT_ADMIN_ROLE) {
