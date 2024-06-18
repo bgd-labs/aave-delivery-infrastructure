@@ -41,6 +41,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
       GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER
     );
 
+    hoax(BGD_GUARDIAN);
     OwnableWithGuardian(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER).updateGuardian(
       address(control)
     );
@@ -222,7 +223,6 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     public
     createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian)
     generateEmergencyState(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
-    validateEmergencySolved(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
   {
     vm.startPrank(solveEmergencyGuardian);
     vm.expectRevert(bytes(''));

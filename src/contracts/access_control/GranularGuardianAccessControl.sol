@@ -6,6 +6,7 @@ import {ICrossChainControllerWithEmergencyMode} from '../interfaces/ICrossChainC
 import {IGranularGuardianAccessControl, Envelope, ICrossChainReceiver} from './IGranularGuardianAccessControl.sol';
 import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
 import {IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {ICrossChainControllerWithEmergencyModeRev2} from '../interfaces/ICrossChainControllerWithEmergencyModeRev2.sol';
 
 /**
  * @title GranularGuardianAccessControl
@@ -103,7 +104,7 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
   ) external onlyRole(SOLVE_EMERGENCY_ROLE) {
-    ICrossChainControllerWithEmergencyMode(CROSS_CHAIN_CONTROLLER).solveEmergency(
+    ICrossChainControllerWithEmergencyModeRev2(CROSS_CHAIN_CONTROLLER).solveEmergency(
       newConfirmations,
       newValidityTimestamp,
       receiverBridgeAdaptersToAllow,
