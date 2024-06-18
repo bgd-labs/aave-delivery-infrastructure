@@ -6,4 +6,11 @@ import {Create2Utils} from 'aave-helpers/ScriptUtils.sol';
 
 abstract contract BaseScript {
   function TRANSACTION_NETWORK() internal view virtual returns (uint256);
+
+  function _deployByteCode(
+    bytes memory byteCode,
+    string memory salt
+  ) internal virtual returns (address) {
+    return Create2Utils.create2Deploy(keccak256(abi.encode(salt)), byteCode);
+  }
 }
