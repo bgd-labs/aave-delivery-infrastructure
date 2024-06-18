@@ -10,7 +10,7 @@ import {ICCIPAdapter, IRouterClient} from './ICCIPAdapter.sol';
 import {IAny2EVMMessageReceiver, Client} from './interfaces/IAny2EVMMessageReceiver.sol';
 import {IERC165} from './interfaces/IERC165.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 
 /**
  * @title CCIPAdapter

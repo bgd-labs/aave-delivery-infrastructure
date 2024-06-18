@@ -55,7 +55,7 @@ Immutable utility contracts, which integrate into a.DI the specifics of each und
     send messages, by directly communicating with the receiving contract in the same chain where it is deployed. This pattern is useful to have same-chain-communication (bypass the cross chain bridging), but still following the same a.DI high-level flow.
 
 Misc aspects of the bridge adapters:
-- To send a message to the bridge provider, the method `forwardMessage()` is called, via `DELEGATECALL`. This way, the CCC can hold the funds to pay the bridges, and can also be used as a trusted receiver. 
+- To send a message to the bridge provider, the method `forwardMessage()` is called, via `DELEGATECALL`. This way, the CCC can hold the funds to pay the bridges, and can also be used as a trusted receiver.
 - **No storage variables should be used on the bridge adapters**.
 - To receive a message a `handleReceive` (*the function name will actually depend on the
 bridge being integrated*) method needs to be called via `CALL` . This call will compare the caller to the trusted remote configured on deployment.
@@ -164,6 +164,17 @@ Once the Emergency is solved, the permissions granted to the `guardian` are remo
 
 <br>
 
+## CrossChainController access control
+
+The guardian system of the CrossChainController is externalized to the [GranularGuardianAccessControl](../src/contracts/access_control/GranularGuardianAccessControl.sol) contract.
+This contract holds a granular way of assigning responsibilities to different entities (roles) so that guardian access
+to CCC methods can be more deterministic. The roles that it holds are:
+- **SOLVE_EMERGENCY_ROLE**: The holders of ths role can call the method `solveEmergency` on CrossChainController on the networks that have emergency enabled.
+- **RETRY_ROLE**: the holders of this role can call the methods `retryTransaction` and `retryEnvelope` on CrossChainController (Forwarder).
+- **DEFAULT_ADMIN_ROLE**: the holder of this role can grant roles, and change the Guardian of CrossChainController by calling `updateGuardian` method.
+
+The audit report by Certora can be found [here](../security/certora/reports/Granular-Guardian-Access-Control.pdf)
+
 ### Contracts
 
 - [EmergencyRegistry](../src/contracts/emergency/EmergencyRegistry.sol): contract containing the registry of the emergency
@@ -179,7 +190,7 @@ the `guardian` can call `solveEmergency`. When the call succeeds the local count
 The `solveEmergency` goal is to return a.DI to the operational mode, which granularly, means the following:
 - **Working Forwarding state**: this means that there is at least one BridgeAdapter configured for a specified chain, so a message can be sent to that chain.
 - **Working Receiving state**: this means that there are enough bridge adapters configured so that when a message is received, `requiredConfirmations` can be reached.
-  
+
 The method can also be used as a way to force the system to a non-working state. This would be needed in the case that more than half of the bridges are compromised, so message should not be trusted (as the confirmations would then also be compromised), and `owner` could not be trusted since it is controlled via cross chain messaging.
 
 In that case there would be two ways of solving the emergency:

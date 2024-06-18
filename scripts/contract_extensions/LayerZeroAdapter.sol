@@ -5,7 +5,7 @@ import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol
 import {BaseAdapter, IBaseAdapter} from '../../src/contracts/adapters/BaseAdapter.sol';
 import {LayerZeroAdapter} from '../../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
 import {ILayerZeroAdapter} from '../../src/contracts/adapters/layerZero/ILayerZeroAdapter.sol';
-import {TestNetChainIds} from './TestNetChainIds.sol';
+import {TestNetChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 
 /**
@@ -32,8 +32,8 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
       return TestNetChainIds.AVALANCHE_FUJI;
     } else if (nativeChainId == 40232) {
       return TestNetChainIds.OPTIMISM_SEPOLIA;
-    } else if (nativeChainId == 40109) {
-      return TestNetChainIds.POLYGON_MUMBAI;
+    } else if (nativeChainId == 40267) {
+      return TestNetChainIds.POLYGON_AMOY;
     } else if (nativeChainId == 40231) {
       return TestNetChainIds.ARBITRUM_SEPOLIA;
     } else if (nativeChainId == 40112) {
@@ -59,8 +59,8 @@ contract LayerZeroAdapterTestnet is LayerZeroAdapter {
       return 40106;
     } else if (infraChainId == TestNetChainIds.OPTIMISM_SEPOLIA) {
       return 40232;
-    } else if (infraChainId == TestNetChainIds.POLYGON_MUMBAI) {
-      return 40109;
+    } else if (infraChainId == TestNetChainIds.POLYGON_AMOY) {
+      return 40267;
     } else if (infraChainId == TestNetChainIds.ARBITRUM_SEPOLIA) {
       return 40231;
     } else if (infraChainId == TestNetChainIds.FANTOM_TESTNET) {

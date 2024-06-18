@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {ChainIds} from '../../libs/ChainIds.sol';
-import {OpAdapter, IOpAdapter, IBaseAdapter, Errors} from '../optimism/OpAdapter.sol';
+import {OpAdapter, IOpAdapter, IBaseAdapter, Errors, ChainIds} from '../optimism/OpAdapter.sol';
 import {IScrollMessenger, IL1MessageQueue} from './interfaces/IScrollMessenger.sol';
 
 /**

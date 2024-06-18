@@ -301,7 +301,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     _validateRetryTransactionWhenAdaptersNotUnique(extendedTx);
   }
 
-  // ----------- validations -----------------------
+  // ----------- validations ----------------------
   function _validateRetryTransactionWhenAllAdaptersFail(
     ExtendedTransaction memory extendedTx
   ) internal {
@@ -347,53 +347,48 @@ contract ForwarderTest is BaseCCForwarderTest {
       j < _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId].length;
       j++
     ) {
-      if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success == false
-      ) {
+      if (_currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success) {
         failedAdaptersCounter++;
       }
     }
 
     address[] memory bridgeAdaptersToRetry = new address[](failedAdaptersCounter);
+    ICrossChainForwarder.ChainIdBridgeConfig[]
+      memory bridgeAdaptersToRetryConfig = new ICrossChainForwarder.ChainIdBridgeConfig[](
+        failedAdaptersCounter
+      );
+
     uint256 index = 0;
     for (
       uint256 k = 0;
       k < _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId].length;
       k++
     ) {
-      if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success == false
-      ) {
-        bridgeAdaptersToRetry[index++] = _currentlyUsedAdaptersByChain[
+      if (_currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success) {
+        bridgeAdaptersToRetry[index] = _currentlyUsedAdaptersByChain[
           extendedTx.envelope.destinationChainId
         ][k].bridgeAdapterConfig.currentChainBridgeAdapter;
-        _adapterSuccess[
-          _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k]
-            .bridgeAdapterConfig
-            .currentChainBridgeAdapter
-        ] = true;
+        bridgeAdaptersToRetryConfig[index] = _currentlyUsedAdaptersByChain[
+          extendedTx.envelope.destinationChainId
+        ][k].bridgeAdapterConfig;
+        index++;
       }
     }
 
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
 
-    UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[
-      extendedTx.envelope.destinationChainId
-    ];
-    for (uint256 i = 0; i < usedAdapters.length; i++) {
-      if (usedAdapters[i].success == false) {
-        vm.expectEmit(true, true, true, true);
-        emit TransactionForwardingAttempted(
-          extendedTx.transactionId,
-          extendedTx.envelopeId,
-          extendedTx.transactionEncoded,
-          extendedTx.envelope.destinationChainId,
-          usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter,
-          usedAdapters[i].bridgeAdapterConfig.destinationBridgeAdapter,
-          true,
-          bytes('')
-        );
-      }
+    for (uint256 i = 0; i < bridgeAdaptersToRetryConfig.length; i++) {
+      vm.expectEmit(true, true, true, true);
+      emit TransactionForwardingAttempted(
+        extendedTx.transactionId,
+        extendedTx.envelopeId,
+        extendedTx.transactionEncoded,
+        extendedTx.envelope.destinationChainId,
+        bridgeAdaptersToRetryConfig[i].currentChainBridgeAdapter,
+        bridgeAdaptersToRetryConfig[i].destinationBridgeAdapter,
+        true,
+        hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+      );
     }
     this.retryTransaction(extendedTx.transactionEncoded, GAS_LIMIT, bridgeAdaptersToRetry);
   }

@@ -6,7 +6,7 @@ import {ICrossDomainMessenger} from './interfaces/ICrossDomainMessenger.sol';
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {IOpAdapter} from './IOpAdapter.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 
 /**
  * @title OpAdapter

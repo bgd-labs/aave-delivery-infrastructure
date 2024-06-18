@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {PolygonAdapterBase} from './PolygonAdapterBase.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {PolygonAdapterBase, ChainIds} from './PolygonAdapterBase.sol';
 
 contract PolygonAdapterEthereum is PolygonAdapterBase {
   constructor(

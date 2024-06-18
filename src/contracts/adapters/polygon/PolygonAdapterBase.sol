@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {IPolygonAdapter} from './IPolygonAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {IFxMessageProcessor} from './interfaces/IFxMessageProcessor.sol';
-import {IFxTunnel} from './tunnel/interfaces/IFxTunnel.sol';
+import {IFxTunnel} from './interfaces/IFxTunnel.sol';
 
 /**
  * @title PolygonAdapter

@@ -3,8 +3,7 @@ pragma solidity ^0.8.0;
 
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
-import {OpAdapter, IOpAdapter, ICrossDomainMessenger, SafeCast} from '../optimism/OpAdapter.sol';
+import {OpAdapter, IOpAdapter, ICrossDomainMessenger, SafeCast, ChainIds} from '../optimism/OpAdapter.sol';
 
 /**
  * @title MetisAdapter
