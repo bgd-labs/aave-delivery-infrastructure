@@ -347,9 +347,7 @@ contract ForwarderTest is BaseCCForwarderTest {
       j < _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId].length;
       j++
     ) {
-      if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success
-      ) {
+      if (_currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][j].success) {
         failedAdaptersCounter++;
       }
     }
@@ -366,9 +364,7 @@ contract ForwarderTest is BaseCCForwarderTest {
       k < _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId].length;
       k++
     ) {
-      if (
-        _currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success
-      ) {
+      if (_currentlyUsedAdaptersByChain[extendedTx.envelope.destinationChainId][k].success) {
         bridgeAdaptersToRetry[index] = _currentlyUsedAdaptersByChain[
           extendedTx.envelope.destinationChainId
         ][k].bridgeAdapterConfig.currentChainBridgeAdapter;
@@ -418,7 +414,7 @@ contract ForwarderTest is BaseCCForwarderTest {
         usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter,
         usedAdapters[i].bridgeAdapterConfig.destinationBridgeAdapter,
         usedAdapters[i].success,
-        hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+        usedAdapters[i].returnData
       );
     }
     bytes32 transactionId = this.retryEnvelope(extendedTx.envelope, GAS_LIMIT);

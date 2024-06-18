@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {TestUtils} from '../utils/TestUtils.sol';
-import '../../src/contracts/access_control/GranularGuardianAccessControl.sol';
 import {OwnableWithGuardian, IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
-import '../BaseTest.sol';
 import {GovernanceV3Polygon} from 'aave-address-book/GovernanceV3Polygon.sol';
 import {MiscPolygon} from 'aave-address-book/MiscPolygon.sol';
+import {TestUtils} from '../utils/TestUtils.sol';
+import '../../src/contracts/access_control/GranularGuardianAccessControl.sol';
+import '../BaseTest.sol';
 
 contract GranularGuardianAccessControlIntTest is BaseTest {
   bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
   address public constant BGD_GUARDIAN = 0xbCEB4f363f2666E2E8E430806F37e97C405c130b;
-
-  address public constant AAVE_GUARDIAN = MiscPolygon.PROTOCOL_GUARDIAN;
 
   // list of supported chains
   uint256 destinationChainId = ChainIds.ETHEREUM;
@@ -20,15 +18,21 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   GranularGuardianAccessControl public control;
   address public ccc;
 
-  modifier createGGAC(address retryGuardian, address solveEmergencyGuardian) {
+  modifier createGGAC(
+    address defaultAdmin,
+    address retryGuardian,
+    address solveEmergencyGuardian
+  ) {
     vm.assume(retryGuardian != address(this));
+    vm.assume(defaultAdmin != address(this));
     vm.assume(solveEmergencyGuardian != address(this));
+    _filterAddress(defaultAdmin);
     _filterAddress(retryGuardian);
     _filterAddress(solveEmergencyGuardian);
 
     IGranularGuardianAccessControl.InitialGuardians
       memory initialGuardians = IGranularGuardianAccessControl.InitialGuardians({
-        defaultAdmin: AAVE_GUARDIAN,
+        defaultAdmin: defaultAdmin,
         retryGuardian: retryGuardian,
         solveEmergencyGuardian: solveEmergencyGuardian
       });
@@ -49,11 +53,12 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_initialization(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian
-  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+  ) public createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian) {
     assertEq(control.CROSS_CHAIN_CONTROLLER(), GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER);
-    assertEq(control.hasRole(DEFAULT_ADMIN_ROLE, AAVE_GUARDIAN), true);
+    assertEq(control.hasRole(DEFAULT_ADMIN_ROLE, defaultAdmin), true);
     assertEq(control.getRoleAdmin(control.RETRY_ROLE()), DEFAULT_ADMIN_ROLE);
     assertEq(control.getRoleAdmin(control.SOLVE_EMERGENCY_ROLE()), DEFAULT_ADMIN_ROLE);
     assertEq(control.getRoleMemberCount(control.RETRY_ROLE()), 1);
@@ -63,13 +68,14 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_retryTx(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian,
     address destination,
     uint256 gasLimit
   )
     public
-    createGGAC(retryGuardian, solveEmergencyGuardian)
+    createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian)
     generateRetryTxState(
       GovernanceV3Polygon.EXECUTOR_LVL_1,
       GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
@@ -107,11 +113,12 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_retryTxWhenWrongCaller(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian,
     uint256 gasLimit,
     address caller
-  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+  ) public createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian) {
     address[] memory bridgeAdaptersToRetry = new address[](0);
     vm.assume(caller != retryGuardian);
 
@@ -130,13 +137,14 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_retryEnvelope(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian,
     address destination,
     uint256 gasLimit
   )
     public
-    createGGAC(retryGuardian, solveEmergencyGuardian)
+    createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian)
     generateRetryTxState(
       GovernanceV3Polygon.EXECUTOR_LVL_1,
       GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER,
@@ -184,11 +192,12 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_retryEnvelopeWhenWrongCaller(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian,
     uint256 gasLimit,
     address caller
-  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+  ) public createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian) {
     vm.assume(caller != retryGuardian);
 
     Envelope memory envelope;
@@ -207,11 +216,12 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_solveEmergency(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian
   )
     public
-    createGGAC(retryGuardian, solveEmergencyGuardian)
+    createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian)
     generateEmergencyState(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
     validateEmergencySolved(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
   {
@@ -230,10 +240,11 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_solveEmergencyWhenWrongCaller(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian,
     address caller
-  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+  ) public createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian) {
     vm.assume(caller != solveEmergencyGuardian);
     hoax(caller);
     vm.expectRevert(
@@ -258,24 +269,26 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function test_updateGuardian(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian,
     address newGuardian
-  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
+  ) public createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian) {
     _filterAddress(newGuardian);
-    vm.startPrank(AAVE_GUARDIAN);
+    vm.startPrank(defaultAdmin);
     control.updateGuardian(newGuardian);
     assertEq(IWithGuardian(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER).guardian(), newGuardian);
     vm.stopPrank();
   }
 
   function test_updateGuardianWhenWrongCaller(
+    address defaultAdmin,
     address retryGuardian,
     address solveEmergencyGuardian,
     address newGuardian,
     address caller
-  ) public createGGAC(retryGuardian, solveEmergencyGuardian) {
-    vm.assume(caller != AAVE_GUARDIAN);
+  ) public createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian) {
+    vm.assume(caller != defaultAdmin);
     hoax(caller);
     vm.expectRevert(
       bytes(
