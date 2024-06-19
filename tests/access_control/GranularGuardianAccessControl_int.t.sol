@@ -251,7 +251,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     validateEmergencySolved(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
   {
     vm.startPrank(solveEmergencyGuardian);
-    control.solveEmergencyRev2(
+    control.solveEmergencyDeprecated(
       new ICrossChainReceiver.ConfirmationInput[](0),
       new ICrossChainReceiver.ValidityTimestampInput[](0),
       new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
@@ -311,7 +311,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
         )
       )
     );
-    control.solveEmergencyRev2(
+    control.solveEmergencyDeprecated(
       new ICrossChainReceiver.ConfirmationInput[](0),
       new ICrossChainReceiver.ValidityTimestampInput[](0),
       new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),

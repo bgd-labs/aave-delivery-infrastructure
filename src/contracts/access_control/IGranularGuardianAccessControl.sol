@@ -97,7 +97,7 @@ interface IGranularGuardianAccessControl {
    * @param forwarderBridgeAdaptersToEnable list of bridge adapters to be enabled to send messages
    * @param forwarderBridgeAdaptersToDisable list of bridge adapters to be disabled
    */
-  function solveEmergencyRev2(
+  function solveEmergencyDeprecated(
     ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
     ICrossChainReceiver.ValidityTimestampInput[] memory newValidityTimestamp,
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,

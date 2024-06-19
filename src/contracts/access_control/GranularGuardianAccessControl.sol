@@ -94,7 +94,7 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
   }
 
   /// @inheritdoc IGranularGuardianAccessControl
-  function solveEmergencyRev2(
+  function solveEmergencyDeprecated(
     ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
     ICrossChainReceiver.ValidityTimestampInput[] memory newValidityTimestamp,
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
