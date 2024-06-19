@@ -49,7 +49,7 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
   }
 
   function setUp() public {
-    vm.createSelectFork('polygon', 56006881);
+    vm.createSelectFork('polygon', 58315066);
   }
 
   function test_initialization(
@@ -223,9 +223,9 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
     public
     createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian)
     generateEmergencyState(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
-    validateEmergencySolved(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
   {
     vm.startPrank(solveEmergencyGuardian);
+    vm.expectRevert(bytes(''));
     control.solveEmergency(
       new ICrossChainReceiver.ConfirmationInput[](0),
       new ICrossChainReceiver.ValidityTimestampInput[](0),
@@ -236,6 +236,30 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
       new ICrossChainForwarder.BridgeAdapterToDisable[](0),
       new ICrossChainForwarder.OptimalBandwidthByChain[](0)
+    );
+    vm.stopPrank();
+  }
+
+  function test_solveEmergencyOld(
+    address defaultAdmin,
+    address retryGuardian,
+    address solveEmergencyGuardian
+  )
+    public
+    createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian)
+    generateEmergencyState(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+    validateEmergencySolved(GovernanceV3Polygon.CROSS_CHAIN_CONTROLLER)
+  {
+    vm.startPrank(solveEmergencyGuardian);
+    control.solveEmergencyDeprecated(
+      new ICrossChainReceiver.ConfirmationInput[](0),
+      new ICrossChainReceiver.ValidityTimestampInput[](0),
+      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
+      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
+      new address[](0),
+      new address[](0),
+      new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
+      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
     );
     vm.stopPrank();
   }
@@ -267,6 +291,35 @@ contract GranularGuardianAccessControlIntTest is BaseTest {
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
       new ICrossChainForwarder.BridgeAdapterToDisable[](0),
       new ICrossChainForwarder.OptimalBandwidthByChain[](0)
+    );
+  }
+
+  function test_solveEmergencyRev2WhenWrongCaller(
+    address defaultAdmin,
+    address retryGuardian,
+    address solveEmergencyGuardian,
+    address caller
+  ) public createGGAC(defaultAdmin, retryGuardian, solveEmergencyGuardian) {
+    vm.assume(caller != solveEmergencyGuardian);
+    hoax(caller);
+    vm.expectRevert(
+      bytes(
+        string.concat(
+          'AccessControl: account 0x',
+          TestUtils.toAsciiString(caller),
+          ' is missing role 0xf4cdc679c22cbf47d6de8e836ce79ffdae51f38408dcde3f0645de7634fa607d'
+        )
+      )
+    );
+    control.solveEmergencyDeprecated(
+      new ICrossChainReceiver.ConfirmationInput[](0),
+      new ICrossChainReceiver.ValidityTimestampInput[](0),
+      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
+      new ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[](0),
+      new address[](0),
+      new address[](0),
+      new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
+      new ICrossChainForwarder.BridgeAdapterToDisable[](0)
     );
   }
 
