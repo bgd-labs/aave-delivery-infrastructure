@@ -8,7 +8,7 @@ import '../emergency/interfaces/IEmergencyConsumer.sol';
  * @title ICrossChainControllerWithEmergencyModeRev2
  * @author BGD Labs. Interface containing the solveEmergency interface of the CrossChainController of Revision 2 or older
  */
-interface ICrossChainControllerWithEmergencyModeRev2 is
+interface ICrossChainControllerWithEmergencyModeDeprecated is
   IBaseCrossChainController,
   IEmergencyConsumer
 {
