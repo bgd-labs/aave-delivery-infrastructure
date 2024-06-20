@@ -1,47 +1,13 @@
 import "base.spec";
-//import "invariants.spec";
+import "invariants.spec";
 
-// ========================================================             
-// ========================================================             
-// The following invariants are proved in the file invariants.spec
-// ========================================================             
-// ========================================================             
 
-invariant inv_TXid_maps_have_same_IDs()
-    forall bytes32 TXid.
-    mirror_TXid_2_TXnonceP1[TXid] > 0 <=> mirror_forwardedTransactions[TXid];
-
-//**********************************************
-invariant inv_every_forwarded_TX_contains_registered_EV()
-    forall bytes32 TXid.
-    mirror_forwardedTransactions[TXid] => mirror_registeredEnvelopes[mirror_TXid_2_ENid[TXid]];
+use invariant inv_TXid_maps_have_same_IDs;
+use invariant inv_every_forwarded_TX_contains_registered_EV;
+use invariant inv_TXnonce_less_than_curr_nonce;
+use invariant nonce_correct;
+use invariant max_nonceTX_is_valid;
     
-//**********************************************
-invariant inv_TXnonce_less_than_curr_nonce()
-    forall bytes32 TXid.
-    mirror_forwardedTransactions[TXid] => to_mathint(mirror_TXid_2_TXnonceP1[TXid]) < getCurrentTransactionNonce()+1;
-
-//**********************************************
-invariant nonce_correct()
-    (!bridgeTransaction_was_called()=>(get_last_nonceTX_sent()==0 && getCurrentTransactionNonce()==0))
-    &&
-    (bridgeTransaction_was_called()=> (get_last_nonceTX_sent()  < getCurrentTransactionNonce()));
-
-//**********************************************
-invariant max_nonceTX_is_valid()
-    (forall bytes32 TXid. (mirror_forwardedTransactions[TXid] =>
-                          (to_mathint(mirror_TXid_2_TXnonceP1[TXid]) <= mirror_max_TXnonce+1))  )
-    &&
-    (getCurrentTransactionNonce()==0 => get_max_TXnonce()==0)
-    &&
-    (getCurrentTransactionNonce()!=0 => to_mathint(get_max_TXnonce())==getCurrentTransactionNonce()-1);
-
-// ========================================================             
-// ========================================================             
-// END OF INVARIANTS
-// ========================================================            
-// ========================================================             
-
 
 
 /* ===========================================================================

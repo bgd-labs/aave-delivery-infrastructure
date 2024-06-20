@@ -45,7 +45,7 @@ contract CrossChainForwarderTest is BaseTest {
     address destinationBridgeAdapter,
     bool indexed allowed
   );
-
+  event OptimalBandwidthUpdated(uint256 indexed chainId, uint256 optimalBandwidth);
   event EnvelopeRegistered(bytes32 indexed envelopeId, Envelope envelope);
 
   function setUp() public {
@@ -54,7 +54,8 @@ contract CrossChainForwarderTest is BaseTest {
 
     crossChainForwarder = new CrossChainForwarder(
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      sendersToApprove
+      sendersToApprove,
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
 
     Ownable(address(crossChainForwarder)).transferOwnership(OWNER);
@@ -80,6 +81,14 @@ contract CrossChainForwarderTest is BaseTest {
 
     hoax(OWNER);
     crossChainForwarder.enableBridgeAdapters(bridgeAdaptersToAllow);
+
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = ChainIds.POLYGON;
+    optimalBandwidthByChain[0].optimalBandwidth = 1;
+
+    hoax(OWNER);
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 
   function testSetUp() public {
@@ -109,6 +118,33 @@ contract CrossChainForwarderTest is BaseTest {
   }
 
   // TEST SETTERS
+  function testUpdateOptimalBandwidthByChain(uint256 optimalBandwidth, uint256 chainId) public {
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = chainId;
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
+
+    hoax(OWNER);
+    vm.expectEmit(true, true, false, true);
+    emit OptimalBandwidthUpdated(chainId, optimalBandwidth);
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
+
+    assertEq(crossChainForwarder.getOptimalBandwidthByChain(chainId), optimalBandwidth);
+  }
+
+  function testUpdateOptimalBandwidthByChainWhenNotOwner(
+    uint256 optimalBandwidth,
+    uint256 chainId
+  ) public {
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = chainId;
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
+
+    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
+  }
+
   function testApproveSenders() public {
     address[] memory newSenders = new address[](2);
     address newSender1 = address(101);

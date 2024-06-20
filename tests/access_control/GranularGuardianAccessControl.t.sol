@@ -260,6 +260,8 @@ contract GranularGuardianAccessControlTest is BaseTest {
       memory forwarderBridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](
         0
       );
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](0);
 
     vm.mockCall(
       ccc,
@@ -272,7 +274,8 @@ contract GranularGuardianAccessControlTest is BaseTest {
         sendersToApprove,
         sendersToRemove,
         forwarderBridgeAdaptersToEnable,
-        forwarderBridgeAdaptersToDisable
+        forwarderBridgeAdaptersToDisable,
+        optimalBandwidthByChain
       ),
       abi.encode()
     );
@@ -285,7 +288,8 @@ contract GranularGuardianAccessControlTest is BaseTest {
         sendersToApprove,
         sendersToRemove,
         forwarderBridgeAdaptersToEnable,
-        forwarderBridgeAdaptersToDisable
+        forwarderBridgeAdaptersToDisable,
+        optimalBandwidthByChain
       );
   }
 

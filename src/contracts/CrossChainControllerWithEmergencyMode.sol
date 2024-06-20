@@ -26,7 +26,8 @@ contract CrossChainControllerWithEmergencyMode is
     ConfirmationInput[] memory initialRequiredConfirmations,
     ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external initializer {
     _updateCLEmergencyOracle(clEmergencyOracle);
     _baseInitialize(
@@ -35,7 +36,8 @@ contract CrossChainControllerWithEmergencyMode is
       initialRequiredConfirmations,
       receiverBridgeAdaptersToAllow,
       forwarderBridgeAdaptersToEnable,
-      sendersToApprove
+      sendersToApprove,
+      optimalBandwidthByChain
     );
   }
 
@@ -48,7 +50,8 @@ contract CrossChainControllerWithEmergencyMode is
     address[] memory sendersToApprove,
     address[] memory sendersToRemove,
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+    BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable,
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external onlyGuardian onlyInEmergency {
     // receiver side
     _configureReceiverBasics(
@@ -63,7 +66,8 @@ contract CrossChainControllerWithEmergencyMode is
       forwarderBridgeAdaptersToEnable,
       forwarderBridgeAdaptersToDisable,
       sendersToApprove,
-      sendersToRemove
+      sendersToRemove,
+      optimalBandwidthByChain
     );
   }
 

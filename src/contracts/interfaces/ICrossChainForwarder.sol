@@ -10,6 +10,16 @@ import {Transaction, Envelope} from '../libs/EncodingUtils.sol';
  */
 interface ICrossChainForwarder {
   /**
+   * @notice Object containing the optimal bandwidth for communication with a receiver chain id
+   * @param chainId id of the receiver chain
+   * @param optimalBandwidth optimal number of bridge adapters to use to send a message to receiver chain
+   */
+  struct OptimalBandwidthByChain {
+    uint256 chainId;
+    uint256 optimalBandwidth;
+  }
+
+  /**
    * @notice object storing the connected pair of bridge adapters, on current and destination chain
    * @param destinationBridgeAdapter address of the bridge adapter on the destination chain
    * @param currentChainBridgeAdapter address of the bridge adapter deployed on current network
@@ -83,6 +93,12 @@ interface ICrossChainForwarder {
     address destinationBridgeAdapter,
     bool indexed allowed
   );
+  /**
+   * @notice emitted when the optimal bandwidth is updated for a specified receiver chain
+   * @param chainId id of the receiver chain that gets the new optimal bandwidth
+   * @param optimalBandwidth optimal number of adapters to use for sending a message to a receiver chain
+   */
+  event OptimalBandwidthUpdated(uint256 indexed chainId, uint256 optimalBandwidth);
 
   /**
    * @notice emitted when a sender has been updated
@@ -212,4 +228,20 @@ interface ICrossChainForwarder {
    * @return boolean indicating if the address has been approved as sender
    */
   function isSenderApproved(address sender) external view returns (bool);
+
+  /**
+   * @notice method to update the optimal bandwidth for communication with a receiver chain
+   * @param optimalBandwidthByChain array of objects containing the optimal bandwidth for a specified
+            receiver chain id
+   */
+  function updateOptimalBandwidthByChain(
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
+  ) external;
+
+  /**
+   * @notice method to get the optimal bandwidth for communication with the receiver chain
+   * @param chainId id of the receiver chain to get the optimal bandwidth from
+   * @return optimal bandwidth of the receiver chain
+   */
+  function getOptimalBandwidthByChain(uint256 chainId) external view returns (uint256);
 }

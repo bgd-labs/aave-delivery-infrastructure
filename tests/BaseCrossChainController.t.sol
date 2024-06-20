@@ -46,7 +46,8 @@ abstract contract BaseCrossChainControllerTest is Test {
     ICrossChainReceiver.ConfirmationInput[] memory initialRequiredConfirmations,
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal view virtual returns (bytes memory);
 
   function setUp() public {
@@ -86,6 +87,12 @@ abstract contract BaseCrossChainControllerTest is Test {
       destinationBridgeAdapter: address(110),
       destinationChainId: ChainIds.POLYGON
     });
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0] = ICrossChainForwarder.OptimalBandwidthByChain({
+      chainId: 1,
+      optimalBandwidth: 1
+    });
 
     crossChainControllerImpl = _deployControllerImplementation();
 
@@ -104,7 +111,8 @@ abstract contract BaseCrossChainControllerTest is Test {
           initialRequiredConfirmations,
           receiverBridgeAdaptersToAllow,
           forwarderBridgeAdaptersToEnable,
-          sendersToApprove
+          sendersToApprove,
+          optimalBandwidthByChain
         ),
         CROSS_CHAIN_CONTROLLER_SALT
       )
@@ -143,7 +151,8 @@ abstract contract BaseCrossChainControllerTest is Test {
         initialRequiredConfirmations,
         receiverBridgeAdaptersToAllow,
         new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-        new address[](0)
+        new address[](0),
+        new ICrossChainForwarder.OptimalBandwidthByChain[](0)
       ),
       CROSS_CHAIN_CONTROLLER_SALT
     );

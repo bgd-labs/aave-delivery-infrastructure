@@ -103,6 +103,12 @@ All the information about setup of the project and deployments can be found [HER
 - Security:
   - Granular Guardian:
     - [Report](security/certora/reports/Granular-Guardian-Access-Control.pdf)
+  - Shuffling:
+    - [Report](./security/certora/reports/aDI-Shuffle.pdf)
+    - [Properties](./security/certora/properties)
+- Diff:
+  - Release branch created [here]()
+  - diff with V1 Maintenance [here]()
 
 
 

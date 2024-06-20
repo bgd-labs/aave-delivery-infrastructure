@@ -3,12 +3,11 @@ pragma solidity ^0.8.8;
 import {CrossChainReceiver} from '../../../src/contracts/CrossChainReceiver.sol';
 import {Envelope, Transaction, TransactionUtils} from '../../../src/contracts/libs/EncodingUtils.sol';
 import {EnumerableSet} from '../../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ICrossChainReceiverHarness} from './ICrossChainReceiverHarness.sol';
 import {Errors} from '../../../src/contracts/libs/Errors.sol';
 import {IBaseReceiverPortal} from '../../../src/contracts/interfaces/IBaseReceiverPortal.sol';
 
 
-abstract contract CrossChainReceiverHarnessAbstract is CrossChainReceiver, ICrossChainReceiverHarness {
+abstract contract CrossChainReceiverHarnessAbstract is CrossChainReceiver {
   using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes malicious_s;
@@ -33,15 +32,8 @@ abstract contract CrossChainReceiverHarnessAbstract is CrossChainReceiver, ICros
         return toReturn; 
     }
 
-        //todo: remove
-        function getEnvelope_without_require(bytes memory encodedTransaction) external returns (Envelope memory) {
-        Transaction memory transaction = TransactionUtils.decode(encodedTransaction);
-        Envelope memory toReturn = transaction.getEnvelope();
-        return toReturn;
-    }
-
        
-        function getEnvelope_with_require(bytes memory encodedTransaction) external returns (Envelope memory) {
+    function getEnvelope(bytes memory encodedTransaction) external returns (Envelope memory) {
         Transaction memory transaction = TransactionUtils.decode(encodedTransaction);
         Envelope memory toReturn = transaction.getEnvelope();
         require(keccak256(abi.encode(toReturn)) == keccak256(transaction.encodedEnvelope));//TODO: check as an assertion on the forwarder

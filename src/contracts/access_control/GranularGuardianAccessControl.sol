@@ -6,6 +6,7 @@ import {ICrossChainControllerWithEmergencyMode} from '../interfaces/ICrossChainC
 import {IGranularGuardianAccessControl, Envelope, ICrossChainReceiver} from './IGranularGuardianAccessControl.sol';
 import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
 import {IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {ICrossChainControllerWithEmergencyModeDeprecated} from '../interfaces/ICrossChainControllerWithEmergencyModeDeprecated.sol';
 
 /**
  * @title GranularGuardianAccessControl
@@ -76,9 +77,34 @@ contract GranularGuardianAccessControl is AccessControlEnumerable, IGranularGuar
     address[] memory sendersToApprove,
     address[] memory sendersToRemove,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable,
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) external onlyRole(SOLVE_EMERGENCY_ROLE) {
     ICrossChainControllerWithEmergencyMode(CROSS_CHAIN_CONTROLLER).solveEmergency(
+      newConfirmations,
+      newValidityTimestamp,
+      receiverBridgeAdaptersToAllow,
+      receiverBridgeAdaptersToDisallow,
+      sendersToApprove,
+      sendersToRemove,
+      forwarderBridgeAdaptersToEnable,
+      forwarderBridgeAdaptersToDisable,
+      optimalBandwidthByChain
+    );
+  }
+
+  /// @inheritdoc IGranularGuardianAccessControl
+  function solveEmergencyDeprecated(
+    ICrossChainReceiver.ConfirmationInput[] memory newConfirmations,
+    ICrossChainReceiver.ValidityTimestampInput[] memory newValidityTimestamp,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
+    ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToDisallow,
+    address[] memory sendersToApprove,
+    address[] memory sendersToRemove,
+    ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
+    ICrossChainForwarder.BridgeAdapterToDisable[] memory forwarderBridgeAdaptersToDisable
+  ) external onlyRole(SOLVE_EMERGENCY_ROLE) {
+    ICrossChainControllerWithEmergencyModeDeprecated(CROSS_CHAIN_CONTROLLER).solveEmergency(
       newConfirmations,
       newValidityTimestamp,
       receiverBridgeAdaptersToAllow,

@@ -1,14 +1,15 @@
 if [[ "$1" ]]
 then
     RULE="--rule $1"
-    MSG="--msg $1:: $2"
+    MSG="--msg \"$1::$2\""
 fi
 
 echo "RULE is ==>" $RULE "<=="
 
+eval \
 certoraRun --send_only \
            --fe_version latest \
-           security/certora/confs/verifyCrossChainForwarder-newEnvelope.conf $RULE $MSG
+           security/certora/confs/verifyCrossChainForwarder-encode-decode-correct.conf $RULE $MSG
 
 
  

@@ -40,16 +40,6 @@ forge script \
 
 endef
 
-# catapulta
-#define deploy_single_fn
-#npx catapulta@0.3.14 script \
-# scripts/$(1).s.sol:$(if $(3),$(3),$(shell UP=$(if $(PROD),$(2),$(2)_testnet); echo $${UP} | perl -nE 'say ucfirst')) \
-# --network $(2) --slow --skip-git \
-# $(if $(LEDGER),$(BASE_LEDGER),$(BASE_KEY)) \
-# $(custom_$(if $(PROD),$(2),$(2)-testnet))
-#
-#endef
-
 define deploy_fn
  $(foreach network,$(2),$(call deploy_single_fn,$(1),$(network),$(3)))
 endef

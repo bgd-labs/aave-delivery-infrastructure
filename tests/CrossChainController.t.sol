@@ -15,7 +15,8 @@ contract CrossChainControllerTest is BaseCrossChainControllerTest {
     ICrossChainReceiver.ConfirmationInput[] memory initialRequiredConfirmations,
     ICrossChainReceiver.ReceiverBridgeAdapterConfigInput[] memory receiverBridgeAdaptersToAllow,
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    ICrossChainForwarder.OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal pure override returns (bytes memory) {
     return
       abi.encodeWithSelector(
@@ -25,7 +26,8 @@ contract CrossChainControllerTest is BaseCrossChainControllerTest {
         initialRequiredConfirmations,
         receiverBridgeAdaptersToAllow,
         forwarderBridgeAdaptersToEnable,
-        sendersToApprove
+        sendersToApprove,
+        optimalBandwidthByChain
       );
   }
 }
