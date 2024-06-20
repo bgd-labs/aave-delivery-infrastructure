@@ -97,8 +97,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         uint160(uint(keccak256(abi.encodePacked(i + numberOfAdapters + 1))))
       );
 
-      bytes
-        memory empty = hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+      bytes memory empty;
       bytes memory returnData = _adapterSuccess[currentChainBridgeAdapter]
         ? empty
         : abi.encodeWithSignature('Error(string)', 'error message');

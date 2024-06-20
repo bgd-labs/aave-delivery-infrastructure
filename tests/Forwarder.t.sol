@@ -446,7 +446,7 @@ contract ForwarderTest is BaseCCForwarderTest {
     }
 
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
-
+    bytes memory empty;
     for (uint256 i = 0; i < bridgeAdaptersToRetryConfig.length; i++) {
       vm.expectEmit(true, true, true, true);
       emit TransactionForwardingAttempted(
@@ -457,7 +457,7 @@ contract ForwarderTest is BaseCCForwarderTest {
         bridgeAdaptersToRetryConfig[i].currentChainBridgeAdapter,
         bridgeAdaptersToRetryConfig[i].destinationBridgeAdapter,
         true,
-        hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+        empty
       );
     }
     this.retryTransaction(extendedTx.transactionEncoded, GAS_LIMIT, bridgeAdaptersToRetry);
@@ -484,7 +484,7 @@ contract ForwarderTest is BaseCCForwarderTest {
         usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter,
         usedAdapters[i].bridgeAdapterConfig.destinationBridgeAdapter,
         usedAdapters[i].success,
-        usedAdapters[i].returnData
+        hex'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
       );
     }
     bytes32 transactionId = this.retryEnvelope(extendedTx.envelope, GAS_LIMIT);
