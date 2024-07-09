@@ -32,15 +32,15 @@ abstract contract BaseInitialDeployment is BaseScript {
     //    addresses.create3Factory = CREATE3_FACTORY() == address(0)
     //      ? address(new Create3Factory{salt: Constants.CREATE3_FACTORY_SALT}())
     //      : CREATE3_FACTORY();
-    //    addresses.proxyFactory = TRANSPARENT_PROXY_FACTORY() == address(0)
-    //      ? address(new TransparentProxyFactory())
-    //      : TRANSPARENT_PROXY_FACTORY();
-    addresses.proxyAdmin = PROXY_ADMIN() == address(0)
-      ? TransparentProxyFactory(addresses.proxyFactory).createDeterministicProxyAdmin(
-        OWNER(),
-        Constants.ADMIN_SALT
-      )
-      : PROXY_ADMIN();
+    addresses.proxyFactory = TRANSPARENT_PROXY_FACTORY() == address(0)
+      ? address(new TransparentProxyFactory())
+      : TRANSPARENT_PROXY_FACTORY();
+    //    addresses.proxyAdmin = PROXY_ADMIN() == address(0)
+    //      ? TransparentProxyFactory(addresses.proxyFactory).createDeterministicProxyAdmin(
+    //        OWNER(),
+    //        Constants.ADMIN_SALT
+    //      )
+    //      : PROXY_ADMIN();
     addresses.chainId = TRANSACTION_NETWORK();
     addresses.owner = OWNER();
     addresses.guardian = GUARDIAN();
