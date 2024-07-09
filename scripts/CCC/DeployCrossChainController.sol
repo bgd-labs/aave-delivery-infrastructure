@@ -27,7 +27,7 @@ abstract contract BaseCCCDeploy is BaseScript {
     return 'a.DI CrossChainController';
   }
 
-  function _deployCCCImpl() internal virtual returns (address) {
+  function _deployCCCImpl() internal returns (address) {
     bytes memory cccCode = CCCImplDeploymentHelper.getCCCImplCode(CL_EMERGENCY_ORACLE());
 
     return _deployByteCode(cccCode, SALT());
