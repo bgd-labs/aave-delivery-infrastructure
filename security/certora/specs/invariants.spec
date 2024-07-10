@@ -36,7 +36,7 @@ invariant inv_every_forwarded_TX_contains_registered_EV()
    ==============================================================================*/
 invariant inv_TXnonce_less_than_curr_nonce()
     forall bytes32 TXid.
-    mirror_forwardedTransactions[TXid] => to_mathint(mirror_TXid_2_TXnonceP1[TXid]) < getCurrentTransactionNonce()+1
+    mirror_forwardedTransactions[TXid] => to_mathint(mirror_TXid_2_TXnonceP1[TXid]) < mirror_currentTransactionNonce+1 //sgetCurrentTransactionNonce()+1
     filtered {f -> f.selector!=sig:reset_harness_storage().selector && !f.isView}
     {
         preserved {

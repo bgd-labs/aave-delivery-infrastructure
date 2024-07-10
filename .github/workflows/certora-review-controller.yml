@@ -1,4 +1,4 @@
-name: certora-review-forwarder
+name: certora-review-controller
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
         with: { java-version: "11", java-package: jre }
 
       - name: Install certora cli
-        run: pip3 install certora-cli==7.6.3
+        run: pip3 install certora-cli==4.13.1
 
       - name: Install solc
         run: |
@@ -51,10 +51,6 @@ jobs:
       max-parallel: 16
       matrix:
         rule:
-          - verifyCrossChainForwarder-envelopRetry.conf
-          - verifyCrossChainForwarder-invariants.conf
-          - verifyCrossChainForwarder-newEnvelope.conf
-          - verifyCrossChainForwarder-sanity.conf
-          - verifyCrossChainForwarder-simpleRules.conf
-          - verifyCrossChainForwarder-encode-decode-correct.conf --rule encode_decode_well_formed_TX
-          - verifyCrossChainForwarder-shuffle.conf
+          - verifyCrossChainControllerWithEmergency.conf #to move to the new prover version, wait for ticket 6284
+
+

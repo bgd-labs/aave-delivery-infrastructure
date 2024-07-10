@@ -111,7 +111,7 @@ ghost mapping(uint256 => uint256) mirrorArrayLen{
  * hook for Set array stores
  * @dev user of this spec must chainIdlace _list with the instance name of the Set.
  **/
-hook Sstore _configurationsByChain [KEY uint256 chainId] .(offset 32)[INDEX uint256 index] bytes32 newValue (bytes32 oldValue) STORAGE {
+hook Sstore _configurationsByChain [KEY uint256 chainId] .(offset 32)[INDEX uint256 index] bytes32 newValue (bytes32 oldValue) {
     mirrorArray[chainId][index] = newValue;
 }
 
@@ -119,14 +119,14 @@ hook Sstore _configurationsByChain [KEY uint256 chainId] .(offset 32)[INDEX uint
  * hook for Set array loads
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sload bytes32 value _configurationsByChain [KEY uint256 chainId] .(offset 32)[INDEX uint256 index] STORAGE {
+hook Sload bytes32 value _configurationsByChain [KEY uint256 chainId] .(offset 32)[INDEX uint256 index] {
     require(mirrorArray[chainId][index] == value);
 }
 /**
  * hook for Set map stores
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sstore _configurationsByChain [KEY uint256 chainId] .(offset 64)[KEY bytes32 key] uint256 newIndex (uint256 oldIndex) STORAGE {
+hook Sstore _configurationsByChain [KEY uint256 chainId] .(offset 64)[KEY bytes32 key] uint256 newIndex (uint256 oldIndex) {
       mirrorMap[chainId][key] = newIndex;
 }
 
@@ -134,7 +134,7 @@ hook Sstore _configurationsByChain [KEY uint256 chainId] .(offset 64)[KEY bytes3
  * hook for Set map loads
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sload uint256 index _configurationsByChain [KEY uint256 chainId] .(offset 64)[KEY bytes32 key] STORAGE {
+hook Sload uint256 index _configurationsByChain [KEY uint256 chainId] .(offset 64)[KEY bytes32 key] {
     require(mirrorMap[chainId][key] == index);
 }
 
@@ -142,7 +142,7 @@ hook Sload uint256 index _configurationsByChain [KEY uint256 chainId] .(offset 6
  * hook for Set array length stores
  * @dev user of this spec must chainIdlace _list with the instance name of the Set.
  **/
-hook Sstore _configurationsByChain  [KEY uint256 chainId] .(offset 32).(offset 0) uint256 newLen (uint256 oldLen) STORAGE {
+hook Sstore _configurationsByChain  [KEY uint256 chainId] .(offset 32).(offset 0) uint256 newLen (uint256 oldLen) {
         mirrorArrayLen[chainId] = newLen;
 }
 
@@ -150,7 +150,7 @@ hook Sstore _configurationsByChain  [KEY uint256 chainId] .(offset 32).(offset 0
  * hook for Set array length load
  * @dev user of this spec must chainIdlace _configurationsByChain with the instance name of the Set.
  **/
-hook Sload uint256 len _configurationsByChain  [KEY uint256 chainId]  .(offset 32).(offset 0) STORAGE {
+hook Sload uint256 len _configurationsByChain  [KEY uint256 chainId]  .(offset 32).(offset 0) {
     require mirrorArrayLen[chainId] == len;
 }
 

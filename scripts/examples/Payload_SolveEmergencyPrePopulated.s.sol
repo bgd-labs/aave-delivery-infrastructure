@@ -83,6 +83,9 @@ contract SolveEmergencyPayloadPrePopulated {
         _getUniqueAdapters(chainIds, forwarderBridgeAdaptersPerChain, forwarderMaxAdapterCount)
       );
 
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](0);
+
     CONTROLLER.solveEmergency(
       confirmationInputs,
       validityTimestampInputs,
@@ -91,7 +94,8 @@ contract SolveEmergencyPayloadPrePopulated {
       sendersToApprove,
       sendersToRemove,
       forwarderBridgeAdaptersToEnable,
-      forwarderBridgeAdaptersToDisable
+      forwarderBridgeAdaptersToDisable,
+      optimalBandwidthByChain
     );
   }
 

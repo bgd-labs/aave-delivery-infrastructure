@@ -8,6 +8,7 @@ import {ICrossChainForwarder} from './interfaces/ICrossChainForwarder.sol';
 import {IBaseAdapter} from './adapters/IBaseAdapter.sol';
 import {Transaction, EncodedTransaction, Envelope, EncodedEnvelope, TransactionUtils} from './libs/EncodingUtils.sol';
 import {Errors} from './libs/Errors.sol';
+import {Utils} from './libs/Utils.sol';
 
 /**
  * @title CrossChainForwarder
@@ -40,9 +41,14 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   // (chainId => chain configuration) list of bridge adapter configurations for a chain
   mapping(uint256 => ChainIdBridgeConfig[]) internal _bridgeAdaptersByChain;
 
+  // configuration to limit bandwidth to only send via X bridge adapters out of the total allowed bridge adapters for
+  // the specified chain
+  // chainId => optimalBandwidth
+  mapping(uint256 => uint256) internal _optimalBandwidthByChain;
+
   // storage gap allocation to be used for later updates. This way storage can be added on parent contract without
   // overwriting storage on child
-  uint256[50] private __FORWARDER_GAP;
+  uint256[49] private __FORWARDER_GAP;
 
   // checks if caller is an approved sender
   modifier onlyApprovedSenders() {
@@ -56,14 +62,21 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
    */
   constructor(
     ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable,
-    address[] memory sendersToApprove
+    address[] memory sendersToApprove,
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) {
     _configureForwarderBasics(
       bridgeAdaptersToEnable,
       new BridgeAdapterToDisable[](0),
       sendersToApprove,
-      new address[](0)
+      new address[](0),
+      optimalBandwidthByChain
     );
+  }
+
+  /// @inheritdoc ICrossChainForwarder
+  function getOptimalBandwidthByChain(uint256 chainId) external view returns (uint256) {
+    return _optimalBandwidthByChain[chainId];
   }
 
   /// @inheritdoc ICrossChainForwarder
@@ -108,7 +121,9 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     uint256 gasLimit,
     bytes memory message
   ) external onlyApprovedSenders returns (bytes32, bytes32) {
-    ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[destinationChainId];
+    ChainIdBridgeConfig[] memory bridgeAdapters = _getShuffledBridgeAdaptersByChain(
+      destinationChainId
+    );
     require(bridgeAdapters.length > 0, Errors.NO_BRIDGE_ADAPTERS_FOR_SPECIFIED_CHAIN);
 
     uint256 envelopeNonce = _currentEnvelopeNonce++;
@@ -153,9 +168,10 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     // Message can be retried only if it was sent before with exactly the same parameters
     require(isEnvelopeRegistered(encodedEnvelope.id), Errors.ENVELOPE_NOT_PREVIOUSLY_REGISTERED);
 
-    ChainIdBridgeConfig[] memory bridgeAdapters = _bridgeAdaptersByChain[
+    // As envelope has not ben previously sent, we need to get the optimalBandwidth shuffled bridge adapters array again.
+    ChainIdBridgeConfig[] memory bridgeAdapters = _getShuffledBridgeAdaptersByChain(
       envelope.destinationChainId
-    ];
+    );
     require(bridgeAdapters.length > 0, Errors.NO_BRIDGE_ADAPTERS_FOR_SPECIFIED_CHAIN);
 
     EncodedTransaction memory encodedTransaction = (
@@ -259,6 +275,47 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     BridgeAdapterToDisable[] memory bridgeAdapters
   ) external onlyOwner {
     _disableBridgeAdapters(bridgeAdapters);
+  }
+
+  /// @inheritdoc ICrossChainForwarder
+  function updateOptimalBandwidthByChain(
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
+  ) external onlyOwner {
+    _updateOptimalBandwidthByChain(optimalBandwidthByChain);
+  }
+
+  /**
+   * @notice method to get a shuffled array of forwarder bridge adapters configurations
+   * @param destinationChainId id of the destination chain to get the adapters that communicate to it
+   * @return a shuffled array of the forwarder configurations for a destination chain
+   */
+  function _getShuffledBridgeAdaptersByChain(
+    uint256 destinationChainId
+  ) internal view returns (ChainIdBridgeConfig[] memory) {
+    uint256 optimalBandwidth = _optimalBandwidthByChain[destinationChainId];
+    ChainIdBridgeConfig[] storage forwarderAdapters = _bridgeAdaptersByChain[destinationChainId];
+
+    // If configured optimal bandwidth for a destination network are set to 0 or are bigger than current adapters,
+    // it will use all the adapters available. This way there would be no way of breaking forwarding communication
+    // by setting wrong configuration.
+    if (optimalBandwidth == 0 || optimalBandwidth >= forwarderAdapters.length) {
+      return forwarderAdapters;
+    }
+
+    uint256[] memory shuffledIndexes = Utils.shuffleArray(
+      Utils.generateIndexArray(forwarderAdapters.length),
+      optimalBandwidth
+    );
+
+    ChainIdBridgeConfig[] memory selectedForwarderAdapters = new ChainIdBridgeConfig[](
+      optimalBandwidth
+    );
+
+    for (uint256 i = 0; i < optimalBandwidth; i++) {
+      selectedForwarderAdapters[i] = forwarderAdapters[shuffledIndexes[i]];
+    }
+
+    return selectedForwarderAdapters;
   }
 
   /**
@@ -433,16 +490,38 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
     }
   }
 
+  /**
+  * @notice method to update the optimal bandwidth of a receiver chain
+  * @param optimalBandwidthByChain array of objects containing the optimal bandwidth for a specified receiver chain id
+  * @dev Setting optimal bandwidth to 0 means that no optimization will be applied, so all allowed bridges will be used to
+         forward a message.
+  */
+  function _updateOptimalBandwidthByChain(
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
+  ) internal {
+    for (uint256 i = 0; i < optimalBandwidthByChain.length; i++) {
+      _optimalBandwidthByChain[optimalBandwidthByChain[i].chainId] = optimalBandwidthByChain[i]
+        .optimalBandwidth;
+
+      emit OptimalBandwidthUpdated(
+        optimalBandwidthByChain[i].chainId,
+        optimalBandwidthByChain[i].optimalBandwidth
+      );
+    }
+  }
+
   /// @dev utility function, defining an order of actions commonly done in batch
   function _configureForwarderBasics(
     ForwarderBridgeAdapterConfigInput[] memory bridgesToEnable,
     BridgeAdapterToDisable[] memory bridgesToDisable,
     address[] memory sendersToEnable,
-    address[] memory sendersToDisable
+    address[] memory sendersToDisable,
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal {
     _enableBridgeAdapters(bridgesToEnable);
     _disableBridgeAdapters(bridgesToDisable);
     _updateSenders(sendersToEnable, true);
     _updateSenders(sendersToDisable, false);
+    _updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 }
