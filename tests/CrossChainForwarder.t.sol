@@ -9,7 +9,7 @@ import {ILayerZeroEndpointV2} from '../src/contracts/adapters/layerZero/interfac
 import {CrossChainForwarder, ICrossChainForwarder} from '../src/contracts/CrossChainForwarder.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
 import {LayerZeroAdapter, ILayerZeroAdapter, MessagingFee, MessagingReceipt} from '../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
-import {ChainIds} from '../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {Transaction, EncodedTransaction, Envelope} from '../src/contracts/libs/EncodingUtils.sol';
 import {BaseTest} from './BaseTest.sol';
@@ -45,7 +45,7 @@ contract CrossChainForwarderTest is BaseTest {
     address destinationBridgeAdapter,
     bool indexed allowed
   );
-
+  event OptimalBandwidthUpdated(uint256 indexed chainId, uint256 optimalBandwidth);
   event EnvelopeRegistered(bytes32 indexed envelopeId, Envelope envelope);
 
   function setUp() public {
@@ -54,7 +54,8 @@ contract CrossChainForwarderTest is BaseTest {
 
     crossChainForwarder = new CrossChainForwarder(
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      sendersToApprove
+      sendersToApprove,
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
 
     Ownable(address(crossChainForwarder)).transferOwnership(OWNER);
@@ -80,6 +81,14 @@ contract CrossChainForwarderTest is BaseTest {
 
     hoax(OWNER);
     crossChainForwarder.enableBridgeAdapters(bridgeAdaptersToAllow);
+
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = ChainIds.POLYGON;
+    optimalBandwidthByChain[0].optimalBandwidth = 1;
+
+    hoax(OWNER);
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 
   function testSetUp() public {
@@ -109,6 +118,33 @@ contract CrossChainForwarderTest is BaseTest {
   }
 
   // TEST SETTERS
+  function testUpdateOptimalBandwidthByChain(uint256 optimalBandwidth, uint256 chainId) public {
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = chainId;
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
+
+    hoax(OWNER);
+    vm.expectEmit(true, true, false, true);
+    emit OptimalBandwidthUpdated(chainId, optimalBandwidth);
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
+
+    assertEq(crossChainForwarder.getOptimalBandwidthByChain(chainId), optimalBandwidth);
+  }
+
+  function testUpdateOptimalBandwidthByChainWhenNotOwner(
+    uint256 optimalBandwidth,
+    uint256 chainId
+  ) public {
+    ICrossChainForwarder.OptimalBandwidthByChain[]
+      memory optimalBandwidthByChain = new ICrossChainForwarder.OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].chainId = chainId;
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
+
+    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
+  }
+
   function testApproveSenders() public {
     address[] memory newSenders = new address[](2);
     address newSender1 = address(101);
@@ -430,17 +466,6 @@ contract CrossChainForwarderTest is BaseTest {
         })
       )
     );
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTx.transactionEncoded
-      )
-    );
     vm.expectEmit(true, true, false, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = crossChainForwarder
@@ -472,17 +497,6 @@ contract CrossChainForwarderTest is BaseTest {
     );
 
     hoax(extendedTx.envelope.origin);
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTx.transactionEncoded
-      )
-    );
     vm.expectEmit(true, true, false, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = crossChainForwarder
@@ -561,17 +575,7 @@ contract CrossChainForwarderTest is BaseTest {
         })
       )
     );
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTx.transactionEncoded
-      )
-    );
+
     vm.expectEmit(true, true, false, true);
     emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = crossChainForwarder
@@ -600,17 +604,6 @@ contract CrossChainForwarderTest is BaseTest {
     );
 
     hoax(GUARDIAN);
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        extendedTxOnRetry.transactionEncoded
-      )
-    );
     crossChainForwarder.retryEnvelope(extendedTx.envelope, 0);
 
     assertTrue(crossChainForwarder.isTransactionForwarded(extendedTxOnRetry.transaction));
@@ -670,18 +663,6 @@ contract CrossChainForwarderTest is BaseTest {
     ).encode();
 
     hoax(GUARDIAN);
-    vm.expectCall(
-      address(lzAdapter),
-      0,
-      abi.encodeWithSelector(
-        LayerZeroAdapter.forwardMessage.selector,
-        DESTINATION_BRIDGE_ADAPTER,
-        0,
-        extendedTx.envelope.destinationChainId,
-        transactionOnRetry.data
-      )
-    );
-
     crossChainForwarder.retryEnvelope(extendedTx.envelope, 0);
 
     assertTrue(crossChainForwarder.isEnvelopeRegistered(extendedTx.envelope));

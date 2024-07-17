@@ -8,7 +8,7 @@ echo "RULE is ==>" $RULE "<=="
 
 certoraRun --send_only \
            --fe_version latest \
-           certora/confs/CrossChainForwarder-newEnvelope.conf $RULE $MSG
+           security/certora/confs/verifyCrossChainForwarder-newEnvelope.conf $RULE $MSG
 
 
  

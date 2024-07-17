@@ -15,7 +15,7 @@
 
 
 
-using SameChainAdapter as _SameChainAdapter;
+//using SameChainAdapter as _SameChainAdapter;
 
 
 methods {
@@ -30,7 +30,7 @@ methods {
     function getCurrentTransactionNonce() external returns (uint256) envfree;
     function isTransactionForwarded(bytes32 transactionId) external returns (bool) envfree;
     function getEnvelopeId(CrossChainForwarderHarness.Envelope) external returns (bytes32) envfree;
-    function _SameChainAdapter.setupPayments() external envfree;
+    //function _SameChainAdapter.setupPayments() external envfree;
     function isEnvelopeRegistered(bytes32) external returns (bool) envfree;
     function isEnvelopeRegistered(CrossChainForwarderHarness.Envelope) external returns (bool) envfree;
     function getForwarderBridgeAdaptersByChain(uint256) external
@@ -39,6 +39,7 @@ methods {
     function reset_harness_storage() external envfree;
     function get_param_envelopeId() external returns (bytes32) envfree;
     function get_param_transactionId() external returns (bytes32) envfree;
+    function get_param_destinationChainId() external returns (uint256) envfree;
     //function get_param_encodedTransaction() external returns (bytes) envfree;
     function get_envelope_from_encodedTX(bytes encodedTransaction)
         external returns (CrossChainForwarderHarness.Envelope) envfree;
@@ -47,6 +48,9 @@ methods {
     function get_last_nonceTX_sent() external returns (uint256) envfree;
     function get_TXnonceP1(bytes32 TXid) external returns (uint) envfree;
     function get_max_TXnonce() external returns (uint) envfree;
+    function get_num_of_active_bridges() external returns (uint) envfree;
+    function get_active_bridges_dest() external returns (address[]) envfree;
+    function get_active_bridges_curr() external returns (address[]) envfree;
 }
 
 
@@ -57,22 +61,32 @@ methods {
 ghost uint256 mirror_max_TXnonce {
     init_state axiom mirror_max_TXnonce==0;
 }
-hook Sstore _max_TXnonce uint256 newVal (uint256 oldVal) STORAGE {
+hook Sstore _max_TXnonce uint256 newVal (uint256 oldVal) {
       mirror_max_TXnonce = newVal;
 }
-hook Sload uint256 val _max_TXnonce STORAGE {
+hook Sload uint256 val _max_TXnonce  {
     require(mirror_max_TXnonce == val);
+}
+
+
+ghost uint256 mirror_currentTransactionNonce {
+    init_state axiom mirror_currentTransactionNonce==0;
+}
+hook Sstore _currentTransactionNonce uint256 newVal (uint256 oldVal) {
+      mirror_currentTransactionNonce = newVal;
+}
+hook Sload uint256 val _currentTransactionNonce  {
+    require(mirror_currentTransactionNonce == val);
 }
 
 
 ghost mapping(bytes32 => uint256) mirror_TXid_2_TXnonceP1 { 
     init_state axiom forall bytes32 a. mirror_TXid_2_TXnonceP1[a] == 0;
-    //    axiom forall bytes32 a. mirror_TXid_2_TXnonceP1[a] >= 0;// && mirror_TXid_2_TXnonceP1[a] <= MAX_UINT256(); //todo: remove once https://certora.atlassian.net/browse/CERT-1060 is resolved
 }
-hook Sstore _TXid_2_TXnonceP1[KEY bytes32 key] uint256 newVal (uint256 oldVal) STORAGE {
+hook Sstore _TXid_2_TXnonceP1[KEY bytes32 key] uint256 newVal (uint256 oldVal)  {
       mirror_TXid_2_TXnonceP1[key] = newVal;
 }
-hook Sload uint256 val _TXid_2_TXnonceP1[KEY bytes32 key] STORAGE {
+hook Sload uint256 val _TXid_2_TXnonceP1[KEY bytes32 key]  {
     require(mirror_TXid_2_TXnonceP1[key] == val);
 }
 
@@ -80,10 +94,10 @@ hook Sload uint256 val _TXid_2_TXnonceP1[KEY bytes32 key] STORAGE {
 ghost mapping(bytes32 => bytes32) mirror_TXid_2_ENid { 
     init_state axiom forall bytes32 a. mirror_TXid_2_ENid[a] == to_bytes32(0);
 }
-hook Sstore _TXid_2_ENid[KEY bytes32 key] bytes32 newVal (bytes32 oldVal) STORAGE {
+hook Sstore _TXid_2_ENid[KEY bytes32 key] bytes32 newVal (bytes32 oldVal)  {
       mirror_TXid_2_ENid[key] = newVal;
 }
-hook Sload bytes32 val _TXid_2_ENid[KEY bytes32 key] STORAGE {
+hook Sload bytes32 val _TXid_2_ENid[KEY bytes32 key]  {
     require(mirror_TXid_2_ENid[key] == val);
 }
 
@@ -91,10 +105,10 @@ hook Sload bytes32 val _TXid_2_ENid[KEY bytes32 key] STORAGE {
 ghost mapping(bytes32 => bool) mirror_forwardedTransactions { 
     init_state axiom forall bytes32 a. mirror_forwardedTransactions[a] == false;
 }
-hook Sstore _forwardedTransactions[KEY bytes32 key] bool newVal (bool oldVal) STORAGE {
+hook Sstore _forwardedTransactions[KEY bytes32 key] bool newVal (bool oldVal)  {
       mirror_forwardedTransactions[key] = newVal;
 }
-hook Sload bool val _forwardedTransactions[KEY bytes32 key] STORAGE {
+hook Sload bool val _forwardedTransactions[KEY bytes32 key]  {
     require(mirror_forwardedTransactions[key] == val);
 }
 
@@ -102,10 +116,10 @@ hook Sload bool val _forwardedTransactions[KEY bytes32 key] STORAGE {
 ghost mapping(bytes32 => bool) mirror_registeredEnvelopes { 
     init_state axiom forall bytes32 a. mirror_registeredEnvelopes[a] == false;
 }
-hook Sstore _registeredEnvelopes[KEY bytes32 key] bool newVal (bool oldVal) STORAGE {
+hook Sstore _registeredEnvelopes[KEY bytes32 key] bool newVal (bool oldVal)  {
       mirror_registeredEnvelopes[key] = newVal;
 }
-hook Sload bool val _registeredEnvelopes[KEY bytes32 key] STORAGE {
+hook Sload bool val _registeredEnvelopes[KEY bytes32 key]  {
     require(mirror_registeredEnvelopes[key] == val);
 }
 
@@ -115,30 +129,30 @@ hook Sload bool val _registeredEnvelopes[KEY bytes32 key] STORAGE {
 ghost mapping(uint => uint) mirror_bridgeAdaptersByChain_IDlen { 
     init_state axiom forall uint a. mirror_bridgeAdaptersByChain_IDlen[a] == 0;
 }
-hook Sstore _bridgeAdaptersByChain[KEY uint key].(offset 0) uint newLen (uint oldLen) STORAGE {
+hook Sstore _bridgeAdaptersByChain[KEY uint key].(offset 0) uint newLen (uint oldLen)  {
     mirror_bridgeAdaptersByChain_IDlen[key] = newLen;
 }
-hook Sload uint len _bridgeAdaptersByChain[KEY uint key].(offset 0) STORAGE {
+hook Sload uint len _bridgeAdaptersByChain[KEY uint key].(offset 0)  {
     require(mirror_bridgeAdaptersByChain_IDlen[key] == len);
 }
 
 ghost mapping(uint256 => mapping(uint=>address)) mirrorArray_dest{
     init_state axiom forall uint256 i. forall uint j. mirrorArray_dest[i][j] == 0;
 }
-hook Sstore _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 0) address newAddr (bytes32 oldAddr) STORAGE {
+hook Sstore _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 0) address newAddr (bytes32 oldAddr)  {
     mirrorArray_dest[key][i] = newAddr;
 }
-hook Sload address addr _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 0) STORAGE {
+hook Sload address addr _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 0)  {
     require(mirrorArray_dest[key][i] == addr);
 }
 
 ghost mapping(uint256 => mapping(uint=>address)) mirrorArray_curr{
     init_state axiom forall uint256 i. forall uint j. mirrorArray_curr[i][j] == 0;
 }
-hook Sstore _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 32) address newAddr (bytes32 oldAddr) STORAGE {
+hook Sstore _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 32) address newAddr (bytes32 oldAddr)  {
     mirrorArray_curr[key][i] = newAddr;
 }
-hook Sload address addr _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 32) STORAGE {
+hook Sload address addr _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(offset 32)  {
     require(mirrorArray_curr[key][i] == addr);
 }
 
@@ -146,9 +160,9 @@ hook Sload address addr _bridgeAdaptersByChain[KEY uint key][INDEX uint256 i].(o
 ghost mapping(address => bool) mirror_approvedSenders { 
     init_state axiom forall address a. mirror_approvedSenders[a] == false;
 }
-hook Sstore _approvedSenders[KEY address key] bool newVal (bool oldVal) STORAGE {
+hook Sstore _approvedSenders[KEY address key] bool newVal (bool oldVal)  {
     mirror_approvedSenders[key] = newVal;
 }
-hook Sload bool val _approvedSenders[KEY address key] STORAGE {
+hook Sload bool val _approvedSenders[KEY address key]  {
     require(mirror_approvedSenders[key] == val);
 }

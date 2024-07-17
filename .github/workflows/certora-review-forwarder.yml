@@ -28,7 +28,7 @@ jobs:
         with: { java-version: "11", java-package: jre }
 
       - name: Install certora cli
-        run: pip3 install certora-cli==4.13.1
+        run: pip3 install certora-cli==7.6.3
 
       - name: Install solc
         run: |
@@ -56,3 +56,5 @@ jobs:
           - verifyCrossChainForwarder-newEnvelope.conf
           - verifyCrossChainForwarder-sanity.conf
           - verifyCrossChainForwarder-simpleRules.conf
+          - verifyCrossChainForwarder-encode-decode-correct.conf --rule encode_decode_well_formed_TX
+          - verifyCrossChainForwarder-shuffle.conf
