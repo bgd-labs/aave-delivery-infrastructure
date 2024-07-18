@@ -34,9 +34,9 @@ library ZkSyncAdapterDeploymentHelper {
 }
 
 abstract contract BaseZkSyncAdapter is BaseAdapterScript {
-  function BRIDGE_HUB() public view virtual returns (address);
+  function BRIDGE_HUB() internal view virtual returns (address);
 
-  function REFUND_ADDRESS() public pure virtual returns (address) {
+  function REFUND_ADDRESS() internal pure virtual returns (address) {
     return address(0);
   }
 
