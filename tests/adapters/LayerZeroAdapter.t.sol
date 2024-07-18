@@ -5,7 +5,7 @@ import {LayerZeroAdapter, Origin, ILayerZeroEndpointV2, MessagingFee, MessagingR
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 import {ILayerZeroAdapter} from '../../src/contracts/adapters/layerZero/ILayerZeroAdapter.sol';
-import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {BaseAdapterTest} from './BaseAdapterTest.sol';
 
@@ -35,8 +35,8 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     originConfigs[0] = originConfig;
 
     layerZeroAdapter = new LayerZeroAdapter(
-      lzEndpoint,
       crossChainController,
+      lzEndpoint,
       baseGasLimit,
       originConfigs
     );
@@ -64,7 +64,7 @@ contract LayerZeroAdapterTest is BaseAdapterTest {
     originConfigs[0] = originConfig;
 
     vm.expectRevert(bytes(Errors.INVALID_LZ_ENDPOINT));
-    new LayerZeroAdapter(address(0), crossChainController, baseGasLimit, originConfigs);
+    new LayerZeroAdapter(crossChainController, address(0), baseGasLimit, originConfigs);
   }
 
   function testInit(

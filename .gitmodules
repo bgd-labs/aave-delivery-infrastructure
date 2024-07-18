@@ -2,12 +2,6 @@
 	path = lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
 	branch = release-v4.9
-[submodule "lib/nitro-contracts"]
-	path = lib/nitro-contracts
-	url = https://github.com/OffchainLabs/nitro-contracts
-[submodule "lib/fx-portal"]
-	path = lib/fx-portal
-	url = https://github.com/0xPolygon/fx-portal
 [submodule "lib/aave-helpers"]
 	path = lib/aave-helpers
 	url = https://github.com/bgd-labs/aave-helpers

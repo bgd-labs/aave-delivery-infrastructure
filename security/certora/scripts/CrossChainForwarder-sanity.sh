@@ -9,7 +9,7 @@ echo "RULE is ==>" $RULE "<=="
 eval \
 certoraRun --send_only \
            --fe_version latest \
-           certora/confs/CrossChainForwarder-sanity.conf $RULE $MSG
+           security/certora/confs/verifyCrossChainForwarder-sanity.conf $RULE $MSG
 
 
  

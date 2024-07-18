@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {TestNetChainIds} from './TestNetChainIds.sol';
+import {TestNetChainIds} from 'aave-helpers/ChainIds.sol';
 import {IZkSyncAdapter, ZkSyncAdapter} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.sol';
 
 contract ZkSyncAdapterTestnet is ZkSyncAdapter {

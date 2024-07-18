@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import '../src/contracts/CrossChainForwarder.sol';
 import './BaseTest.sol';
 import {FailingAdapter} from './mocks/FailingAdapter.sol';
+import {SuccessAdapter} from './mocks/SuccessAdapter.sol';
 
 contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
   address internal constant CROSS_CHAIN_CONTROLLER = address(123029525691); // can be hardcoded as its not consequential to testing
@@ -29,7 +30,8 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
   constructor()
     CrossChainForwarder(
       new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](0),
-      new address[](0)
+      new address[](0),
+      new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     )
   {}
 
@@ -65,6 +67,12 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     return address(new FailingAdapter(trustedRemotes));
   }
 
+  function _deploySuccessAdapter() internal returns (address) {
+    SuccessAdapter.TrustedRemotesConfig[]
+      memory trustedRemotes = new SuccessAdapter.TrustedRemotesConfig[](0);
+    return address(new SuccessAdapter(trustedRemotes));
+  }
+
   modifier enableBridgeAdaptersForPath(
     uint256 destinationChainId,
     uint256 numberOfAdapters,
@@ -79,7 +87,7 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         adaptersType == AdapterSuccessType.ALL_SUCCESS ||
         (adaptersType == AdapterSuccessType.SOME_SUCCESS && i % 2 == 0)
       ) {
-        currentChainBridgeAdapter = address(uint160(uint(keccak256(abi.encodePacked(i)))));
+        currentChainBridgeAdapter = _deploySuccessAdapter();
         _adapterSuccess[currentChainBridgeAdapter] = true;
       } else {
         currentChainBridgeAdapter = _deployFailingAdapter();
@@ -89,8 +97,9 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
         uint160(uint(keccak256(abi.encodePacked(i + numberOfAdapters + 1))))
       );
 
+      bytes memory empty;
       bytes memory returnData = _adapterSuccess[currentChainBridgeAdapter]
-        ? bytes('')
+        ? empty
         : abi.encodeWithSignature('Error(string)', 'error message');
 
       UsedAdapter memory usedBridgeAdapter = UsedAdapter({
@@ -110,6 +119,15 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
       );
     }
 
+    _;
+  }
+
+  modifier setOptimalBandwidth(uint256 destinationChainId, uint256 optimalBandwidth) {
+    OptimalBandwidthByChain[] memory optimalBandwidthByChain = new OptimalBandwidthByChain[](1);
+    optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
+    optimalBandwidthByChain[0].chainId = destinationChainId;
+
+    _updateOptimalBandwidthByChain(optimalBandwidthByChain);
     _;
   }
 
@@ -162,6 +180,32 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
     assertEq(_forwardedTransactions[extendedTx.transactionId], false);
   }
 
+  modifier validateOptimalBandwidthUsed(
+    ExtendedTransaction memory extendedTx,
+    uint256 optimalBandwidth
+  ) {
+    _;
+    uint256 destinationChainId = extendedTx.envelope.destinationChainId;
+    UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[destinationChainId];
+    uint256 successfulAdapters;
+    uint256 length = optimalBandwidth >= usedAdapters.length
+      ? usedAdapters.length
+      : optimalBandwidth;
+    for (uint256 i = 0; i < length; i++) {
+      if (usedAdapters[i].success) {
+        successfulAdapters++;
+      }
+    }
+
+    uint256 numberOfAdapters = this.getForwarderBridgeAdaptersByChain(destinationChainId).length;
+
+    if (optimalBandwidth == 0 || optimalBandwidth >= numberOfAdapters) {
+      assertEq(successfulAdapters, numberOfAdapters);
+    } else {
+      assertEq(successfulAdapters, optimalBandwidth);
+    }
+  }
+
   // ----- internal tests helpers ---------------
 
   function _registerEnvelope(ExtendedTransaction memory extendedTx) internal {
@@ -174,23 +218,42 @@ contract BaseCCForwarderTest is BaseTest, CrossChainForwarder {
 
   function _testForwardMessage(ExtendedTransaction memory extendedTx) internal {
     _mockAdaptersForwardMessage(extendedTx.envelope.destinationChainId);
-    vm.expectEmit(true, true, true, true);
-    emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
+    bool successEmitted;
+
     UsedAdapter[] memory usedAdapters = _currentlyUsedAdaptersByChain[
       extendedTx.envelope.destinationChainId
     ];
     for (uint256 i = 0; i < usedAdapters.length; i++) {
-      vm.expectEmit(true, true, true, true);
-      emit TransactionForwardingAttempted(
-        extendedTx.transactionId,
-        extendedTx.envelopeId,
-        extendedTx.transactionEncoded,
-        extendedTx.envelope.destinationChainId,
-        usedAdapters[i].bridgeAdapterConfig.currentChainBridgeAdapter,
-        usedAdapters[i].bridgeAdapterConfig.destinationBridgeAdapter,
-        usedAdapters[i].success,
-        usedAdapters[i].returnData
-      );
+      if (usedAdapters[i].success == true && !successEmitted) {
+        vm.expectEmit(true, true, true, true);
+        emit EnvelopeRegistered(extendedTx.envelopeId, extendedTx.envelope);
+        successEmitted = true;
+      }
+    }
+    ChainIdBridgeConfig[] memory shuffledAdapters = _getShuffledBridgeAdaptersByChain(
+      extendedTx.envelope.destinationChainId
+    );
+    for (uint256 i = 0; i < shuffledAdapters.length; i++) {
+      for (uint256 j = 0; j < usedAdapters.length; j++) {
+        if (
+          usedAdapters[j].bridgeAdapterConfig.currentChainBridgeAdapter ==
+          shuffledAdapters[i].currentChainBridgeAdapter &&
+          usedAdapters[j].bridgeAdapterConfig.destinationBridgeAdapter ==
+          shuffledAdapters[i].destinationBridgeAdapter
+        ) {
+          vm.expectEmit(true, true, true, true);
+          emit TransactionForwardingAttempted(
+            extendedTx.transactionId,
+            extendedTx.envelopeId,
+            extendedTx.transactionEncoded,
+            extendedTx.envelope.destinationChainId,
+            usedAdapters[j].bridgeAdapterConfig.currentChainBridgeAdapter,
+            usedAdapters[j].bridgeAdapterConfig.destinationBridgeAdapter,
+            usedAdapters[j].success,
+            usedAdapters[j].returnData
+          );
+        }
+      }
     }
     (bytes32 returnedEnvelopeId, bytes32 returnedTransactionId) = this.forwardMessage(
       extendedTx.envelope.destinationChainId,

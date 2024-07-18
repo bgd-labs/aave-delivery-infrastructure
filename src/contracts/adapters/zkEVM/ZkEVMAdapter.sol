@@ -6,7 +6,7 @@ import {IPolygonZkEVMBridge} from './interfaces/IPolygonZkEVMBridge.sol';
 import {IBridgeMessageReceiver} from './interfaces/IBridgeMessageReceiver.sol';
 import {IBaseAdapter, BaseAdapter} from '../BaseAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from '../../libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 
 /**
  * @title ZkEVMAdapter

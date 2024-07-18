@@ -12,7 +12,7 @@ import {GovernanceV3Base} from 'aave-address-book/GovernanceV3Base.sol';
 import {GovernanceV3Metis} from 'aave-address-book/GovernanceV3Metis.sol';
 import {ICrossChainForwarder} from '../src/contracts/interfaces/ICrossChainForwarder.sol';
 import {ICrossChainReceiver} from '../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from '../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {BaseAdapter} from '../src/contracts/adapters/BaseAdapter.sol';
 
 contract BaseCCCommunicationTest is Test {

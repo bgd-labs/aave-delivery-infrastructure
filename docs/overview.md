@@ -30,6 +30,20 @@ These are the base contracts, internal to a.DI and defining all base mechanism o
   previously registered, and the caller must also be an approved sender. Apart from the approved senders, the Guardian will
   be able to retry sending previously sent messages. This can happen when there was insufficient gas, or the message failed
   to arrive to the destination for whatever reason.
+  The number of Bridge Adapters used to forward a message to its destination will be the minimum specified by the optimal bandwidth
+  for the receiver chain. Understanding:
+    - `bandwidth` as the number of bridges through which an envelope could be sent: all allowed in the system
+    - `optimalBandwidth` as extra configuration to limit bandwidth and only send via X bridge adapters out of the total Y bandwidth.
+  The specified number of adapters will be selected (pseudo randomly) from the list of allowed forwarders.
+  With this logic, a.DI can have any number of allowed forwarders for a specific destination chain, without increasing the cost
+  of forwarding a message.
+    - Setting optimal bandwidth to 0 means that no optimization on the number of adapters will be applied,
+  meaning that forwarding the message will make use of all the bandwidth (all allowed adapters). This will also make it so that a communication
+  path can not be broken by setting wrong configuration.
+    - For the cases where optimalBandwidth > bandwidth, the full bandwidth will be used to send the message.
+    - For the case where optimalBandwidth < bandwidth, and even with optimalBandwidth, required confirmations can not be reached
+  on receiver side, communication would still not be broken as Guardian can then retry the transaction with the unused bridge adapters to
+  reach the required confirmations.
 - [CrossChainReceiver (CCR)](../src/contracts/CrossChainReceiver.sol): contains the logic to receive messages
   from other chains. To route a message to the destination address, the message needs to be received correctly (from the
   different allowed bridges) a certain amount of times. To be received correctly means that it must be the exact same
@@ -55,7 +69,7 @@ Immutable utility contracts, which integrate into a.DI the specifics of each und
     send messages, by directly communicating with the receiving contract in the same chain where it is deployed. This pattern is useful to have same-chain-communication (bypass the cross chain bridging), but still following the same a.DI high-level flow.
 
 Misc aspects of the bridge adapters:
-- To send a message to the bridge provider, the method `forwardMessage()` is called, via `DELEGATECALL`. This way, the CCC can hold the funds to pay the bridges, and can also be used as a trusted receiver. 
+- To send a message to the bridge provider, the method `forwardMessage()` is called, via `DELEGATECALL`. This way, the CCC can hold the funds to pay the bridges, and can also be used as a trusted receiver.
 - **No storage variables should be used on the bridge adapters**.
 - To receive a message a `handleReceive` (*the function name will actually depend on the
 bridge being integrated*) method needs to be called via `CALL` . This call will compare the caller to the trusted remote configured on deployment.
@@ -164,6 +178,17 @@ Once the Emergency is solved, the permissions granted to the `guardian` are remo
 
 <br>
 
+## CrossChainController access control
+
+The guardian system of the CrossChainController is externalized to the [GranularGuardianAccessControl](../src/contracts/access_control/GranularGuardianAccessControl.sol) contract.
+This contract holds a granular way of assigning responsibilities to different entities (roles) so that guardian access
+to CCC methods can be more deterministic. The roles that it holds are:
+- **SOLVE_EMERGENCY_ROLE**: The holders of ths role can call the method `solveEmergency` on CrossChainController on the networks that have emergency enabled.
+- **RETRY_ROLE**: the holders of this role can call the methods `retryTransaction` and `retryEnvelope` on CrossChainController (Forwarder).
+- **DEFAULT_ADMIN_ROLE**: the holder of this role can grant roles, and change the Guardian of CrossChainController by calling `updateGuardian` method.
+
+The audit report by Certora can be found [here](../security/certora/reports/Granular-Guardian-Access-Control.pdf)
+
 ### Contracts
 
 - [EmergencyRegistry](../src/contracts/emergency/EmergencyRegistry.sol): contract containing the registry of the emergency
@@ -179,7 +204,7 @@ the `guardian` can call `solveEmergency`. When the call succeeds the local count
 The `solveEmergency` goal is to return a.DI to the operational mode, which granularly, means the following:
 - **Working Forwarding state**: this means that there is at least one BridgeAdapter configured for a specified chain, so a message can be sent to that chain.
 - **Working Receiving state**: this means that there are enough bridge adapters configured so that when a message is received, `requiredConfirmations` can be reached.
-  
+
 The method can also be used as a way to force the system to a non-working state. This would be needed in the case that more than half of the bridges are compromised, so message should not be trusted (as the confirmations would then also be compromised), and `owner` could not be trusted since it is controlled via cross chain messaging.
 
 In that case there would be two ways of solving the emergency:

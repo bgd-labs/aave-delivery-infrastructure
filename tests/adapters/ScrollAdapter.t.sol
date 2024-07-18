@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import 'forge-std/Test.sol';
 import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from '../../src/contracts/libs/ChainIds.sol';
+import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ICrossDomainMessenger} from '../../src/contracts/adapters/optimism/OpAdapter.sol';
 import {ScrollAdapter, IOpAdapter, IL1MessageQueue, IScrollMessenger} from '../../src/contracts/adapters/scroll/ScrollAdapter.sol';
