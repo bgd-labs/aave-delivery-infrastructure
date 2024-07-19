@@ -54,4 +54,31 @@ abstract contract BaseZkSyncAdapter is BaseAdapterScript {
         })
       );
   }
+
+  function _deployWithoutCreate2(BaseAdapterArgs memory baseArgs) internal returns (address) {
+    require(BRIDGE_HUB() != address(0), 'Invalid BRIDGE_HUB');
+    if (isTestnet()) {
+      return
+        address(
+          new ZkSyncAdapterTestnet(
+            baseArgs.crossChainController,
+            BRIDGE_HUB(),
+            REFUND_ADDRESS(),
+            baseArgs.providerGasLimit,
+            baseArgs.trustedRemotes
+          )
+        );
+    } else {
+      return
+        address(
+          new ZkSyncAdapter(
+            baseArgs.crossChainController,
+            BRIDGE_HUB(),
+            REFUND_ADDRESS(),
+            baseArgs.providerGasLimit,
+            baseArgs.trustedRemotes
+          )
+        );
+    }
+  }
 }
