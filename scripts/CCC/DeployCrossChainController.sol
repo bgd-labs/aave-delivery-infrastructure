@@ -32,4 +32,12 @@ abstract contract BaseCCCDeploy is BaseScript {
 
     return _deployByteCode(cccCode, SALT());
   }
+
+  function _deployWithoutCreate2() internal returns (address) {
+    if (CL_EMERGENCY_ORACLE() == address(0)) {
+      return address(new CrossChainController());
+    } else {
+      return address(new CrossChainControllerWithEmergencyMode(CL_EMERGENCY_ORACLE()));
+    }
+  }
 }
