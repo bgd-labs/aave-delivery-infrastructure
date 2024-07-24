@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
+import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {ChainIds} from 'aave-helpers/ChainIds.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
@@ -82,7 +82,7 @@ contract ScrollAdapterTest is Test {
       OVM_CROSS_DOMAIN_MESSENGER,
       fee,
       abi.encodeWithSelector(
-        hex"b2267a7b",
+        hex'b2267a7b',
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         0,
         abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
