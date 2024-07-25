@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ArbAdapter, IArbAdapter, AddressAliasHelper, IInbox} from '../../src/contracts/adapters/arbitrum/ArbAdapter.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';

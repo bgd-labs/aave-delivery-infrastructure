@@ -6,7 +6,7 @@ import {IArbAdapter} from './IArbAdapter.sol';
 import {IInbox} from './interfaces/IInbox.sol';
 import {AddressAliasHelper} from './libs/AddressAliasHelper.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 
 /**
  * @title ArbAdapter

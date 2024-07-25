@@ -5,7 +5,7 @@ import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {IArbitraryMessageBridge} from './IArbitraryMessageBridge.sol';
 import {IGnosisChainAdapter} from './IGnosisChainAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 
 /**
  * @title GnosisChainAdapter

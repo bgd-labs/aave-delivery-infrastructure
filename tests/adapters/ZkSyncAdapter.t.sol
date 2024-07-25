@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import 'forge-std/console.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {Transaction, Envelope, EncodedEnvelope, EncodedTransaction, TransactionUtils, EnvelopeUtils} from '../../src/contracts/libs/EncodingUtils.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ZkSyncAdapter, IZkSyncAdapter, IBridgehub, IBaseAdapter, AddressAliasHelper} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.sol';
 import {BaseAdapterTest} from './BaseAdapterTest.sol';
