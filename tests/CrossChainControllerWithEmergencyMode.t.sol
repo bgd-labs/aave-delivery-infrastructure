@@ -214,9 +214,9 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     ICrossChainForwarder.ChainIdBridgeConfig[] memory forwarderBridgeAdapters = crossChainController
       .getForwarderBridgeAdaptersByChain(ChainIds.POLYGON);
 
-    assertEq(forwarderBridgeAdapters.length, 1);
-    assertEq(forwarderBridgeAdapters[0].destinationBridgeAdapter, address(210));
-    assertEq(forwarderBridgeAdapters[0].currentChainBridgeAdapter, address(203));
+    assertEq(forwarderBridgeAdapters.length, 2);
+    assertEq(forwarderBridgeAdapters[1].destinationBridgeAdapter, address(210));
+    assertEq(forwarderBridgeAdapters[1].currentChainBridgeAdapter, address(203));
     assertEq(crossChainController.getOptimalBandwidthByChain(1), 3);
   }
 
