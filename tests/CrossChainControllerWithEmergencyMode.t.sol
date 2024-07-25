@@ -111,6 +111,11 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
   }
 
   function testSolveEmergency() public {
+    ICrossChainForwarder.ChainIdBridgeConfig[]
+      memory forwarderBridgeAdaptersBefore = crossChainController.getForwarderBridgeAdaptersByChain(
+        ChainIds.POLYGON
+      );
+
     EmergencyArgs memory args = EmergencyArgs({
       newConfirmations: new ICrossChainReceiver.ConfirmationInput[](1),
       newValidityTimestamps: new ICrossChainReceiver.ValidityTimestampInput[](1),
@@ -214,9 +219,15 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     ICrossChainForwarder.ChainIdBridgeConfig[] memory forwarderBridgeAdapters = crossChainController
       .getForwarderBridgeAdaptersByChain(ChainIds.POLYGON);
 
-    assertEq(forwarderBridgeAdapters.length, 2);
-    assertEq(forwarderBridgeAdapters[0].destinationBridgeAdapter, address(65536 + 110));
-    assertEq(forwarderBridgeAdapters[0].currentChainBridgeAdapter, address(65536 + 103));
+    assertEq(forwarderBridgeAdapters.length, forwarderBridgeAdaptersBefore.length + 1);
+    assertEq(
+      forwarderBridgeAdapters[0].destinationBridgeAdapter,
+      forwarderBridgeAdaptersBefore[0].destinationBridgeAdapter
+    );
+    assertEq(
+      forwarderBridgeAdapters[0].currentChainBridgeAdapter,
+      forwarderBridgeAdaptersBefore[0].currentChainBridgeAdapter
+    );
     assertEq(forwarderBridgeAdapters[1].destinationBridgeAdapter, address(210));
     assertEq(forwarderBridgeAdapters[1].currentChainBridgeAdapter, address(203));
     assertEq(crossChainController.getOptimalBandwidthByChain(1), 3);
