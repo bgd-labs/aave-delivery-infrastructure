@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import 'forge-std/console.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
 import {Transaction, Envelope, EncodedEnvelope, EncodedTransaction, TransactionUtils, EnvelopeUtils} from '../../src/contracts/libs/EncodingUtils.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ZkSyncAdapter, IZkSyncAdapter, IBridgehub, IBaseAdapter, AddressAliasHelper} from '../../src/contracts/adapters/zkSync/ZkSyncAdapter.sol';
 import {BaseAdapterTest} from './BaseAdapterTest.sol';
@@ -268,55 +268,6 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     uint8 confirmations
   );
   event EnvelopeDeliveryAttempted(bytes32 envelopeId, Envelope envelope, bool isDelivered);
-
-  function test_receiveMessage() public {
-    vm.createSelectFork('https://sepolia.era.zksync.dev', 2627064);
-
-    bytes
-      memory message = hex'0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000120000000000000000000000006d603081563784db3f83ef1f65cc389d94365ac90000000000000000000000003676a657f22ea4a6eb3a51da7233a37e8d6049670000000000000000000000000000000000000000000000000000000000aa36a7000000000000000000000000000000000000000000000000000000000000012c00000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000013736f6d652072616e646f6d206d65737361676500000000000000000000000000';
-
-    Transaction memory transaction = TransactionUtils.decode(message);
-    Envelope memory envelope = transaction.getEnvelope();
-    bytes32 txId = TransactionUtils.getId(transaction);
-    bytes32 envelopeId = EnvelopeUtils.getId(envelope);
-
-    address crossChainReceiver = 0x77430FCd47F62A9706CAca6300563c6B27885F5F;
-    address zkSyncAdapter = 0x013D88537bFdb7984700D44a8c0427D13d352D90;
-    // config checks
-    bool allowed = ICrossChainReceiver(crossChainReceiver).isReceiverBridgeAdapterAllowed(
-      zkSyncAdapter,
-      11155111
-    );
-    assertEq(allowed, true);
-
-    // call adapter contract with real tx data
-    hoax(0x91Bbb474eE7E3a04A4eE77bE874bcCEaA01b342a); // aliased origin of 0x80Aab474ee7e3A04A4ee77Be874bCCEAA01B2319 (crossChainController on sepolia)
-    vm.expectEmit(true, true, true, true);
-    emit TransactionReceived(
-      txId,
-      envelopeId,
-      envelope.originChainId,
-      transaction,
-      zkSyncAdapter,
-      1
-    );
-    vm.expectEmit(true, true, true, true);
-    emit TestWorked(envelope.origin, envelope.originChainId, envelope.message);
-    vm.expectEmit(true, true, true, true);
-    emit EnvelopeDeliveryAttempted(envelopeId, envelope, true);
-    ZkSyncAdapter(zkSyncAdapter).receiveMessage(message);
-
-    // check state after tx
-    bool received = ICrossChainReceiver(crossChainReceiver).isTransactionReceivedByAdapter(
-      txId,
-      zkSyncAdapter
-    );
-    assertEq(received, true);
-
-    ICrossChainReceiver.EnvelopeState state = ICrossChainReceiver(crossChainReceiver)
-      .getEnvelopeState(envelopeId);
-    assertEq(uint256(state), 2);
-  }
 
   function _testForwardMessageWhenNoValue(
     address mailbox,

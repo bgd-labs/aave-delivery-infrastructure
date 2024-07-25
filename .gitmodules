@@ -2,7 +2,6 @@
 	path = lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
 	branch = release-v4.9
-[submodule "lib/aave-helpers"]
-	path = lib/aave-helpers
-	url = https://github.com/bgd-labs/aave-helpers
-	branch = feat/zksync
+[submodule "lib/solidity-utils"]
+	path = lib/solidity-utils
+	url = https://github.com/bgd-labs/solidity-utils

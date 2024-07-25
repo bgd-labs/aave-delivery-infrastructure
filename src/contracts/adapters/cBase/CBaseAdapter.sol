@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {OpAdapter, IOpAdapter} from '../optimism/OpAdapter.sol';
 
 /**

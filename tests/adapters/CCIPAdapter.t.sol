@@ -5,7 +5,7 @@ import 'forge-std/Test.sol';
 import {CCIPAdapter, IRouterClient, Client, IBaseAdapter} from '../../src/contracts/adapters/ccip/CCIPAdapter.sol';
 import {ICCIPAdapter} from '../../src/contracts/adapters/ccip/ICCIPAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ERC20, IERC20} from '../mocks/ERC20.sol';
 
