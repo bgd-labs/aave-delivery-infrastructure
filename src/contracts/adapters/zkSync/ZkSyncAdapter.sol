@@ -18,7 +18,7 @@ import {IZkSyncAdapter, IBridgehub} from './IZkSyncAdapter.sol';
  */
 contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
   /// @inheritdoc IZkSyncAdapter
-  IBridgehub public immutable BRIDGEHUB;
+  IBridgehub public immutable BRIDGE_HUB;
 
   /// @inheritdoc IZkSyncAdapter
   uint256 public constant REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT = 800;
@@ -33,13 +33,13 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
    */
   constructor(
     address crossChainController,
-    address bridgehub,
+    address bridgeHub,
     address refundAddress,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
   ) BaseAdapter(crossChainController, providerGasLimit, 'ZkSync native adapter', trustedRemotes) {
-    require(bridgehub != address(0), Errors.ZK_SYNC_BRIDGEHUB_CANT_BE_ADDRESS_0);
-    BRIDGEHUB = IBridgehub(bridgehub);
+    require(bridgeHub != address(0), Errors.ZK_SYNC_BRIDGE_HUB_CANT_BE_ADDRESS_0);
+    BRIDGE_HUB = IBridgehub(bridgeHub);
     REFUND_ADDRESS_L2 = refundAddress;
   }
 
@@ -58,7 +58,7 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
 
     uint256 totalGasLimit = executionGasLimit + BASE_GAS_LIMIT;
 
-    uint256 cost = BRIDGEHUB.l2TransactionBaseCost(
+    uint256 cost = BRIDGE_HUB.l2TransactionBaseCost(
       destinationChainId,
       uint256(tx.gasprice),
       totalGasLimit,
@@ -72,7 +72,7 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
       message
     );
 
-    bytes32 canonicalTxHash = BRIDGEHUB.requestL2TransactionDirect{value: cost}(
+    bytes32 canonicalTxHash = BRIDGE_HUB.requestL2TransactionDirect{value: cost}(
       IBridgehub.L2TransactionRequestDirect({
         chainId: destinationChainId,
         mintValue: cost,
@@ -86,7 +86,7 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
       })
     );
 
-    return (address(BRIDGEHUB), uint256(canonicalTxHash));
+    return (address(BRIDGE_HUB), uint256(canonicalTxHash));
   }
 
   /// @inheritdoc IZkSyncAdapter

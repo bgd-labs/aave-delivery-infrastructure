@@ -74,7 +74,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     IBaseAdapter.TrustedRemotesConfig[]
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
-    vm.expectRevert(bytes(Errors.ZK_SYNC_BRIDGEHUB_CANT_BE_ADDRESS_0));
+    vm.expectRevert(bytes(Errors.ZK_SYNC_BRIDGE_HUB_CANT_BE_ADDRESS_0));
     new ZkSyncAdapter(crossChainController, address(0), refundAddress, baseGasLimit, originConfigs);
   }
 

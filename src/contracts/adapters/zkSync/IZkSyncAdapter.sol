@@ -10,10 +10,10 @@ import {IBridgehub} from './interfaces/IBridgehub.sol';
  */
 interface IZkSyncAdapter {
   /**
-   * @notice method to get the BRIDGEHUB address
-   * @return address of the BRIDGEHUB
+   * @notice method to get the bridge hub address
+   * @return address of the bridge hub
    */
-  function BRIDGEHUB() external view returns (IBridgehub);
+  function BRIDGE_HUB() external view returns (IBridgehub);
 
   /**
    * @notice method to get the required l1 to l2 gas per pubdata.

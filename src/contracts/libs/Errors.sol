@@ -49,6 +49,6 @@ library Errors {
   string public constant INVALID_HL_MAILBOX = '40'; // the Hyperlane mailbox address can not be 0
   string public constant WORMHOLE_RELAYER_CANT_BE_ADDRESS_0 = '41'; // Wormhole relayer can not be address 0
   string public constant CALLER_NOT_WORMHOLE_RELAYER = '42'; // caller must be the Wormhole relayer
-  string public constant ZK_SYNC_BRIDGEHUB_CANT_BE_ADDRESS_0 = '43'; // ZkSync Bridgehub can not be address 0
+  string public constant ZK_SYNC_BRIDGE_HUB_CANT_BE_ADDRESS_0 = '43'; // ZkSync Bridgehub can not be address 0
   string public constant CL_GAS_PRICE_ORACLE_CANT_BE_ADDRESS_0 = '44'; // ChainLink gas price oracle can not be address 0
 }
