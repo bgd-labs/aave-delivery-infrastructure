@@ -15,13 +15,7 @@ fs_permissions = [{ access = "read-write", path = "./"}]
 
 solc = "0.8.19"
 
-
-
-
-
 [profile.default.zksync]
-src = 'src'
-libs = ['lib']
 fallback_oz = true
 mode = "3"
 zksolc="1.4.1"
