@@ -8,14 +8,14 @@ import {IERC20} from 'solidity-utils/contracts/oz-common/interfaces/IERC20.sol';
 import {ERC20} from './mocks/ERC20.sol';
 import {IBaseCrossChainController, ICrossChainForwarder, ICrossChainReceiver} from 'src/contracts/interfaces/IBaseCrossChainController.sol';
 import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-proxy/TransparentProxyFactory.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
 
 abstract contract BaseCrossChainControllerTest is Test {
-  address public constant OWNER = address(123);
-  address public constant GUARDIAN = address(1234);
-  address public constant BRIDGE_ADAPTER = address(123456);
+  address public constant OWNER = address(65536 + 123);
+  address public constant GUARDIAN = address(65536 + 1234);
+  address public constant BRIDGE_ADAPTER = address(65536 + 123456);
 
   uint8 public constant CONFIRMATIONS = 1;
 
@@ -77,14 +77,14 @@ abstract contract BaseCrossChainControllerTest is Test {
 
     // forwarder configs
     address[] memory sendersToApprove = new address[](1);
-    sendersToApprove[0] = address(102);
+    sendersToApprove[0] = address(65536 + 102);
     ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[]
       memory forwarderBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
         1
       );
     forwarderBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
-      currentChainBridgeAdapter: address(103),
-      destinationBridgeAdapter: address(110),
+      currentChainBridgeAdapter: address(65536 + 103),
+      destinationBridgeAdapter: address(65536 + 110),
       destinationChainId: ChainIds.POLYGON
     });
     ICrossChainForwarder.OptimalBandwidthByChain[]
@@ -97,7 +97,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     crossChainControllerImpl = _deployControllerImplementation();
 
     vm.mockCall(
-      address(103),
+      address(65536 + 103),
       abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
       abi.encode()
     );

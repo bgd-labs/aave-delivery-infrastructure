@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {WormholeAdapter, IBaseAdapter, IWormholeRelayer} from '../../src/contracts/adapters/wormhole/WormholeAdapter.sol';
 import {IWormholeAdapter} from '../../src/contracts/adapters/wormhole/IWormholeAdapter.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {BaseAdapterTest} from './BaseAdapterTest.sol';
 
@@ -21,6 +21,7 @@ contract WormholeAdapterTest is BaseAdapterTest {
     uint256 baseGasLimit,
     uint256 originChainId
   ) {
+    vm.assume(crossChainController != tx.origin); // zkVM doesn't support mocking tx.origin
     vm.assume(baseGasLimit < 1 ether);
     _assumeSafeAddress(crossChainController);
     _assumeSafeAddress(wormholeRelayer);

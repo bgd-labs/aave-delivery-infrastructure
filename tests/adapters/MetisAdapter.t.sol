@@ -2,18 +2,18 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
+import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
 import {ICrossChainReceiver} from '../../src/contracts/interfaces/ICrossChainReceiver.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
 import {ICrossDomainMessenger} from '../../src/contracts/adapters/optimism/OpAdapter.sol';
 import {MetisAdapter, IOpAdapter} from '../../src/contracts/adapters/metis/MetisAdapter.sol';
 import {IBaseAdapter} from '../../src/contracts/adapters/IBaseAdapter.sol';
 
 contract MetisAdapterTest is Test {
-  address public constant ORIGIN_FORWARDER = address(123);
-  address public constant CROSS_CHAIN_CONTROLLER = address(1234);
-  address public constant OVM_CROSS_DOMAIN_MESSENGER = address(12345);
+  address public constant ORIGIN_FORWARDER = address(65536 + 123);
+  address public constant CROSS_CHAIN_CONTROLLER = address(65536 + 1234);
+  address public constant OVM_CROSS_DOMAIN_MESSENGER = address(65536 + 12345);
   address public constant RECEIVER_CROSS_CHAIN_CONTROLLER = address(1234567);
   uint256 public constant ORIGIN_CHAIN_ID = ChainIds.ETHEREUM;
   address public constant ADDRESS_WITH_ETH = address(12301234);
@@ -65,7 +65,8 @@ contract MetisAdapterTest is Test {
     vm.mockCall(
       OVM_CROSS_DOMAIN_MESSENGER,
       abi.encodeWithSelector(
-        ICrossDomainMessenger.sendMessage.selector,
+        ICrossDomainMessenger.sendMessageViaChainId.selector,
+        ChainIds.METIS,
         RECEIVER_CROSS_CHAIN_CONTROLLER,
         abi.encodeWithSelector(IOpAdapter.ovmReceive.selector, message),
         SafeCast.toUint32(dstGasLimit + BASE_GAS_LIMIT)

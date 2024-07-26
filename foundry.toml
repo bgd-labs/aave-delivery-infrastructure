@@ -9,10 +9,16 @@ remappings = [
   'hyperlane-monorepo/=lib/hyperlane-monorepo/solidity/contracts/',
   '@openzeppelin/=lib/openzeppelin-contracts/'
 ]
+evm_version = 'shanghai'
 
 fs_permissions = [{ access = "read-write", path = "./"}]
 
 solc = "0.8.19"
+
+[profile.default.zksync]
+fallback_oz = true
+mode = "3"
+zksolc="1.4.1"
 
 [rpc_endpoints]
 ethereum="${RPC_MAINNET}"
@@ -41,6 +47,8 @@ scroll="${RPC_SCROLL}"
 scroll-testnet="${RPC_SCROLL_TESTNET}"
 celo="${RPC_CELO}"
 celo-testnet="${RPC_CELO_ALFAJORES}"
+zksync="${RPC_ZK_SYNC}"
+zksync-testnet="${RPC_ZK_SYNC_TESTNET}"
 
 [etherscan]
 ethereum={key="${ETHERSCAN_API_KEY_MAINNET}", chain=1 }
@@ -69,5 +77,11 @@ scroll={key="${ETHERSCAN_API_KEY_SCROLL}", chain=534352, utl='https://api.scroll
 scroll-testnet={key="${ETHERSCAN_API_KEY_SCROLL}", chain=534351, url='https://api-sepolia.scrollscan.com/api/'}
 celo={key="${ETHERSCAN_API_KEY_CELO}", chain=42220, utl='https://api.celoscan.io/api'}
 celo-testnet={key="${ETHERSCAN_API_KEY_CELO}", chain=44787, url='https://api-alfajores.celoscan.io/api'}
+zksync={key="${ETHERSCAN_API_KEY_ZK_SYNC}", chain=324}
+zksync-testnet={key="${ETHERSCAN_API_KEY_ZK_SYNC}", chain=300, url='https://api-sepolia-era.zksync.network/api'}
 
 # See more config options https://github.com/gakonst/foundry/tree/master/config
+[fuzz]
+no_zksync_reserved_addresses = true
+[invariant]
+no_zksync_reserved_addresses = true

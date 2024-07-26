@@ -1,8 +1,3 @@
-solidity-utils/=lib/aave-helpers/lib/solidity-utils/src/
-ds-test/=lib/aave-helpers/lib/forge-std/lib/ds-test/src/
-forge-std/=lib/aave-helpers/lib/forge-std/src/
-fx-portal/=lib/fx-portal/contracts/
-nitro-contracts/=lib/nitro-contracts/src/
+solidity-utils/=lib/solidity-utils/src/
+forge-std/=lib/solidity-utils/lib/forge-std/src/
 openzeppelin-contracts/=lib/openzeppelin-contracts/
-aave-helpers/=lib/aave-helpers/src/
-aave-address-book/=lib/aave-helpers/lib/aave-address-book/src/

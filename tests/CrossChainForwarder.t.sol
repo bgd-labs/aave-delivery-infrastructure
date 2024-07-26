@@ -9,16 +9,16 @@ import {ILayerZeroEndpointV2} from '../src/contracts/adapters/layerZero/interfac
 import {CrossChainForwarder, ICrossChainForwarder} from '../src/contracts/CrossChainForwarder.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
 import {LayerZeroAdapter, ILayerZeroAdapter, MessagingFee, MessagingReceipt} from '../src/contracts/adapters/layerZero/LayerZeroAdapter.sol';
-import {ChainIds} from 'aave-helpers/ChainIds.sol';
+import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {Transaction, EncodedTransaction, Envelope} from '../src/contracts/libs/EncodingUtils.sol';
 import {BaseTest} from './BaseTest.sol';
 
 contract CrossChainForwarderTest is BaseTest {
-  address public constant OWNER = address(123);
-  address public constant GUARDIAN = address(12);
+  address public constant OWNER = address(65536 + 123);
+  address public constant GUARDIAN = address(65536 + 12);
   // mock addresses
-  address public constant DESTINATION_BRIDGE_ADAPTER = address(12345);
+  address public constant DESTINATION_BRIDGE_ADAPTER = address(65536 + 12345);
   address public constant SENDER = address(123456);
 
   uint256 public constant ORIGIN_LZ_CHAIN_ID = ChainIds.ETHEREUM;
@@ -222,9 +222,9 @@ contract CrossChainForwarderTest is BaseTest {
         3
       );
 
-    address NEW_BRIDGE_ADAPTER_1 = address(201);
-    address NEW_BRIDGE_ADAPTER_2 = address(202);
-    address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(203);
+    address NEW_BRIDGE_ADAPTER_1 = address(65536 + 201);
+    address NEW_BRIDGE_ADAPTER_2 = address(65536 + 202);
+    address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(65536 + 203);
 
     // this one overwrites
     newBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
@@ -363,8 +363,8 @@ contract CrossChainForwarderTest is BaseTest {
         2
       );
 
-    address NEW_BRIDGE_ADAPTER_1 = address(201);
-    address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(203);
+    address NEW_BRIDGE_ADAPTER_1 = address(65536 + 201);
+    address NEW_DESTINATION_BRIDGE_ADAPTER_A = address(65536 + 203);
 
     // new one on same network
     newBridgeAdaptersToEnable[0] = ICrossChainForwarder.ForwarderBridgeAdapterConfigInput({
