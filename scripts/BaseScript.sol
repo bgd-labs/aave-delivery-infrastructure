@@ -18,7 +18,6 @@ abstract contract BaseScript {
     bytes memory byteCode,
     string memory salt
   ) internal virtual returns (address) {
-    bytes32 encodedSalt = keccak256(abi.encode(salt));
-    return Create2Utils.computeCreate2Address(encodedSalt, byteCode);
+    return Create2Utils.computeCreate2Address(keccak256(abi.encode(salt)), byteCode);
   }
 }
