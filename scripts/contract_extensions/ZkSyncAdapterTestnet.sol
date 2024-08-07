@@ -15,7 +15,7 @@ contract ZkSyncAdapterTestnet is ZkSyncAdapter {
 
   /// @inheritdoc IZkSyncAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
-    return chainId == TestNetChainIds.ZK_SYNC_SEPOLIA;
+    return chainId == TestNetChainIds.ZKSYNC_SEPOLIA;
   }
 
   /// @inheritdoc IZkSyncAdapter

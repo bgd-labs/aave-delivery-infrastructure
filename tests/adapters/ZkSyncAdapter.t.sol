@@ -199,7 +199,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     vm.assume(dstGasLimit > 200000 && dstGasLimit < 1 ether);
 
     vm.expectRevert(bytes(Errors.RECEIVER_NOT_SET));
-    zkSyncAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.ZK_SYNC, message);
+    zkSyncAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.ZKSYNC, message);
   }
 
   function testReceive(
@@ -294,7 +294,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
         IBaseAdapter.forwardMessage.selector,
         receiver,
         dstGasLimit,
-        ChainIds.ZK_SYNC,
+        ChainIds.ZKSYNC,
         message
       )
     );
@@ -322,7 +322,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
         IBaseAdapter.forwardMessage.selector,
         params.receiver,
         params.dstGasLimit,
-        ChainIds.ZK_SYNC,
+        ChainIds.ZKSYNC,
         message
       )
     );
