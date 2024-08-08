@@ -108,7 +108,7 @@ contract ZkSyncAdapter is IZkSyncAdapter, BaseAdapter {
 
   /// @inheritdoc IZkSyncAdapter
   function isDestinationChainIdSupported(uint256 chainId) public view virtual returns (bool) {
-    return chainId == ChainIds.ZK_SYNC;
+    return chainId == ChainIds.ZKSYNC;
   }
 
   /// @inheritdoc IBaseAdapter
