@@ -4,7 +4,7 @@ pragma solidity ^0.8.8;
 import {ICrossChainForwarder} from '../interfaces/ICrossChainForwarder.sol';
 import {ICrossChainControllerWithEmergencyMode} from '../interfaces/ICrossChainControllerWithEmergencyMode.sol';
 import {IGranularGuardianAccessControl, Envelope, ICrossChainReceiver} from './IGranularGuardianAccessControl.sol';
-import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/AccessControlEnumerable.sol';
+import {AccessControlEnumerable} from 'openzeppelin-contracts/contracts/access/extensions/AccessControlEnumerable.sol';
 import {IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 import {ICrossChainControllerWithEmergencyModeDeprecated} from '../interfaces/ICrossChainControllerWithEmergencyModeDeprecated.sol';
 

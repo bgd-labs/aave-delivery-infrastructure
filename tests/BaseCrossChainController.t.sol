@@ -11,6 +11,8 @@ import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-prox
 import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
+import {ProxyAdmin} from 'solidity-utils/contracts/transparent-proxy/ProxyAdmin.sol';
+import {IRescuable} from 'solidity-utils/contracts/utils/interfaces/IRescuable.sol';
 
 abstract contract BaseCrossChainControllerTest is Test {
   address public constant OWNER = address(65536 + 123);
@@ -104,7 +106,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     crossChainController = IBaseCrossChainController(
       proxyFactory.createDeterministic(
         crossChainControllerImpl,
-        proxyAdmin,
+        ProxyAdmin(proxyAdmin),
         _getEncodedInitializer(
           OWNER,
           GUARDIAN,
@@ -144,7 +146,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     vm.expectRevert(bytes(Errors.INVALID_REQUIRED_CONFIRMATIONS));
     proxyFactory.createDeterministic(
       crossChainControllerImpl,
-      proxyAdmin,
+      ProxyAdmin(proxyAdmin),
       _getEncodedInitializer(
         OWNER,
         GUARDIAN,
@@ -191,7 +193,7 @@ abstract contract BaseCrossChainControllerTest is Test {
 
     address recipient = address(1230123519);
 
-    vm.expectRevert((bytes('ONLY_RESCUE_GUARDIAN')));
+    vm.expectRevert(abi.encodeWithSelector(IRescuable.OnlyRescueGuardian.selector));
     crossChainController.emergencyEtherTransfer(recipient, 5 ether);
   }
 
@@ -224,7 +226,7 @@ abstract contract BaseCrossChainControllerTest is Test {
 
     address recipient = address(1230123519);
 
-    vm.expectRevert((bytes('ONLY_RESCUE_GUARDIAN')));
+    vm.expectRevert(abi.encodeWithSelector(IRescuable.OnlyRescueGuardian.selector));
     crossChainController.emergencyTokenTransfer(address(testToken), recipient, 3 ether);
   }
 }
