@@ -10,25 +10,9 @@ import {ILineaAdapter, LineaAdapter} from '../../src/contracts/adapters/linea/Li
  */
 contract LineaAdapterTestnet is LineaAdapter {
   /**
-   * @param crossChainController address of the cross chain controller that will use this bridge adapter
-   * @param lineaMessageService linea entry point address
-   * @param trustedRemotes list of remote configurations to set as trusted
+   * @param params object containing the necessary parameters to initialize the contract
    */
-  constructor(
-    address crossChainController,
-    address lineaMessageService,
-    uint256 providerGasLimit,
-    TrustedRemotesConfig[] memory trustedRemotes
-  )
-    LineaAdapter(
-      ILineaAdapter.LineaParams({
-        crossChainController: crossChainController,
-        lineaMessageService: lineaMessageService,
-        providerGasLimit: providerGasLimit,
-        trustedRemotes: trustedRemotes
-      })
-    )
-  {}
+  constructor(ILineaAdapter.LineaParams memory params) LineaAdapter(params) {}
 
   /// @inheritdoc ILineaAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {
