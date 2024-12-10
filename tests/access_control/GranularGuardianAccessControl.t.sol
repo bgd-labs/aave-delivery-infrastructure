@@ -5,6 +5,7 @@ import {TestUtils} from '../utils/TestUtils.sol';
 import '../../src/contracts/access_control/GranularGuardianAccessControl.sol';
 import {OwnableWithGuardian, IWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 import '../BaseTest.sol';
+import {IAccessControl} from 'openzeppelin-contracts/contracts/access/IAccessControl.sol';
 
 contract GranularGuardianAccessControlTest is BaseTest {
   bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
@@ -105,13 +106,12 @@ contract GranularGuardianAccessControlTest is BaseTest {
   ) public setUpGranularGuardians(defaultAdmin, retryGuardian, solveEmergencyGuardian, ccc) {
     vm.assume(retryCaller != retryGuardian);
     hoax(retryCaller);
+
     vm.expectRevert(
-      bytes(
-        string.concat(
-          'AccessControl: account 0x',
-          TestUtils.toAsciiString(retryCaller),
-          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
-        )
+      abi.encodeWithSelector(
+        IAccessControl.AccessControlUnauthorizedAccount.selector,
+        retryCaller,
+        0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3
       )
     );
     _retryTx(ccc);
@@ -141,13 +141,12 @@ contract GranularGuardianAccessControlTest is BaseTest {
   ) public setUpGranularGuardians(defaultAdmin, retryGuardian, solveEmergencyGuardian, ccc) {
     vm.assume(retryCaller != retryGuardian);
     hoax(retryCaller);
+
     vm.expectRevert(
-      bytes(
-        string.concat(
-          'AccessControl: account 0x',
-          TestUtils.toAsciiString(retryCaller),
-          ' is missing role 0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3'
-        )
+      abi.encodeWithSelector(
+        IAccessControl.AccessControlUnauthorizedAccount.selector,
+        retryCaller,
+        0xc448b9502bbdf9850cc39823b6ea40cfe96d3ac63008e89edd2b8e98c6cc0af3
       )
     );
     _retryEnvelope(ccc, mockEnvId);
@@ -174,12 +173,10 @@ contract GranularGuardianAccessControlTest is BaseTest {
     vm.assume(solveCaller != solveEmergencyGuardian);
     hoax(solveCaller);
     vm.expectRevert(
-      bytes(
-        string.concat(
-          'AccessControl: account 0x',
-          TestUtils.toAsciiString(solveCaller),
-          ' is missing role 0xf4cdc679c22cbf47d6de8e836ce79ffdae51f38408dcde3f0645de7634fa607d'
-        )
+      abi.encodeWithSelector(
+        IAccessControl.AccessControlUnauthorizedAccount.selector,
+        solveCaller,
+        0xf4cdc679c22cbf47d6de8e836ce79ffdae51f38408dcde3f0645de7634fa607d
       )
     );
     _solveEmergency(ccc);
@@ -213,13 +210,12 @@ contract GranularGuardianAccessControlTest is BaseTest {
   ) public setUpGranularGuardians(defaultAdmin, retryGuardian, solveEmergencyGuardian, ccc) {
     vm.assume(guardianCaller != defaultAdmin);
     hoax(guardianCaller);
+
     vm.expectRevert(
-      bytes(
-        string.concat(
-          'AccessControl: account 0x',
-          TestUtils.toAsciiString(guardianCaller),
-          ' is missing role 0x0000000000000000000000000000000000000000000000000000000000000000'
-        )
+      abi.encodeWithSelector(
+        IAccessControl.AccessControlUnauthorizedAccount.selector,
+        guardianCaller,
+        0x0000000000000000000000000000000000000000000000000000000000000000
       )
     );
     control.updateGuardian(newGuardian);
