@@ -1,3 +1,3 @@
 solidity-utils/=lib/solidity-utils/src/
 forge-std/=lib/solidity-utils/lib/forge-std/src/
-openzeppelin-contracts/=lib/openzeppelin-contracts/
+openzeppelin-contracts/=lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/
