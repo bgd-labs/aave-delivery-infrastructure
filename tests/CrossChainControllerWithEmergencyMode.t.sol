@@ -74,7 +74,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     vm.expectRevert(bytes(Errors.INVALID_EMERGENCY_ORACLE));
     proxyFactory.createDeterministic(
       crossChainControllerImpl,
-      proxyAdmin,
+      ProxyAdmin(proxyAdmin),
       abi.encodeWithSelector(
         ICrossChainControllerWithEmergencyMode.initialize.selector,
         OWNER,
