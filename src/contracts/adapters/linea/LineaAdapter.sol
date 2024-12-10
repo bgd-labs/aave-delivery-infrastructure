@@ -58,12 +58,11 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
     );
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
-    uint256 cost = 0; // TODO: find how to calculate cost
-    require(cost <= address(this).balance, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
-
-    IMessageService(LINEA_MESSAGE_SERVICE).sendMessage{value: cost}(
+    // @dev we set _fee to 0 because for now we will do the claim manually. Until an automated way of getting the
+    // price is implemented by Linea
+    IMessageService(LINEA_MESSAGE_SERVICE).sendMessage(
       receiver,
-      _fee,
+      0,
       abi.encodeWithSelector(ILineaAdapter.receiveMessage.selector, message)
     );
     return (LINEA_MESSAGE_SERVICE, 0);
