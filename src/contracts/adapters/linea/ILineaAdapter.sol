@@ -1,12 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IBaseAdapter} from '../IBaseAdapter.sol';
+
 /**
  * @title ILineaAdapter
  * @author BGD Labs
  * @notice interface containing the events, objects and method definitions used in the Linea bridge adapter
  */
-interface ILineaAdapter {
+interface ILineaAdapter is IBaseAdapter {
+  /**
+   * @notice struct used to pass parameters to the Linea constructor
+   * @param crossChainController address of the cross chain controller that will use this bridge adapter
+   * @param lineaMessageService Linea entry point address
+   * @param providerGasLimit base gas limit used by the bridge adapter
+   * @param trustedRemotes list of remote configurations to set as trusted
+   */
+  struct LineaParams {
+    address crossChainController;
+    address lineaMessageService;
+    uint256 providerGasLimit;
+    TrustedRemotesConfig[] trustedRemotes;
+  }
+
   /**
    * @notice method to get the Linea message service address
    * @return address of the Linea message service

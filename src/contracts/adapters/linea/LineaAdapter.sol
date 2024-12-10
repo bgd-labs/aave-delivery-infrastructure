@@ -2,26 +2,27 @@
 pragma solidity ^0.8.0;
 
 import {IMessageService} from './interfaces/IMessageService.sol';
-import {BaseAdapter, IBaseAdapter} from '../BaseAdapter.sol';
+import {BaseAdapter} from '../BaseAdapter.sol';
 import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../libs/Errors.sol';
-import {ILineaAdapter} from './ILineaAdapter.sol';
+import {ILineaAdapter, IBaseAdapter} from './ILineaAdapter.sol';
 import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
 
 /**
  * @title LineaAdapter
  * @author BGD Labs
- * @notice Optimism bridge adapter. Used to send and receive messages cross chain between Ethereum and Optimism
+ * @notice Linea bridge adapter. Used to send and receive messages cross chain between Ethereum and Linea
  * @dev it uses the eth balance of CrossChainController contract to pay for message bridging as the method to bridge
         is called via delegate call
- * @dev note that this adapter is can only be used for the communication path ETHEREUM -> LINEA
+ * @dev note that this adapter can only be used for the communication path ETHEREUM -> LINEA
+ * @dev documentation regarding the Linea bridge can be found here: https://docs.linea.build/get-started/concepts/message-service#technical-reference
  */
 contract LineaAdapter is ILineaAdapter, BaseAdapter {
   /// @inheritdoc ILineaAdapter
   address public immutable LINEA_MESSAGE_SERVICE;
 
   /**
-   * @notice only calls from the set ovm are accepted.
+   * @notice only calls from the set message service are accepted.
    */
   modifier onlyLineaMessageService() {
     require(msg.sender == address(LINEA_MESSAGE_SERVICE), Errors.CALLER_NOT_LINEA_MESSAGE_SERVICE);
@@ -29,19 +30,23 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
   }
 
   /**
-   * @param crossChainController address of the cross chain controller that will use this bridge adapter
-   * @param lineaMessageService Linea entry point address
-   * @param providerGasLimit base gas limit used by the bridge adapter
-   * @param trustedRemotes list of remote configurations to set as trusted
+   * @param params object containing the necessary parameters to initialize the contract
    */
   constructor(
-    address crossChainController,
-    address lineaMessageService,
-    uint256 providerGasLimit,
-    TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, 'Linea native adapter', trustedRemotes) {
-    require(lineaMessageService != address(0), Errors.LINEA_MESSAGE_SERVICE_CANT_BE_ADDRESS_0);
-    LINEA_MESSAGE_SERVICE = lineaMessageService;
+    LineaParams memory params
+  )
+    BaseAdapter(
+      params.crossChainController,
+      params.providerGasLimit,
+      'Linea native adapter',
+      params.trustedRemotes
+    )
+  {
+    require(
+      params.lineaMessageService != address(0),
+      Errors.LINEA_MESSAGE_SERVICE_CANT_BE_ADDRESS_0
+    );
+    LINEA_MESSAGE_SERVICE = params.lineaMessageService;
   }
 
   /// @inheritdoc IBaseAdapter
@@ -90,12 +95,16 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
   }
 
   /// @inheritdoc IBaseAdapter
-  function nativeToInfraChainId(uint256 nativeChainId) public pure override returns (uint256) {
+  function nativeToInfraChainId(
+    uint256 nativeChainId
+  ) public pure override(BaseAdapter, IBaseAdapter) returns (uint256) {
     return nativeChainId;
   }
 
   /// @inheritdoc IBaseAdapter
-  function infraToNativeChainId(uint256 infraChainId) public pure override returns (uint256) {
+  function infraToNativeChainId(
+    uint256 infraChainId
+  ) public pure override(BaseAdapter, IBaseAdapter) returns (uint256) {
     return infraChainId;
   }
 }

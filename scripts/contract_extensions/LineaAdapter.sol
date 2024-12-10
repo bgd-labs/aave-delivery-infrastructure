@@ -19,7 +19,16 @@ contract LineaAdapterTestnet is LineaAdapter {
     address lineaMessageService,
     uint256 providerGasLimit,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) LineaAdapter(crossChainController, lineaMessageService, providerGasLimit, trustedRemotes) {}
+  )
+    LineaAdapter(
+      ILineaAdapter.LineaParams({
+        crossChainController: crossChainController,
+        lineaMessageService: lineaMessageService,
+        providerGasLimit: providerGasLimit,
+        trustedRemotes: trustedRemotes
+      })
+    )
+  {}
 
   /// @inheritdoc ILineaAdapter
   function isDestinationChainIdSupported(uint256 chainId) public pure override returns (bool) {

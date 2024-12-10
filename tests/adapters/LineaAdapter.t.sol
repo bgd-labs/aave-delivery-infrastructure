@@ -34,10 +34,12 @@ contract LineaAdapterTest is BaseAdapterTest {
     originConfigs[0] = originConfig;
 
     lineaAdapter = new LineaAdapter(
-      crossChainController,
-      lineaMessageService,
-      baseGasLimit,
-      originConfigs
+      ILineaAdapter.LineaParams({
+        crossChainController: crossChainController,
+        lineaMessageService: lineaMessageService,
+        providerGasLimit: baseGasLimit,
+        trustedRemotes: originConfigs
+      })
     );
     _;
   }
@@ -69,7 +71,14 @@ contract LineaAdapterTest is BaseAdapterTest {
       memory originConfigs = new IBaseAdapter.TrustedRemotesConfig[](1);
     originConfigs[0] = originConfig;
     vm.expectRevert(bytes(Errors.LINEA_MESSAGE_SERVICE_CANT_BE_ADDRESS_0));
-    new LineaAdapter(crossChainController, address(0), baseGasLimit, originConfigs);
+    new LineaAdapter(
+      ILineaAdapter.LineaParams({
+        crossChainController: crossChainController,
+        lineaMessageService: address(0),
+        providerGasLimit: baseGasLimit,
+        trustedRemotes: originConfigs
+      })
+    );
   }
 
   function testInitialize(
