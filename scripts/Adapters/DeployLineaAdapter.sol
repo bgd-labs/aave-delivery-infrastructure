@@ -20,10 +20,12 @@ library LineaAdapterDeploymentHelper {
       abi.encodePacked(
         creationCode,
         abi.encode(
-          lineaArgs.baseArgs.crossChainController,
-          lineaArgs.lineaMessageService,
-          lineaArgs.baseArgs.providerGasLimit,
-          lineaArgs.baseArgs.trustedRemotes
+          ILineaAdapter.LineaParams({
+            crossChainController: lineaArgs.baseArgs.crossChainController,
+            lineaMessageService: lineaArgs.lineaMessageService,
+            providerGasLimit: lineaArgs.baseArgs.providerGasLimit,
+            trustedRemotes: lineaArgs.baseArgs.trustedRemotes
+          })
         )
       );
   }
