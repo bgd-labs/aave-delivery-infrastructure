@@ -32,23 +32,22 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
    * @param crossChainController address of the cross chain controller that will use this bridge adapter
    * @param lineaMessageService Linea entry point address
    * @param providerGasLimit base gas limit used by the bridge adapter
-   * @param adapterName string indicating the adapter name
    * @param trustedRemotes list of remote configurations to set as trusted
    */
   constructor(
     address crossChainController,
     address lineaMessageService,
     uint256 providerGasLimit,
-    string memory adapterName,
     TrustedRemotesConfig[] memory trustedRemotes
-  ) BaseAdapter(crossChainController, providerGasLimit, adapterName, trustedRemotes) {
+  ) BaseAdapter(crossChainController, providerGasLimit, 'Linea native adapter', trustedRemotes) {
+    require(lineaMessageService != address(0), Errors.LINEA_MESSAGE_SERVICE_CANT_BE_ADDRESS_0);
     LINEA_MESSAGE_SERVICE = lineaMessageService;
   }
 
   /// @inheritdoc IBaseAdapter
   function forwardMessage(
     address receiver,
-    uint256 executionGasLimit,
+    uint256,
     uint256 destinationChainId,
     bytes calldata message
   ) external virtual returns (address, uint256) {
@@ -69,7 +68,7 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
   }
 
   /// @inheritdoc ILineaAdapter
-  function ovmReceive(bytes calldata message) external onlyLineaMessageService {
+  function receiveMessage(bytes calldata message) external onlyLineaMessageService {
     uint256 originChainId = getOriginChainId();
     address srcAddress = IMessageService(LINEA_MESSAGE_SERVICE).sender();
     require(

@@ -48,7 +48,7 @@ abstract contract BaseDeployLineaAdapter is BaseAdapterScript {
       LineaAdapterDeploymentHelper.getAdapterCode(
         LineaAdapterDeploymentHelper.LineaAdapterArgs({
           baseArgs: baseArgs,
-          inbox: LINEA_MESSAGE_SERVICE()
+          lineaMessageService: LINEA_MESSAGE_SERVICE()
         })
       );
   }
