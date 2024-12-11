@@ -67,11 +67,11 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
 
     require(address(this).balance >= L2_FEE, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
 
-    // @dev we set _fee to 0 because for now we will do the claim manually. Until an automated way of getting the
-    // price is implemented by Linea
+    // @dev we set _fee to hardcoded L2_FEE to overpay to ensure automatic claiming. If by some case it is not enough then
+    // we will do the claim manually. Until an automated way of getting the price is implemented by Linea
     IMessageService(LINEA_MESSAGE_SERVICE).sendMessage{value: L2_FEE}(
       receiver,
-      0,
+      L2_FEE,
       abi.encodeWithSelector(ILineaAdapter.receiveMessage.selector, message)
     );
     return (LINEA_MESSAGE_SERVICE, 0);
