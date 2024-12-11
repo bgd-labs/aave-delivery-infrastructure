@@ -21,6 +21,8 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
   /// @inheritdoc ILineaAdapter
   address public immutable LINEA_MESSAGE_SERVICE;
 
+  uint256 public constant L2_FEE = 0.003 ether;
+
   /**
    * @notice only calls from the set message service are accepted.
    */
@@ -62,9 +64,12 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
     );
     require(receiver != address(0), Errors.RECEIVER_NOT_SET);
 
+
+    require(address(this).balance >= L2_FEE, Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES);
+
     // @dev we set _fee to 0 because for now we will do the claim manually. Until an automated way of getting the
     // price is implemented by Linea
-    IMessageService(LINEA_MESSAGE_SERVICE).sendMessage(
+    IMessageService(LINEA_MESSAGE_SERVICE).sendMessage{value: L2_FEE}(
       receiver,
       0,
       abi.encodeWithSelector(ILineaAdapter.receiveMessage.selector, message)
@@ -90,7 +95,7 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
   }
 
   /// @inheritdoc ILineaAdapter
-  function isDestinationChainIdSupported(uint256 chainId) public view virtual returns (bool) {
+  function isDestinationChainIdSupported(uint256 chainId) public pure virtual returns (bool) {
     return chainId == ChainIds.LINEA;
   }
 

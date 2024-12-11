@@ -173,6 +173,30 @@ contract LineaAdapterTest is BaseAdapterTest {
     lineaAdapter.forwardMessage(address(0), dstGasLimit, ChainIds.LINEA, message);
   }
 
+  function testForwardMessageWhenNoValue(
+    address crossChainController,
+    address lineaMessageService,
+    address originForwarder,
+    uint256 baseGasLimit,
+    uint256 originChainId,
+    uint256 dstGasLimit,
+    address receiver,
+    bytes memory message
+  )
+    public
+    setLineaAdapter(
+      crossChainController,
+      lineaMessageService,
+      originForwarder,
+      baseGasLimit,
+      originChainId
+    )
+  {
+    vm.assume(receiver != address(0));
+    vm.expectRevert(bytes(Errors.NOT_ENOUGH_VALUE_TO_PAY_BRIDGE_FEES));
+    lineaAdapter.forwardMessage(receiver, dstGasLimit, ChainIds.LINEA, message);
+  }
+
   function testReceive(
     address crossChainController,
     address lineaMessageService,
