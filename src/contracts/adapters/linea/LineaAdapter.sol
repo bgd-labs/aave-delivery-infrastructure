@@ -21,7 +21,7 @@ contract LineaAdapter is ILineaAdapter, BaseAdapter {
   /// @inheritdoc ILineaAdapter
   address public immutable LINEA_MESSAGE_SERVICE;
 
-  uint256 public constant L2_FEE = 0.003 ether;
+  uint256 public constant L2_FEE = 0.002 ether;
 
   /**
    * @notice only calls from the set message service are accepted.
