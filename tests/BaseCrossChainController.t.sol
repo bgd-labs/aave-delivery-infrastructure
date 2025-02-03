@@ -106,7 +106,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     crossChainController = IBaseCrossChainController(
       proxyFactory.createDeterministic(
         crossChainControllerImpl,
-        ProxyAdmin(proxyAdmin),
+        OWNER,
         _getEncodedInitializer(
           OWNER,
           GUARDIAN,
@@ -146,7 +146,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     vm.expectRevert(bytes(Errors.INVALID_REQUIRED_CONFIRMATIONS));
     proxyFactory.createDeterministic(
       crossChainControllerImpl,
-      ProxyAdmin(proxyAdmin),
+      OWNER,
       _getEncodedInitializer(
         OWNER,
         GUARDIAN,

@@ -14,6 +14,8 @@ import {Errors} from '../libs/Errors.sol';
 contract EmergencyRegistry is IEmergencyRegistry, Ownable {
   mapping(uint256 => int256) internal _emergencyStateByNetwork;
 
+  constructor() Ownable(msg.sender) {}
+
   /// @inheritdoc IEmergencyRegistry
   function getNetworkEmergencyCount(uint256 chainId) external view returns (int256) {
     return _emergencyStateByNetwork[chainId];

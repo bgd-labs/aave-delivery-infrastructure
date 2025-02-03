@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {UpgradeableOwnableWithGuardian} from 'solidity-utils/contracts/access-control/UpgradeableOwnableWithGuardian.sol';
 import {Address} from 'openzeppelin-contracts/contracts/utils/Address.sol';
 
 import {ICrossChainForwarder} from './interfaces/ICrossChainForwarder.sol';
@@ -17,7 +17,9 @@ import {Utils} from './libs/Utils.sol';
  *         using registered bridge adapters.
  * @dev To be able to forward a message, caller needs to be an approved sender.
  */
-contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
+contract CrossChainForwarder is UpgradeableOwnableWithGuardian, ICrossChainForwarder {
+  // gap to account for previous owner & guardian
+  uint256[2] internal __gap;
   // every message originator sends we put into an envelope and attach a nonce. It increments by one
   uint256 internal _currentEnvelopeNonce;
 
@@ -57,18 +59,14 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   }
 
   /**
-   * @param initialOwner initial owner of the contract
-   * @param initialGuardian initial guardian of the contract
    * @param bridgeAdaptersToEnable list of bridge adapter configurations to enable
    * @param sendersToApprove list of addresses to approve to forward messages
    */
   constructor(
-    address initialOwner,
-    address initialGuardian,
     ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable,
     address[] memory sendersToApprove,
     OptimalBandwidthByChain[] memory optimalBandwidthByChain
-  ) OwnableWithGuardian(initialOwner, initialGuardian) {
+  ) {
     _configureForwarderBasics(
       bridgeAdaptersToEnable,
       new BridgeAdapterToDisable[](0),
@@ -422,11 +420,11 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
 
       if (!configFound) {
         // preparing fees stream
-        Address.functionDelegateCall(
-          bridgeAdapterConfigInput.currentChainBridgeAdapter,
-          abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
-          Errors.ADAPTER_PAYMENT_SETUP_FAILED
-        );
+        // Address.functionDelegateCall(
+        //   bridgeAdapterConfigInput.currentChainBridgeAdapter,
+        //   abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
+        //   Errors.ADAPTER_PAYMENT_SETUP_FAILED
+        // ); // TODO
 
         bridgeAdapterConfigs.push(
           ChainIdBridgeConfig({

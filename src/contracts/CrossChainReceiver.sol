@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {UpgradeableOwnableWithGuardian} from 'solidity-utils/contracts/access-control/UpgradeableOwnableWithGuardian.sol';
 import {ICrossChainReceiver, EnumerableSet} from './interfaces/ICrossChainReceiver.sol';
 import {IBaseReceiverPortal} from './interfaces/IBaseReceiverPortal.sol';
 import {Transaction, Envelope, TransactionUtils} from './libs/EncodingUtils.sol';
@@ -15,7 +15,7 @@ import {Errors} from './libs/Errors.sol';
  * @dev if at some point, it is detected that some bridge has been hacked, there is a possibility to invalidate
  *      messages by calling updateMessagesValidityTimestamp
  */
-contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
+contract CrossChainReceiver is UpgradeableOwnableWithGuardian, ICrossChainReceiver {
   using EnumerableSet for EnumerableSet.AddressSet;
   using EnumerableSet for EnumerableSet.UintSet;
 
@@ -42,18 +42,14 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
   }
 
   /**
-   * @param initialOwner initial owner of the contract
-   * @param initialGuardian initial guardian of the contract
    * @param initialRequiredConfirmations number of confirmations the messages need to be accepted as valid
    * @param bridgeAdaptersToAllow array of objects containing the chain and address of the bridge adapters that
             can receive messages
    */
   constructor(
-    address initialOwner,
-    address initialGuardian,
     ConfirmationInput[] memory initialRequiredConfirmations,
     ReceiverBridgeAdapterConfigInput[] memory bridgeAdaptersToAllow
-  ) OwnableWithGuardian(initialOwner, initialGuardian) {
+  ) {
     _configureReceiverBasics(
       bridgeAdaptersToAllow,
       new ReceiverBridgeAdapterConfigInput[](0),
