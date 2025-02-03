@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
+import {Ownable} from 'openzeppelin-contracts/contracts/access/Ownable.sol';
 import {IEmergencyRegistry} from './interfaces/IEmergencyRegistry.sol';
 import {Errors} from '../libs/Errors.sol';
 

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {Initializable} from 'solidity-utils/contracts/transparent-proxy/Initializable.sol';
-import {Rescuable, RescuableBase, IERC20} from 'solidity-utils/contracts/utils/Rescuable.sol';
+import {Initializable} from 'openzeppelin-contracts/contracts/proxy/utils/Initializable.sol';
+import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
+import {Rescuable, RescuableBase} from 'solidity-utils/contracts/utils/Rescuable.sol';
 import {IRescuable, IRescuableBase} from 'solidity-utils/contracts/utils/interfaces/IRescuable.sol';
 import {CrossChainReceiver} from './CrossChainReceiver.sol';
 import {CrossChainForwarder} from './CrossChainForwarder.sol';

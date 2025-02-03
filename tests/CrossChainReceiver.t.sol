@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
+import {Ownable} from 'openzeppelin-contracts/contracts/access/Ownable.sol';
 import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
 
 import {CrossChainReceiver, ICrossChainReceiver} from '../src/contracts/CrossChainReceiver.sol';
