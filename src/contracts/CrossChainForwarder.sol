@@ -420,11 +420,10 @@ contract CrossChainForwarder is UpgradeableOwnableWithGuardian, ICrossChainForwa
 
       if (!configFound) {
         // preparing fees stream
-        // Address.functionDelegateCall(
-        //   bridgeAdapterConfigInput.currentChainBridgeAdapter,
-        //   abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
-        //   Errors.ADAPTER_PAYMENT_SETUP_FAILED
-        // ); // TODO
+        Address.functionDelegateCall(
+          bridgeAdapterConfigInput.currentChainBridgeAdapter,
+          abi.encodeWithSelector(IBaseAdapter.setupPayments.selector)
+        );
 
         bridgeAdapterConfigs.push(
           ChainIdBridgeConfig({
