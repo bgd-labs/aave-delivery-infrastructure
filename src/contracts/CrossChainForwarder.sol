@@ -424,8 +424,7 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
         // preparing fees stream
         Address.functionDelegateCall(
           bridgeAdapterConfigInput.currentChainBridgeAdapter,
-          abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
-          Errors.ADAPTER_PAYMENT_SETUP_FAILED
+          abi.encodeWithSelector(IBaseAdapter.setupPayments.selector)
         );
 
         bridgeAdapterConfigs.push(

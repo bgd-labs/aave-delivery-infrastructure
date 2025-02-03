@@ -56,8 +56,6 @@ abstract contract BaseCrossChainControllerTest is Test {
     testToken = new ERC20('Test', 'TST');
     proxyFactory = new TransparentProxyFactory();
 
-    // deploy admin if not deployed before
-    proxyAdmin = proxyFactory.createDeterministicProxyAdmin(OWNER, PROXY_ADMIN_SALT);
 
     // receiver configs
     uint256[] memory chainIds = new uint256[](1);
@@ -106,7 +104,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     crossChainController = IBaseCrossChainController(
       proxyFactory.createDeterministic(
         crossChainControllerImpl,
-        ProxyAdmin(proxyAdmin),
+        OWNER,
         _getEncodedInitializer(
           OWNER,
           GUARDIAN,
@@ -119,6 +117,9 @@ abstract contract BaseCrossChainControllerTest is Test {
         CROSS_CHAIN_CONTROLLER_SALT
       )
     );
+
+    // deploy admin if not deployed before
+    proxyAdmin = proxyFactory.getProxyAdmin(address(crossChainController));
   }
 
   function testInitializeWhenAdaptersLessThanConfirmations() public {
@@ -146,7 +147,7 @@ abstract contract BaseCrossChainControllerTest is Test {
     vm.expectRevert(bytes(Errors.INVALID_REQUIRED_CONFIRMATIONS));
     proxyFactory.createDeterministic(
       crossChainControllerImpl,
-      ProxyAdmin(proxyAdmin),
+      OWNER,
       _getEncodedInitializer(
         OWNER,
         GUARDIAN,
