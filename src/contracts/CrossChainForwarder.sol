@@ -57,14 +57,18 @@ contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   }
 
   /**
+   * @param initialOwner initial owner of the contract
+   * @param initialGuardian initial guardian of the contract
    * @param bridgeAdaptersToEnable list of bridge adapter configurations to enable
    * @param sendersToApprove list of addresses to approve to forward messages
    */
   constructor(
+    address initialOwner,
+    address initialGuardian,
     ForwarderBridgeAdapterConfigInput[] memory bridgeAdaptersToEnable,
     address[] memory sendersToApprove,
     OptimalBandwidthByChain[] memory optimalBandwidthByChain
-  ) {
+  ) OwnableWithGuardian(initialOwner, initialGuardian) {
     _configureForwarderBasics(
       bridgeAdaptersToEnable,
       new BridgeAdapterToDisable[](0),

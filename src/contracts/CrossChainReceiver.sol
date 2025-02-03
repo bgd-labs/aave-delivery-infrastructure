@@ -42,14 +42,18 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
   }
 
   /**
+   * @param initialOwner initial owner of the contract
+   * @param initialGuardian initial guardian of the contract
    * @param initialRequiredConfirmations number of confirmations the messages need to be accepted as valid
    * @param bridgeAdaptersToAllow array of objects containing the chain and address of the bridge adapters that
             can receive messages
    */
   constructor(
+    address initialOwner,
+    address initialGuardian,
     ConfirmationInput[] memory initialRequiredConfirmations,
     ReceiverBridgeAdapterConfigInput[] memory bridgeAdaptersToAllow
-  ) {
+  ) OwnableWithGuardian(initialOwner, initialGuardian) {
     _configureReceiverBasics(
       bridgeAdaptersToAllow,
       new ReceiverBridgeAdapterConfigInput[](0),
