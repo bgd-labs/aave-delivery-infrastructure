@@ -218,7 +218,8 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
       ChainIds.ETHEREUM
     )
   {
-    hoax(AddressAliasHelper.applyL1ToL2Alias(originForwarder));
+    address aliased = AddressAliasHelper.applyL1ToL2Alias(originForwarder);
+    hoax(aliased);
     vm.mockCall(
       crossChainController,
       abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector),
@@ -227,7 +228,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
     vm.expectCall(
       crossChainController,
       0,
-      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector, message, 1)
+      abi.encodeWithSelector(ICrossChainReceiver.receiveCrossChainMessage.selector, message, ChainIds.ETHEREUM)
     );
     zkSyncAdapter.receiveMessage(message);
   }
@@ -304,7 +305,7 @@ contract ZkSyncAdapterTest is BaseAdapterTest {
   function _testForwardMessage(Params memory params) internal {
     bytes memory message = abi.encode('test message');
 
-    hoax(params.caller, 10 ether);
+    hoax(params.caller, 100 ether);
 
     vm.mockCall(
       params.mailbox,

@@ -5,6 +5,7 @@ import 'forge-std/Test.sol';
 import {IEmergencyRegistry} from '../../src/contracts/emergency/interfaces/IEmergencyRegistry.sol';
 import {EmergencyRegistry} from '../../src/contracts/emergency/EmergencyRegistry.sol';
 import {Errors} from '../../src/contracts/libs/Errors.sol';
+import {OwnableUpgradeable} from 'openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol';
 
 contract EmergencyRegistryTest is Test {
   uint256 public constant AVALANCHE_CHAIN_ID = 43114;
@@ -43,7 +44,7 @@ contract EmergencyRegistryTest is Test {
     chains[0] = chainId;
 
     hoax(notOwner);
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, notOwner)));
     emergencyRegistry.setEmergency(chains);
   }
 
