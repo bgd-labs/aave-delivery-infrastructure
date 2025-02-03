@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {Initializable} from 'openzeppelin-contracts/contracts/proxy/utils/Initializable.sol';
 import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {Rescuable, RescuableBase} from 'solidity-utils/contracts/utils/Rescuable.sol';
 import {IRescuable, IRescuableBase} from 'solidity-utils/contracts/utils/interfaces/IRescuable.sol';
@@ -22,8 +21,7 @@ contract BaseCrossChainController is
   IBaseCrossChainController,
   Rescuable,
   CrossChainForwarder,
-  CrossChainReceiver,
-  Initializable
+  CrossChainReceiver
 {
   constructor()
     CrossChainReceiver(new ConfirmationInput[](0), new ReceiverBridgeAdapterConfigInput[](0))
@@ -32,7 +30,9 @@ contract BaseCrossChainController is
       new address[](0),
       new OptimalBandwidthByChain[](0)
     )
-  {}
+  {
+    _disableInitializers();
+  }
 
   /// @dev child class should make a call of this method
   function _baseInitialize(
@@ -44,8 +44,7 @@ contract BaseCrossChainController is
     address[] memory sendersToApprove,
     OptimalBandwidthByChain[] memory optimalBandwidthByChain
   ) internal initializer {
-    _transferOwnership(owner);
-    _updateGuardian(guardian);
+    __Ownable_With_Guardian_init(owner, guardian);
 
     _configureReceiverBasics(
       receiverBridgeAdaptersToAllow,

@@ -17,6 +17,10 @@
   "homepage": "https://github.com/bgd-labs/aave-delivery-infrastructure#readme",
   "devDependencies": {
     "prettier": "^2.8.3",
-    "prettier-plugin-solidity": "^1.1.1"
+    "prettier-plugin-solidity": "^1.1.1",
+    "@bgd-labs/aave-address-book": "^4.8.1",
+    "@bgd-labs/aave-cli": "^1.1.14",
+    "@bgd-labs/rpc-env": "^2.3.0",
+    "viem": "^2.22.12"
   }
 }
