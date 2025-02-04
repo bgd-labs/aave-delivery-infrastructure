@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 import './BaseCrossChainController.t.sol';
 import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmergencyOracle.sol';
 import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../src/contracts/CrossChainControllerWithEmergencyMode.sol';
-import {OwnableUpgradeable} from 'openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol';
-import {IWithGuardian} from 'solidity-utils/contracts/access-control/interfaces/IWithGuardian.sol';
+import {IWithGuardian} from '../src/contracts/old-oz/interfaces/IWithGuardian.sol';
+import {Ownable} from 'openzeppelin-contracts/contracts/access/Ownable.sol';
 
 contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTest {
   address public constant CL_EMERGENCY_ORACLE = address(12345);
@@ -312,7 +312,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
   }
 
   function testSolveEmergencyWhenNotGuardian() public {
-    vm.expectRevert(bytes(abi.encodeWithSelector(IWithGuardian.OnlyGuardianInvalidCaller.selector, address(this))));
+    vm.expectRevert(bytes('ONLY_BY_GUARDIAN'));
     ICrossChainControllerWithEmergencyMode(address(crossChainController)).solveEmergency(
       new ICrossChainReceiver.ConfirmationInput[](0),
       new ICrossChainReceiver.ValidityTimestampInput[](0),
@@ -373,7 +373,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
   function testUpdateCLEmergencyOracleWhenNotOwner() public {
     address newChainlinkEmergencyOracle = address(101);
 
-    vm.expectRevert(bytes(abi.encodeWithSelector(OwnableUpgradeable.OwnableUnauthorizedAccount.selector, address(this))));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
     ICrossChainControllerWithEmergencyMode(address(crossChainController)).updateCLEmergencyOracle(
       newChainlinkEmergencyOracle
     );

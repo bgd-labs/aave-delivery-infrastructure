@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {UpgradeableOwnableWithGuardian} from 'solidity-utils/contracts/access-control/UpgradeableOwnableWithGuardian.sol';
+import {OwnableWithGuardian} from './old-oz/OwnableWithGuardian.sol';
 import {ICrossChainReceiver, EnumerableSet} from './interfaces/ICrossChainReceiver.sol';
 import {IBaseReceiverPortal} from './interfaces/IBaseReceiverPortal.sol';
 import {Transaction, Envelope, TransactionUtils} from './libs/EncodingUtils.sol';
@@ -15,7 +15,7 @@ import {Errors} from './libs/Errors.sol';
  * @dev if at some point, it is detected that some bridge has been hacked, there is a possibility to invalidate
  *      messages by calling updateMessagesValidityTimestamp
  */
-contract CrossChainReceiver is UpgradeableOwnableWithGuardian, ICrossChainReceiver {
+contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
   using EnumerableSet for EnumerableSet.AddressSet;
   using EnumerableSet for EnumerableSet.UintSet;
 
