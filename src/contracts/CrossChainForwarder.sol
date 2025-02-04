@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {UpgradeableOwnableWithGuardian} from 'solidity-utils/contracts/access-control/UpgradeableOwnableWithGuardian.sol';
-import {Address} from 'openzeppelin-contracts/contracts/utils/Address.sol';
+import {OwnableWithGuardian} from './old-oz/OwnableWithGuardian.sol';
+import {Address} from './old-oz/Address.sol';
 
 import {ICrossChainForwarder} from './interfaces/ICrossChainForwarder.sol';
 import {IBaseAdapter} from './adapters/IBaseAdapter.sol';
@@ -17,9 +17,7 @@ import {Utils} from './libs/Utils.sol';
  *         using registered bridge adapters.
  * @dev To be able to forward a message, caller needs to be an approved sender.
  */
-contract CrossChainForwarder is UpgradeableOwnableWithGuardian, ICrossChainForwarder {
-  // gap to account for previous owner & guardian
-  uint256[2] internal __gap;
+contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
   // every message originator sends we put into an envelope and attach a nonce. It increments by one
   uint256 internal _currentEnvelopeNonce;
 
@@ -422,7 +420,8 @@ contract CrossChainForwarder is UpgradeableOwnableWithGuardian, ICrossChainForwa
         // preparing fees stream
         Address.functionDelegateCall(
           bridgeAdapterConfigInput.currentChainBridgeAdapter,
-          abi.encodeWithSelector(IBaseAdapter.setupPayments.selector)
+          abi.encodeWithSelector(IBaseAdapter.setupPayments.selector),
+          Errors.ADAPTER_PAYMENT_SETUP_FAILED
         );
 
         bridgeAdapterConfigs.push(

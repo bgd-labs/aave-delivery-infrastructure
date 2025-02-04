@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
 import {Address} from 'openzeppelin-contracts/contracts/utils/Address.sol';
-import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {OwnableWithGuardian} from '../src/contracts/old-oz/OwnableWithGuardian.sol';
 import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {ERC20} from './mocks/ERC20.sol';
 import {IBaseCrossChainController, ICrossChainForwarder, ICrossChainReceiver} from 'src/contracts/interfaces/IBaseCrossChainController.sol';
