@@ -34,7 +34,7 @@ const getImplementationStorageSlot = async (client: Client, address: Hex) => {
   })) as Hex;
 };
 
-async function snapshotCCC({ CHAIN_ID, CROSS_CHAIN_CONTROLLER }) {
+async function snapshotCCC({ CHAIN_ID, CROSS_CHAIN_CONTROLLER }, isEmergencyMode = false) {
   const client = createClient({ transport: http(getRPCUrl(CHAIN_ID)) });
   const impl = bytes32toAddress(
     await getImplementationStorageSlot(client, CROSS_CHAIN_CONTROLLER),
@@ -45,10 +45,10 @@ async function snapshotCCC({ CHAIN_ID, CROSS_CHAIN_CONTROLLER }) {
     const sourceCommand = `cast etherscan-source --flatten --chain ${CHAIN_ID} -d ${destination} ${impl} --etherscan-api-key ${CHAIN_ID_API_KEY_MAP[CHAIN_ID]}`;
     execSync(sourceCommand);
   }
-  const codeDiff = `make git-diff before=${destination} after=flattened/CrossChainController.sol out=${CHAIN_ID}.patch`;
+  const codeDiff = `make git-diff before=${destination} after=flattened/CrossChainController${isEmergencyMode ? 'WithEmergencyMode' : ''}.sol out=${CHAIN_ID}.patch`;
   execSync(codeDiff);
 
-  const command = `mkdir -p reports/${CHAIN_ID} && forge inspect ${destination}:CrossChainController storage > reports/${CHAIN_ID}/storage_${CROSS_CHAIN_CONTROLLER}`;
+  const command = `mkdir -p reports/${CHAIN_ID} && forge inspect ${destination}:CrossChainController${isEmergencyMode ? 'WithEmergencyMode' : ''} storage > reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}`;
   execSync(command);
 }
 
@@ -61,18 +61,28 @@ async function diffReference() {
   );
 }
 
+async function diffReferenceEmergencyMode() {
+  execSync(
+    `forge flatten src/contracts/CrossChainControllerWithEmergencyMode.sol -o flattened/CrossChainControllerWithEmergencyMode.sol && forge fmt flattened/CrossChainControllerWithEmergencyMode.sol`,
+  );
+  execSync(
+    `forge inspect flattened/CrossChainControllerWithEmergencyMode.sol:CrossChainControllerWithEmergencyMode storage > reports/emergency_storage_new`,
+  );
+}
+
 (async function main() {
   diffReference();
-  // await snapshotCCC(GovernanceV3Ethereum);
+  diffReferenceEmergencyMode();
+  await snapshotCCC(GovernanceV3Ethereum);
   await snapshotCCC(GovernanceV3ZkSync);
-  // await snapshotCCC(GovernanceV3Polygon);
-  // await snapshotCCC(GovernanceV3Avalanche);
-  // await snapshotCCC(GovernanceV3Arbitrum);
-  // await snapshotCCC(GovernanceV3Optimism);
-  // await snapshotCCC(GovernanceV3Base);
-  // await snapshotCCC(GovernanceV3Gnosis);
-  // await snapshotCCC(GovernanceV3Metis);
-  // await snapshotCCC(GovernanceV3BNB);
-  // await snapshotCCC(GovernanceV3Scroll);
-  // await snapshotCCC(GovernanceV3Linea);
+  await snapshotCCC(GovernanceV3Polygon, true);
+  await snapshotCCC(GovernanceV3Avalanche, true);
+  await snapshotCCC(GovernanceV3Arbitrum);
+  await snapshotCCC(GovernanceV3Optimism);
+  await snapshotCCC(GovernanceV3Base);
+  await snapshotCCC(GovernanceV3Gnosis, true);
+  await snapshotCCC(GovernanceV3Metis);
+  await snapshotCCC(GovernanceV3BNB, true);
+  await snapshotCCC(GovernanceV3Scroll);
+  await snapshotCCC(GovernanceV3Linea);
 })();
