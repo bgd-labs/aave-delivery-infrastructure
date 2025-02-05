@@ -21,3 +21,6 @@ broadcast/
 input.json
 compressedArtifacts.zip
 zkout/
+
+flattened/
+reports/
