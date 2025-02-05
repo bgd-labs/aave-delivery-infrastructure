@@ -1,244 +1,15 @@
 diff --git a/flattened/59144/0xcb5C27e1EF28949b354904ee8D3088330D806a6f.sol b/flattened/CrossChainController.sol
-index 376f7ab..4ca4440 100644
+index 376f7ab..72d1f46 100644
 --- a/flattened/59144/0xcb5C27e1EF28949b354904ee8D3088330D806a6f.sol
 +++ b/flattened/CrossChainController.sol
-@@ -1,9 +1,403 @@
+@@ -1,9 +1,175 @@
  // SPDX-License-Identifier: BUSL-1.1
--pragma solidity >=0.7.0 ^0.8.0 ^0.8.1 ^0.8.2 ^0.8.20 ^0.8.8;
-+pragma solidity >=0.7.0 ^0.8.0 ^0.8.1 ^0.8.20 ^0.8.8;
+ pragma solidity >=0.7.0 ^0.8.0 ^0.8.1 ^0.8.2 ^0.8.20 ^0.8.8;
  
 -// lib/aave-delivery-infrastructure/lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/utils/structs/EnumerableSet.sol
-+// lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/proxy/utils/Initializable.sol
++// lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol
  
 -// OpenZeppelin Contracts (last updated v5.0.0) (utils/structs/EnumerableSet.sol)
-+// OpenZeppelin Contracts (last updated v5.0.0) (proxy/utils/Initializable.sol)
-+
-+/**
-+ * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed
-+ * behind a proxy. Since proxied contracts do not make use of a constructor, it's common to move constructor logic to an
-+ * external initializer function, usually called `initialize`. It then becomes necessary to protect this initializer
-+ * function so it can only be called once. The {initializer} modifier provided by this contract will have this effect.
-+ *
-+ * The initialization functions use a version number. Once a version number is used, it is consumed and cannot be
-+ * reused. This mechanism prevents re-execution of each "step" but allows the creation of new initialization steps in
-+ * case an upgrade adds a module that needs to be initialized.
-+ *
-+ * For example:
-+ *
-+ * [.hljs-theme-light.nopadding]
-+ * ```solidity
-+ * contract MyToken is ERC20Upgradeable {
-+ *     function initialize() initializer public {
-+ *         __ERC20_init("MyToken", "MTK");
-+ *     }
-+ * }
-+ *
-+ * contract MyTokenV2 is MyToken, ERC20PermitUpgradeable {
-+ *     function initializeV2() reinitializer(2) public {
-+ *         __ERC20Permit_init("MyToken");
-+ *     }
-+ * }
-+ * ```
-+ *
-+ * TIP: To avoid leaving the proxy in an uninitialized state, the initializer function should be called as early as
-+ * possible by providing the encoded function call as the `_data` argument to {ERC1967Proxy-constructor}.
-+ *
-+ * CAUTION: When used with inheritance, manual care must be taken to not invoke a parent initializer twice, or to ensure
-+ * that all initializers are idempotent. This is not verified automatically as constructors are by Solidity.
-+ *
-+ * [CAUTION]
-+ * ====
-+ * Avoid leaving a contract uninitialized.
-+ *
-+ * An uninitialized contract can be taken over by an attacker. This applies to both a proxy and its implementation
-+ * contract, which may impact the proxy. To prevent the implementation contract from being used, you should invoke
-+ * the {_disableInitializers} function in the constructor to automatically lock it when it is deployed:
-+ *
-+ * [.hljs-theme-light.nopadding]
-+ * ```
-+ * /// @custom:oz-upgrades-unsafe-allow constructor
-+ * constructor() {
-+ *     _disableInitializers();
-+ * }
-+ * ```
-+ * ====
-+ */
-+abstract contract Initializable {
-+    /**
-+     * @dev Storage of the initializable contract.
-+     *
-+     * It's implemented on a custom ERC-7201 namespace to reduce the risk of storage collisions
-+     * when using with upgradeable contracts.
-+     *
-+     * @custom:storage-location erc7201:openzeppelin.storage.Initializable
-+     */
-+    struct InitializableStorage {
-+        /**
-+         * @dev Indicates that the contract has been initialized.
-+         */
-+        uint64 _initialized;
-+        /**
-+         * @dev Indicates that the contract is in the process of being initialized.
-+         */
-+        bool _initializing;
-+    }
-+
-+    // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.Initializable")) - 1)) & ~bytes32(uint256(0xff))
-+    bytes32 private constant INITIALIZABLE_STORAGE = 0xf0c57e16840df040f15088dc2f81fe391c3923bec73e23a9662efc9c229c6a00;
-+
-+    /**
-+     * @dev The contract is already initialized.
-+     */
-+    error InvalidInitialization();
-+
-+    /**
-+     * @dev The contract is not initializing.
-+     */
-+    error NotInitializing();
-+
-+    /**
-+     * @dev Triggered when the contract has been initialized or reinitialized.
-+     */
-+    event Initialized(uint64 version);
-+
-+    /**
-+     * @dev A modifier that defines a protected initializer function that can be invoked at most once. In its scope,
-+     * `onlyInitializing` functions can be used to initialize parent contracts.
-+     *
-+     * Similar to `reinitializer(1)`, except that in the context of a constructor an `initializer` may be invoked any
-+     * number of times. This behavior in the constructor can be useful during testing and is not expected to be used in
-+     * production.
-+     *
-+     * Emits an {Initialized} event.
-+     */
-+    modifier initializer() {
-+        // solhint-disable-next-line var-name-mixedcase
-+        InitializableStorage storage $ = _getInitializableStorage();
-+
-+        // Cache values to avoid duplicated sloads
-+        bool isTopLevelCall = !$._initializing;
-+        uint64 initialized = $._initialized;
-+
-+        // Allowed calls:
-+        // - initialSetup: the contract is not in the initializing state and no previous version was
-+        //                 initialized
-+        // - construction: the contract is initialized at version 1 (no reininitialization) and the
-+        //                 current contract is just being deployed
-+        bool initialSetup = initialized == 0 && isTopLevelCall;
-+        bool construction = initialized == 1 && address(this).code.length == 0;
-+
-+        if (!initialSetup && !construction) {
-+            revert InvalidInitialization();
-+        }
-+        $._initialized = 1;
-+        if (isTopLevelCall) {
-+            $._initializing = true;
-+        }
-+        _;
-+        if (isTopLevelCall) {
-+            $._initializing = false;
-+            emit Initialized(1);
-+        }
-+    }
-+
-+    /**
-+     * @dev A modifier that defines a protected reinitializer function that can be invoked at most once, and only if the
-+     * contract hasn't been initialized to a greater version before. In its scope, `onlyInitializing` functions can be
-+     * used to initialize parent contracts.
-+     *
-+     * A reinitializer may be used after the original initialization step. This is essential to configure modules that
-+     * are added through upgrades and that require initialization.
-+     *
-+     * When `version` is 1, this modifier is similar to `initializer`, except that functions marked with `reinitializer`
-+     * cannot be nested. If one is invoked in the context of another, execution will revert.
-+     *
-+     * Note that versions can jump in increments greater than 1; this implies that if multiple reinitializers coexist in
-+     * a contract, executing them in the right order is up to the developer or operator.
-+     *
-+     * WARNING: Setting the version to 2**64 - 1 will prevent any future reinitialization.
-+     *
-+     * Emits an {Initialized} event.
-+     */
-+    modifier reinitializer(uint64 version) {
-+        // solhint-disable-next-line var-name-mixedcase
-+        InitializableStorage storage $ = _getInitializableStorage();
-+
-+        if ($._initializing || $._initialized >= version) {
-+            revert InvalidInitialization();
-+        }
-+        $._initialized = version;
-+        $._initializing = true;
-+        _;
-+        $._initializing = false;
-+        emit Initialized(version);
-+    }
-+
-+    /**
-+     * @dev Modifier to protect an initialization function so that it can only be invoked by functions with the
-+     * {initializer} and {reinitializer} modifiers, directly or indirectly.
-+     */
-+    modifier onlyInitializing() {
-+        _checkInitializing();
-+        _;
-+    }
-+
-+    /**
-+     * @dev Reverts if the contract is not in an initializing state. See {onlyInitializing}.
-+     */
-+    function _checkInitializing() internal view virtual {
-+        if (!_isInitializing()) {
-+            revert NotInitializing();
-+        }
-+    }
-+
-+    /**
-+     * @dev Locks the contract, preventing any future reinitialization. This cannot be part of an initializer call.
-+     * Calling this in the constructor of a contract will prevent that contract from being initialized or reinitialized
-+     * to any version. It is recommended to use this to lock implementation contracts that are designed to be called
-+     * through proxies.
-+     *
-+     * Emits an {Initialized} event the first time it is successfully executed.
-+     */
-+    function _disableInitializers() internal virtual {
-+        // solhint-disable-next-line var-name-mixedcase
-+        InitializableStorage storage $ = _getInitializableStorage();
-+
-+        if ($._initializing) {
-+            revert InvalidInitialization();
-+        }
-+        if ($._initialized != type(uint64).max) {
-+            $._initialized = type(uint64).max;
-+            emit Initialized(type(uint64).max);
-+        }
-+    }
-+
-+    /**
-+     * @dev Returns the highest version that has been initialized. See {reinitializer}.
-+     */
-+    function _getInitializedVersion() internal view returns (uint64) {
-+        return _getInitializableStorage()._initialized;
-+    }
-+
-+    /**
-+     * @dev Returns `true` if the contract is currently initializing. See {onlyInitializing}.
-+     */
-+    function _isInitializing() internal view returns (bool) {
-+        return _getInitializableStorage()._initializing;
-+    }
-+
-+    /**
-+     * @dev Returns a pointer to the storage namespace.
-+     */
-+    // solhint-disable-next-line var-name-mixedcase
-+    function _getInitializableStorage() private pure returns (InitializableStorage storage $) {
-+        assembly {
-+            $.slot := INITIALIZABLE_STORAGE
-+        }
-+    }
-+}
-+
-+// lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol
-+
 +// OpenZeppelin Contracts (last updated v5.1.0) (token/ERC20/IERC20.sol)
 +
 +/**
@@ -409,7 +180,7 @@ index 376f7ab..4ca4440 100644
  // This file was procedurally generated from scripts/generate/templates/EnumerableSet.js.
  
  /**
-@@ -222,8 +616,7 @@ library EnumerableSet {
+@@ -222,8 +388,7 @@ library EnumerableSet {
          bytes32[] memory store = _values(set._inner);
          bytes32[] memory result;
  
@@ -419,7 +190,7 @@ index 376f7ab..4ca4440 100644
              result := store
          }
  
-@@ -296,8 +689,7 @@ library EnumerableSet {
+@@ -296,8 +461,7 @@ library EnumerableSet {
          bytes32[] memory store = _values(set._inner);
          address[] memory result;
  
@@ -429,7 +200,7 @@ index 376f7ab..4ca4440 100644
              result := store
          }
  
-@@ -370,8 +762,7 @@ library EnumerableSet {
+@@ -370,8 +534,7 @@ library EnumerableSet {
          bytes32[] memory store = _values(set._inner);
          uint256[] memory result;
  
@@ -439,7 +210,7 @@ index 376f7ab..4ca4440 100644
              result := store
          }
  
-@@ -379,442 +770,7 @@ library EnumerableSet {
+@@ -379,442 +542,7 @@ library EnumerableSet {
      }
  }
  
@@ -883,7 +654,7 @@ index 376f7ab..4ca4440 100644
  
  /**
   * @title IRescuableBase
-@@ -822,60 +778,52 @@ interface IERC20Permit {
+@@ -822,60 +550,52 @@ interface IERC20Permit {
   * @notice interface containing the objects, events and methods definitions of the RescuableBase contract
   */
  interface IRescuableBase {
@@ -977,7 +748,7 @@ index 376f7ab..4ca4440 100644
  
  using EnvelopeUtils for Envelope global;
  using TransactionUtils for Transaction global;
-@@ -890,12 +838,12 @@ using TransactionUtils for Transaction global;
+@@ -890,12 +610,12 @@ using TransactionUtils for Transaction global;
   * @param message bytes that needs to be bridged
   */
  struct Envelope {
@@ -996,7 +767,7 @@ index 376f7ab..4ca4440 100644
  }
  
  /**
-@@ -904,8 +852,8 @@ struct Envelope {
+@@ -904,8 +624,8 @@ struct Envelope {
   * @param id hash of the encoded envelope
   */
  struct EncodedEnvelope {
@@ -1007,7 +778,7 @@ index 376f7ab..4ca4440 100644
  }
  
  /**
-@@ -914,45 +862,45 @@ struct EncodedEnvelope {
+@@ -914,45 +634,45 @@ struct EncodedEnvelope {
   * @notice Defines utility functions for Envelopes
   */
  library EnvelopeUtils {
@@ -1089,7 +860,7 @@ index 376f7ab..4ca4440 100644
  }
  
  /**
-@@ -961,8 +909,8 @@ library EnvelopeUtils {
+@@ -961,8 +681,8 @@ library EnvelopeUtils {
   * @param encodedEnvelope bytes of an encoded envelope object
   */
  struct Transaction {
@@ -1100,7 +871,7 @@ index 376f7ab..4ca4440 100644
  }
  
  /**
-@@ -971,8 +919,8 @@ struct Transaction {
+@@ -971,8 +691,8 @@ struct Transaction {
   * @param id hash of the encoded transaction
   */
  struct EncodedTransaction {
@@ -1111,7 +882,7 @@ index 376f7ab..4ca4440 100644
  }
  
  /**
-@@ -981,407 +929,692 @@ struct EncodedTransaction {
+@@ -981,253 +701,953 @@ struct EncodedTransaction {
   * @notice Defines utility functions for Transactions
   */
  library TransactionUtils {
@@ -1849,19 +1620,10 @@ index 376f7ab..4ca4440 100644
 +        _owner = newOwner;
 +        emit OwnershipTransferred(oldOwner, newOwner);
 +    }
- }
- 
--// lib/aave-delivery-infrastructure/lib/solidity-utils/src/contracts/transparent-proxy/Initializable.sol
++}
++
 +// lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol
- 
--/**
-- * @dev OpenZeppelin Contracts (last updated v4.7.0) (proxy/utils/Initializable.sol)
-- * From https://github.com/OpenZeppelin/openzeppelin-contracts/tree/8b778fa20d6d76340c5fac1ed66c80273f05b95a
-- *
-- * BGD Labs adaptations:
-- * - Added a constructor disabling initialization for implementation contracts
-- * - Linting
-- */
++
 +// OpenZeppelin Contracts (last updated v5.0.0) (interfaces/IERC165.sol)
 +
 +// lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol
@@ -1871,95 +1633,10 @@ index 376f7ab..4ca4440 100644
 +// lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/utils/Address.sol
 +
 +// OpenZeppelin Contracts (last updated v5.1.0) (utils/Address.sol)
- 
- /**
-- * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed
-- * behind a proxy. Since proxied contracts do not make use of a constructor, it's common to move constructor logic to an
-- * external initializer function, usually called `initialize`. It then becomes necessary to protect this initializer
-- * function so it can only be called once. The {initializer} modifier provided by this contract will have this effect.
-- *
-- * The initialization functions use a version number. Once a version number is used, it is consumed and cannot be
-- * reused. This mechanism prevents re-execution of each "step" but allows the creation of new initialization steps in
-- * case an upgrade adds a module that needs to be initialized.
-- *
-- * For example:
-- *
-- * [.hljs-theme-light.nopadding]
-- * ```
-- * contract MyToken is ERC20Upgradeable {
-- *     function initialize() initializer public {
-- *         __ERC20_init("MyToken", "MTK");
-- *     }
-- * }
-- * contract MyTokenV2 is MyToken, ERC20PermitUpgradeable {
-- *     function initializeV2() reinitializer(2) public {
-- *         __ERC20Permit_init("MyToken");
-- *     }
-- * }
-- * ```
-- *
-- * TIP: To avoid leaving the proxy in an uninitialized state, the initializer function should be called as early as
-- * possible by providing the encoded function call as the `_data` argument to {ERC1967Proxy-constructor}.
-- *
-- * CAUTION: When used with inheritance, manual care must be taken to not invoke a parent initializer twice, or to ensure
-- * that all initializers are idempotent. This is not verified automatically as constructors are by Solidity.
-- *
-- * [CAUTION]
-- * ====
-- * Avoid leaving a contract uninitialized.
-- *
-- * An uninitialized contract can be taken over by an attacker. This applies to both a proxy and its implementation
-- * contract, which may impact the proxy. To prevent the implementation contract from being used, you should invoke
-- * the {_disableInitializers} function in the constructor to automatically lock it when it is deployed:
-- *
-- * [.hljs-theme-light.nopadding]
-- * ```
-- * /// @custom:oz-upgrades-unsafe-allow constructor
-- * constructor() {
-- *     _disableInitializers();
-- * }
-- * ```
-- * ====
++
++/**
 + * @dev Collection of functions related to the address type
-  */
--abstract contract Initializable {
--  /**
--   * @dev Indicates that the contract has been initialized.
--   * @custom:oz-retyped-from bool
--   */
--  uint8 private _initialized;
--
--  /**
--   * @dev Indicates that the contract is in the process of being initialized.
--   */
--  bool private _initializing;
--
--  /**
--   * @dev Triggered when the contract has been initialized or reinitialized.
--   */
--  event Initialized(uint8 version);
--
--  /**
--   * @dev OPINIONATED. Generally is not a good practise to allow initialization of implementations
--   */
--  constructor() {
--    _disableInitializers();
--  }
--
--  /**
--   * @dev A modifier that defines a protected initializer function that can be invoked at most once. In its scope,
--   * `onlyInitializing` functions can be used to initialize parent contracts. Equivalent to `reinitializer(1)`.
--   */
--  modifier initializer() {
--    bool isTopLevelCall = !_initializing;
--    require(
--      (isTopLevelCall && _initialized < 1) ||
--        (!Address.isContract(address(this)) && _initialized == 1),
--      'Initializable: contract is already initialized'
--    );
--    _initialized = 1;
--    if (isTopLevelCall) {
--      _initializing = true;
++ */
 +library Address_1 {
 +    /**
 +     * @dev There's no code at `target` (it is not a contract).
@@ -2030,11 +1707,7 @@ index 376f7ab..4ca4440 100644
 +        }
 +        (bool success, bytes memory returndata) = target.call{value: value}(data);
 +        return verifyCallResultFromTarget(target, success, returndata);
-     }
--    _;
--    if (isTopLevelCall) {
--      _initializing = false;
--      emit Initialized(1);
++    }
 +
 +    /**
 +     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
@@ -2043,53 +1716,7 @@ index 376f7ab..4ca4440 100644
 +    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
 +        (bool success, bytes memory returndata) = target.staticcall(data);
 +        return verifyCallResultFromTarget(target, success, returndata);
-     }
--  }
--
--  /**
--   * @dev A modifier that defines a protected reinitializer function that can be invoked at most once, and only if the
--   * contract hasn't been initialized to a greater version before. In its scope, `onlyInitializing` functions can be
--   * used to initialize parent contracts.
--   *
--   * `initializer` is equivalent to `reinitializer(1)`, so a reinitializer may be used after the original
--   * initialization step. This is essential to configure modules that are added through upgrades and that require
--   * initialization.
--   *
--   * Note that versions can jump in increments greater than 1; this implies that if multiple reinitializers coexist in
--   * a contract, executing them in the right order is up to the developer or operator.
--   */
--  modifier reinitializer(uint8 version) {
--    require(
--      !_initializing && _initialized < version,
--      'Initializable: contract is already initialized'
--    );
--    _initialized = version;
--    _initializing = true;
--    _;
--    _initializing = false;
--    emit Initialized(version);
--  }
--
--  /**
--   * @dev Modifier to protect an initialization function so that it can only be invoked by functions with the
--   * {initializer} and {reinitializer} modifiers, directly or indirectly.
--   */
--  modifier onlyInitializing() {
--    require(_initializing, 'Initializable: contract is not initializing');
--    _;
--  }
--
--  /**
--   * @dev Locks the contract, preventing any future reinitialization. This cannot be part of an initializer call.
--   * Calling this in the constructor of a contract will prevent that contract from being initialized or reinitialized
--   * to any version. It is recommended to use this to lock implementation contracts that are designed to be called
--   * through proxies.
--   */
--  function _disableInitializers() internal virtual {
--    require(!_initializing, 'Initializable: contract is initializing');
--    if (_initialized < type(uint8).max) {
--      _initialized = type(uint8).max;
--      emit Initialized(type(uint8).max);
++    }
 +
 +    /**
 +     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
@@ -2148,29 +1775,19 @@ index 376f7ab..4ca4440 100644
 +        } else {
 +            revert Errors_0.FailedCall();
 +        }
-     }
--  }
- }
- 
--// lib/aave-delivery-infrastructure/lib/solidity-utils/src/contracts/utils/interfaces/IRescuable.sol
++    }
++}
++
 +// lib/solidity-utils/src/contracts/utils/interfaces/IRescuable.sol
- 
- /**
-  * @title IRescuable
-@@ -1389,25 +1622,25 @@ abstract contract Initializable {
-  * @notice interface containing the objects, events and methods definitions of the Rescuable contract
-  */
- interface IRescuable is IRescuableBase {
--  error OnlyRescueGuardian();
++
++/**
++ * @title IRescuable
++ * @author BGD Labs
++ * @notice interface containing the objects, events and methods definitions of the Rescuable contract
++ */
++interface IRescuable is IRescuableBase {
 +    error OnlyRescueGuardian();
- 
--  /**
--   * @notice method called to rescue tokens sent erroneously to the contract. Only callable by owner
--   * @param erc20Token address of the token to rescue
--   * @param to address to send the tokens
--   * @param amount of tokens to rescue
--   */
--  function emergencyTokenTransfer(address erc20Token, address to, uint256 amount) external;
++
 +    /**
 +     * @notice method called to rescue tokens sent erroneously to the contract. Only callable by owner
 +     * @param erc20Token address of the token to rescue
@@ -2178,265 +1795,23 @@ index 376f7ab..4ca4440 100644
 +     * @param amount of tokens to rescue
 +     */
 +    function emergencyTokenTransfer(address erc20Token, address to, uint256 amount) external;
- 
--  /**
--   * @notice method called to rescue ether sent erroneously to the contract. Only callable by owner
--   * @param to address to send the eth
--   * @param amount of eth to rescue
--   */
--  function emergencyEtherTransfer(address to, uint256 amount) external;
++
 +    /**
 +     * @notice method called to rescue ether sent erroneously to the contract. Only callable by owner
 +     * @param to address to send the eth
 +     * @param amount of eth to rescue
 +     */
 +    function emergencyEtherTransfer(address to, uint256 amount) external;
- }
- 
--// lib/aave-delivery-infrastructure/src/contracts/interfaces/ICrossChainForwarder.sol
++}
++
 +// src/contracts/interfaces/ICrossChainForwarder.sol
- 
- /**
-  * @title ICrossChainForwarder
-@@ -1415,244 +1648,234 @@ interface IRescuable is IRescuableBase {
-  * @notice interface containing the objects, events and methods definitions of the CrossChainForwarder contract
-  */
- interface ICrossChainForwarder {
--  /**
--   * @notice Object containing the optimal bandwidth for communication with a receiver chain id
--   * @param chainId id of the receiver chain
--   * @param optimalBandwidth optimal number of bridge adapters to use to send a message to receiver chain
--   */
--  struct OptimalBandwidthByChain {
--    uint256 chainId;
--    uint256 optimalBandwidth;
--  }
--
--  /**
--   * @notice object storing the connected pair of bridge adapters, on current and destination chain
--   * @param destinationBridgeAdapter address of the bridge adapter on the destination chain
--   * @param currentChainBridgeAdapter address of the bridge adapter deployed on current network
--   */
--  struct ChainIdBridgeConfig {
--    address destinationBridgeAdapter;
--    address currentChainBridgeAdapter;
--  }
--
--  /**
--   * @notice object with the necessary information to remove bridge adapters
--   * @param bridgeAdapter address of the bridge adapter to remove
--   * @param chainIds array of chain ids where the bridge adapter connects
--   */
--  struct BridgeAdapterToDisable {
--    address bridgeAdapter;
--    uint256[] chainIds;
--  }
--
--  /**
--   * @notice object storing the pair bridgeAdapter (current deployed chain) destination chain bridge adapter configuration
--   * @param currentChainBridgeAdapter address of the bridge adapter deployed on current chain
--   * @param destinationBridgeAdapter address of the bridge adapter on the destination chain
--   * @param destinationChainId id of the destination chain using our own nomenclature
--   */
--  struct ForwarderBridgeAdapterConfigInput {
--    address currentChainBridgeAdapter;
--    address destinationBridgeAdapter;
--    uint256 destinationChainId;
--  }
--
--  /**
--   * @notice emitted when a transaction is successfully forwarded through a bridge adapter
--   * @param envelopeId internal id of the envelope
--   * @param envelope the Envelope type data
--   */
--  event EnvelopeRegistered(bytes32 indexed envelopeId, Envelope envelope);
--
--  /**
--   * @notice emitted when a transaction forwarding is attempted through a bridge adapter
--   * @param transactionId id of the forwarded transaction
--   * @param envelopeId internal id of the envelope
--   * @param encodedTransaction object intended to be bridged
--   * @param destinationChainId id of the destination chain in our notation
--   * @param bridgeAdapter address of the bridge adapter that failed (deployed on current network)
--   * @param destinationBridgeAdapter address of the connected bridge adapter on destination chain
--   * @param adapterSuccessful adapter was able to forward the message
--   * @param returnData bytes with error information
--   */
--  event TransactionForwardingAttempted(
--    bytes32 transactionId,
--    bytes32 indexed envelopeId,
--    bytes encodedTransaction,
--    uint256 destinationChainId,
--    address indexed bridgeAdapter,
--    address destinationBridgeAdapter,
--    bool indexed adapterSuccessful,
--    bytes returnData
--  );
--
--  /**
--   * @notice emitted when a bridge adapter has been added to the allowed list
--   * @param destinationChainId id of the destination chain in our notation
--   * @param bridgeAdapter address of the bridge adapter added (deployed on current network)
--   * @param destinationBridgeAdapter address of the connected bridge adapter on destination chain
--   * @param allowed boolean indicating if the bridge adapter is allowed or disallowed
--   */
--  event BridgeAdapterUpdated(
--    uint256 indexed destinationChainId,
--    address indexed bridgeAdapter,
--    address destinationBridgeAdapter,
--    bool indexed allowed
--  );
--  /**
--   * @notice emitted when the optimal bandwidth is updated for a specified receiver chain
--   * @param chainId id of the receiver chain that gets the new optimal bandwidth
--   * @param optimalBandwidth optimal number of adapters to use for sending a message to a receiver chain
--   */
--  event OptimalBandwidthUpdated(uint256 indexed chainId, uint256 optimalBandwidth);
--
--  /**
--   * @notice emitted when a sender has been updated
--   * @param sender address of the updated sender
--   * @param isApproved boolean that indicates if the sender has been approved or removed
--   */
--  event SenderUpdated(address indexed sender, bool indexed isApproved);
--
--  /**
--   * @notice method to get the current valid envelope nonce
--   * @return the current valid envelope nonce
--   */
--  function getCurrentEnvelopeNonce() external view returns (uint256);
--
--  /**
--   * @notice method to get the current valid transaction nonce
--   * @return the current valid transaction nonce
--   */
--  function getCurrentTransactionNonce() external view returns (uint256);
--
--  /**
--   * @notice method to check if a envelope has been previously forwarded.
--   * @param envelope the Envelope type data
--   * @return boolean indicating if the envelope has been registered
--   */
--  function isEnvelopeRegistered(Envelope memory envelope) external view returns (bool);
--
--  /**
--   * @notice method to check if a envelope has been previously forwarded.
--   * @param envelopeId the hashed id of the envelope
--   * @return boolean indicating if the envelope has been registered
--   */
--  function isEnvelopeRegistered(bytes32 envelopeId) external view returns (bool);
--
--  /**
--   * @notice method to get if a transaction has been forwarded
--   * @param transaction the Transaction type data
--   * @return flag indicating if a transaction has been forwarded
--   */
--  function isTransactionForwarded(Transaction memory transaction) external view returns (bool);
--
--  /**
--   * @notice method to get if a transaction has been forwarded
--   * @param transactionId hashed id of the transaction
--   * @return flag indicating if a transaction has been forwarded
--   */
--  function isTransactionForwarded(bytes32 transactionId) external view returns (bool);
--
--  /**
--   * @notice method called to initiate message forwarding to other networks.
--   * @param destinationChainId id of the destination chain where the message needs to be bridged
--   * @param destination address where the message is intended for
--   * @param gasLimit gas cost on receiving side of the message
--   * @param message bytes that need to be bridged
--   * @return internal id of the envelope and transaction
--   */
--  function forwardMessage(
--    uint256 destinationChainId,
--    address destination,
--    uint256 gasLimit,
--    bytes memory message
--  ) external returns (bytes32, bytes32);
--
--  /**
--   * @notice method called to re forward a previously sent envelope.
--   * @param envelope the Envelope type data
--   * @param gasLimit gas cost on receiving side of the message
--   * @return the transaction id that has the retried envelope
--   * @dev This method will send an existing Envelope using a new Transaction.
--   * @dev This method should be used when the intention is to send the Envelope as if it was a new message. This way on
--          the Receiver side it will start from 0 to count for the required confirmations. (usual use case would be for
--          when an envelope has been invalidated on Receiver side, and needs to be retried as a new message)
--   */
--  function retryEnvelope(Envelope memory envelope, uint256 gasLimit) external returns (bytes32);
--
--  /**
--   * @notice method to retry forwarding an already forwarded transaction
--   * @param encodedTransaction the encoded Transaction data
--   * @param gasLimit limit of gas to spend on forwarding per bridge
--   * @param bridgeAdaptersToRetry list of bridge adapters to be used for the transaction forwarding retry
--   * @dev This method will send an existing Transaction with its Envelope to the specified adapters.
--   * @dev Should be used when some of the bridges on the initial forwarding did not work (out of gas),
--          and we want the Transaction with Envelope to still account for the required confirmations on the Receiver side
--   */
--  function retryTransaction(
--    bytes memory encodedTransaction,
--    uint256 gasLimit,
--    address[] memory bridgeAdaptersToRetry
--  ) external;
--
--  /**
--   * @notice method to enable bridge adapters
--   * @param bridgeAdapters array of new bridge adapter configurations
--   */
--  function enableBridgeAdapters(ForwarderBridgeAdapterConfigInput[] memory bridgeAdapters) external;
--
--  /**
--   * @notice method to disable bridge adapters
--   * @param bridgeAdapters array of bridge adapter addresses to disable
--   */
--  function disableBridgeAdapters(BridgeAdapterToDisable[] memory bridgeAdapters) external;
--
--  /**
--   * @notice method to remove sender addresses
--   * @param senders list of addresses to remove
--   */
--  function removeSenders(address[] memory senders) external;
--
--  /**
--   * @notice method to approve new sender addresses
--   * @param senders list of addresses to approve
--   */
--  function approveSenders(address[] memory senders) external;
--
--  /**
--   * @notice method to get all the forwarder bridge adapters of a chain
--   * @param chainId id of the chain we want to get the adapters from
--   * @return an array of chain configurations where the bridge adapter can communicate
--   */
--  function getForwarderBridgeAdaptersByChain(
--    uint256 chainId
--  ) external view returns (ChainIdBridgeConfig[] memory);
--
--  /**
--   * @notice method to get if a sender is approved
--   * @param sender address that we want to check if approved
--   * @return boolean indicating if the address has been approved as sender
--   */
--  function isSenderApproved(address sender) external view returns (bool);
--
--  /**
--   * @notice method to update the optimal bandwidth for communication with a receiver chain
--   * @param optimalBandwidthByChain array of objects containing the optimal bandwidth for a specified
--            receiver chain id
--   */
--  function updateOptimalBandwidthByChain(
--    OptimalBandwidthByChain[] memory optimalBandwidthByChain
--  ) external;
--
--  /**
--   * @notice method to get the optimal bandwidth for communication with the receiver chain
--   * @param chainId id of the receiver chain to get the optimal bandwidth from
--   * @return optimal bandwidth of the receiver chain
--   */
--  function getOptimalBandwidthByChain(uint256 chainId) external view returns (uint256);
++
++/**
++ * @title ICrossChainForwarder
++ * @author BGD Labs
++ * @notice interface containing the objects, events and methods definitions of the CrossChainForwarder contract
++ */
++interface ICrossChainForwarder {
 +    /**
 +     * @notice Object containing the optimal bandwidth for communication with a receiver chain id
 +     * @param chainId id of the receiver chain
@@ -2664,12 +2039,466 @@ index 376f7ab..4ca4440 100644
 +    function getOptimalBandwidthByChain(uint256 chainId) external view returns (uint256);
  }
  
+-// lib/aave-delivery-infrastructure/lib/solidity-utils/src/contracts/transparent-proxy/Initializable.sol
++// src/contracts/old-oz/Initializable.sol
+ 
+ /**
+  * @dev OpenZeppelin Contracts (last updated v4.7.0) (proxy/utils/Initializable.sol)
+@@ -1288,371 +1708,96 @@ abstract contract Ownable is Context {
+  * ====
+  */
+ abstract contract Initializable {
+-  /**
+-   * @dev Indicates that the contract has been initialized.
+-   * @custom:oz-retyped-from bool
+-   */
+-  uint8 private _initialized;
+-
+-  /**
+-   * @dev Indicates that the contract is in the process of being initialized.
+-   */
+-  bool private _initializing;
+-
+-  /**
+-   * @dev Triggered when the contract has been initialized or reinitialized.
+-   */
+-  event Initialized(uint8 version);
+-
+-  /**
+-   * @dev OPINIONATED. Generally is not a good practise to allow initialization of implementations
+-   */
+-  constructor() {
+-    _disableInitializers();
+-  }
+-
+-  /**
+-   * @dev A modifier that defines a protected initializer function that can be invoked at most once. In its scope,
+-   * `onlyInitializing` functions can be used to initialize parent contracts. Equivalent to `reinitializer(1)`.
+-   */
+-  modifier initializer() {
+-    bool isTopLevelCall = !_initializing;
+-    require(
+-      (isTopLevelCall && _initialized < 1) ||
+-        (!Address.isContract(address(this)) && _initialized == 1),
+-      'Initializable: contract is already initialized'
+-    );
+-    _initialized = 1;
+-    if (isTopLevelCall) {
+-      _initializing = true;
+-    }
+-    _;
+-    if (isTopLevelCall) {
+-      _initializing = false;
+-      emit Initialized(1);
++    /**
++     * @dev Indicates that the contract has been initialized.
++     * @custom:oz-retyped-from bool
++     */
++    uint8 private _initialized;
++
++    /**
++     * @dev Indicates that the contract is in the process of being initialized.
++     */
++    bool private _initializing;
++
++    /**
++     * @dev Triggered when the contract has been initialized or reinitialized.
++     */
++    event Initialized(uint8 version);
++
++    /**
++     * @dev OPINIONATED. Generally is not a good practise to allow initialization of implementations
++     */
++    constructor() {
++        _disableInitializers();
+     }
+-  }
+ 
+-  /**
+-   * @dev A modifier that defines a protected reinitializer function that can be invoked at most once, and only if the
+-   * contract hasn't been initialized to a greater version before. In its scope, `onlyInitializing` functions can be
+-   * used to initialize parent contracts.
+-   *
+-   * `initializer` is equivalent to `reinitializer(1)`, so a reinitializer may be used after the original
+-   * initialization step. This is essential to configure modules that are added through upgrades and that require
+-   * initialization.
+-   *
+-   * Note that versions can jump in increments greater than 1; this implies that if multiple reinitializers coexist in
+-   * a contract, executing them in the right order is up to the developer or operator.
+-   */
+-  modifier reinitializer(uint8 version) {
+-    require(
+-      !_initializing && _initialized < version,
+-      'Initializable: contract is already initialized'
+-    );
+-    _initialized = version;
+-    _initializing = true;
+-    _;
+-    _initializing = false;
+-    emit Initialized(version);
+-  }
+-
+-  /**
+-   * @dev Modifier to protect an initialization function so that it can only be invoked by functions with the
+-   * {initializer} and {reinitializer} modifiers, directly or indirectly.
+-   */
+-  modifier onlyInitializing() {
+-    require(_initializing, 'Initializable: contract is not initializing');
+-    _;
+-  }
+-
+-  /**
+-   * @dev Locks the contract, preventing any future reinitialization. This cannot be part of an initializer call.
+-   * Calling this in the constructor of a contract will prevent that contract from being initialized or reinitialized
+-   * to any version. It is recommended to use this to lock implementation contracts that are designed to be called
+-   * through proxies.
+-   */
+-  function _disableInitializers() internal virtual {
+-    require(!_initializing, 'Initializable: contract is initializing');
+-    if (_initialized < type(uint8).max) {
+-      _initialized = type(uint8).max;
+-      emit Initialized(type(uint8).max);
++    /**
++     * @dev A modifier that defines a protected initializer function that can be invoked at most once. In its scope,
++     * `onlyInitializing` functions can be used to initialize parent contracts. Equivalent to `reinitializer(1)`.
++     */
++    modifier initializer() {
++        bool isTopLevelCall = !_initializing;
++        require(
++            (isTopLevelCall && _initialized < 1) || (!Address_0.isContract(address(this)) && _initialized == 1),
++            "Initializable: contract is already initialized"
++        );
++        _initialized = 1;
++        if (isTopLevelCall) {
++            _initializing = true;
++        }
++        _;
++        if (isTopLevelCall) {
++            _initializing = false;
++            emit Initialized(1);
++        }
+     }
+-  }
+-}
+-
+-// lib/aave-delivery-infrastructure/lib/solidity-utils/src/contracts/utils/interfaces/IRescuable.sol
+-
+-/**
+- * @title IRescuable
+- * @author BGD Labs
+- * @notice interface containing the objects, events and methods definitions of the Rescuable contract
+- */
+-interface IRescuable is IRescuableBase {
+-  error OnlyRescueGuardian();
+-
+-  /**
+-   * @notice method called to rescue tokens sent erroneously to the contract. Only callable by owner
+-   * @param erc20Token address of the token to rescue
+-   * @param to address to send the tokens
+-   * @param amount of tokens to rescue
+-   */
+-  function emergencyTokenTransfer(address erc20Token, address to, uint256 amount) external;
+-
+-  /**
+-   * @notice method called to rescue ether sent erroneously to the contract. Only callable by owner
+-   * @param to address to send the eth
+-   * @param amount of eth to rescue
+-   */
+-  function emergencyEtherTransfer(address to, uint256 amount) external;
+-}
+-
+-// lib/aave-delivery-infrastructure/src/contracts/interfaces/ICrossChainForwarder.sol
+-
+-/**
+- * @title ICrossChainForwarder
+- * @author BGD Labs
+- * @notice interface containing the objects, events and methods definitions of the CrossChainForwarder contract
+- */
+-interface ICrossChainForwarder {
+-  /**
+-   * @notice Object containing the optimal bandwidth for communication with a receiver chain id
+-   * @param chainId id of the receiver chain
+-   * @param optimalBandwidth optimal number of bridge adapters to use to send a message to receiver chain
+-   */
+-  struct OptimalBandwidthByChain {
+-    uint256 chainId;
+-    uint256 optimalBandwidth;
+-  }
+-
+-  /**
+-   * @notice object storing the connected pair of bridge adapters, on current and destination chain
+-   * @param destinationBridgeAdapter address of the bridge adapter on the destination chain
+-   * @param currentChainBridgeAdapter address of the bridge adapter deployed on current network
+-   */
+-  struct ChainIdBridgeConfig {
+-    address destinationBridgeAdapter;
+-    address currentChainBridgeAdapter;
+-  }
+-
+-  /**
+-   * @notice object with the necessary information to remove bridge adapters
+-   * @param bridgeAdapter address of the bridge adapter to remove
+-   * @param chainIds array of chain ids where the bridge adapter connects
+-   */
+-  struct BridgeAdapterToDisable {
+-    address bridgeAdapter;
+-    uint256[] chainIds;
+-  }
+-
+-  /**
+-   * @notice object storing the pair bridgeAdapter (current deployed chain) destination chain bridge adapter configuration
+-   * @param currentChainBridgeAdapter address of the bridge adapter deployed on current chain
+-   * @param destinationBridgeAdapter address of the bridge adapter on the destination chain
+-   * @param destinationChainId id of the destination chain using our own nomenclature
+-   */
+-  struct ForwarderBridgeAdapterConfigInput {
+-    address currentChainBridgeAdapter;
+-    address destinationBridgeAdapter;
+-    uint256 destinationChainId;
+-  }
+-
+-  /**
+-   * @notice emitted when a transaction is successfully forwarded through a bridge adapter
+-   * @param envelopeId internal id of the envelope
+-   * @param envelope the Envelope type data
+-   */
+-  event EnvelopeRegistered(bytes32 indexed envelopeId, Envelope envelope);
+-
+-  /**
+-   * @notice emitted when a transaction forwarding is attempted through a bridge adapter
+-   * @param transactionId id of the forwarded transaction
+-   * @param envelopeId internal id of the envelope
+-   * @param encodedTransaction object intended to be bridged
+-   * @param destinationChainId id of the destination chain in our notation
+-   * @param bridgeAdapter address of the bridge adapter that failed (deployed on current network)
+-   * @param destinationBridgeAdapter address of the connected bridge adapter on destination chain
+-   * @param adapterSuccessful adapter was able to forward the message
+-   * @param returnData bytes with error information
+-   */
+-  event TransactionForwardingAttempted(
+-    bytes32 transactionId,
+-    bytes32 indexed envelopeId,
+-    bytes encodedTransaction,
+-    uint256 destinationChainId,
+-    address indexed bridgeAdapter,
+-    address destinationBridgeAdapter,
+-    bool indexed adapterSuccessful,
+-    bytes returnData
+-  );
+ 
+-  /**
+-   * @notice emitted when a bridge adapter has been added to the allowed list
+-   * @param destinationChainId id of the destination chain in our notation
+-   * @param bridgeAdapter address of the bridge adapter added (deployed on current network)
+-   * @param destinationBridgeAdapter address of the connected bridge adapter on destination chain
+-   * @param allowed boolean indicating if the bridge adapter is allowed or disallowed
+-   */
+-  event BridgeAdapterUpdated(
+-    uint256 indexed destinationChainId,
+-    address indexed bridgeAdapter,
+-    address destinationBridgeAdapter,
+-    bool indexed allowed
+-  );
+-  /**
+-   * @notice emitted when the optimal bandwidth is updated for a specified receiver chain
+-   * @param chainId id of the receiver chain that gets the new optimal bandwidth
+-   * @param optimalBandwidth optimal number of adapters to use for sending a message to a receiver chain
+-   */
+-  event OptimalBandwidthUpdated(uint256 indexed chainId, uint256 optimalBandwidth);
+-
+-  /**
+-   * @notice emitted when a sender has been updated
+-   * @param sender address of the updated sender
+-   * @param isApproved boolean that indicates if the sender has been approved or removed
+-   */
+-  event SenderUpdated(address indexed sender, bool indexed isApproved);
+-
+-  /**
+-   * @notice method to get the current valid envelope nonce
+-   * @return the current valid envelope nonce
+-   */
+-  function getCurrentEnvelopeNonce() external view returns (uint256);
+-
+-  /**
+-   * @notice method to get the current valid transaction nonce
+-   * @return the current valid transaction nonce
+-   */
+-  function getCurrentTransactionNonce() external view returns (uint256);
+-
+-  /**
+-   * @notice method to check if a envelope has been previously forwarded.
+-   * @param envelope the Envelope type data
+-   * @return boolean indicating if the envelope has been registered
+-   */
+-  function isEnvelopeRegistered(Envelope memory envelope) external view returns (bool);
+-
+-  /**
+-   * @notice method to check if a envelope has been previously forwarded.
+-   * @param envelopeId the hashed id of the envelope
+-   * @return boolean indicating if the envelope has been registered
+-   */
+-  function isEnvelopeRegistered(bytes32 envelopeId) external view returns (bool);
+-
+-  /**
+-   * @notice method to get if a transaction has been forwarded
+-   * @param transaction the Transaction type data
+-   * @return flag indicating if a transaction has been forwarded
+-   */
+-  function isTransactionForwarded(Transaction memory transaction) external view returns (bool);
+-
+-  /**
+-   * @notice method to get if a transaction has been forwarded
+-   * @param transactionId hashed id of the transaction
+-   * @return flag indicating if a transaction has been forwarded
+-   */
+-  function isTransactionForwarded(bytes32 transactionId) external view returns (bool);
+-
+-  /**
+-   * @notice method called to initiate message forwarding to other networks.
+-   * @param destinationChainId id of the destination chain where the message needs to be bridged
+-   * @param destination address where the message is intended for
+-   * @param gasLimit gas cost on receiving side of the message
+-   * @param message bytes that need to be bridged
+-   * @return internal id of the envelope and transaction
+-   */
+-  function forwardMessage(
+-    uint256 destinationChainId,
+-    address destination,
+-    uint256 gasLimit,
+-    bytes memory message
+-  ) external returns (bytes32, bytes32);
+-
+-  /**
+-   * @notice method called to re forward a previously sent envelope.
+-   * @param envelope the Envelope type data
+-   * @param gasLimit gas cost on receiving side of the message
+-   * @return the transaction id that has the retried envelope
+-   * @dev This method will send an existing Envelope using a new Transaction.
+-   * @dev This method should be used when the intention is to send the Envelope as if it was a new message. This way on
+-          the Receiver side it will start from 0 to count for the required confirmations. (usual use case would be for
+-          when an envelope has been invalidated on Receiver side, and needs to be retried as a new message)
+-   */
+-  function retryEnvelope(Envelope memory envelope, uint256 gasLimit) external returns (bytes32);
+-
+-  /**
+-   * @notice method to retry forwarding an already forwarded transaction
+-   * @param encodedTransaction the encoded Transaction data
+-   * @param gasLimit limit of gas to spend on forwarding per bridge
+-   * @param bridgeAdaptersToRetry list of bridge adapters to be used for the transaction forwarding retry
+-   * @dev This method will send an existing Transaction with its Envelope to the specified adapters.
+-   * @dev Should be used when some of the bridges on the initial forwarding did not work (out of gas),
+-          and we want the Transaction with Envelope to still account for the required confirmations on the Receiver side
+-   */
+-  function retryTransaction(
+-    bytes memory encodedTransaction,
+-    uint256 gasLimit,
+-    address[] memory bridgeAdaptersToRetry
+-  ) external;
+-
+-  /**
+-   * @notice method to enable bridge adapters
+-   * @param bridgeAdapters array of new bridge adapter configurations
+-   */
+-  function enableBridgeAdapters(ForwarderBridgeAdapterConfigInput[] memory bridgeAdapters) external;
+-
+-  /**
+-   * @notice method to disable bridge adapters
+-   * @param bridgeAdapters array of bridge adapter addresses to disable
+-   */
+-  function disableBridgeAdapters(BridgeAdapterToDisable[] memory bridgeAdapters) external;
+-
+-  /**
+-   * @notice method to remove sender addresses
+-   * @param senders list of addresses to remove
+-   */
+-  function removeSenders(address[] memory senders) external;
+-
+-  /**
+-   * @notice method to approve new sender addresses
+-   * @param senders list of addresses to approve
+-   */
+-  function approveSenders(address[] memory senders) external;
+-
+-  /**
+-   * @notice method to get all the forwarder bridge adapters of a chain
+-   * @param chainId id of the chain we want to get the adapters from
+-   * @return an array of chain configurations where the bridge adapter can communicate
+-   */
+-  function getForwarderBridgeAdaptersByChain(
+-    uint256 chainId
+-  ) external view returns (ChainIdBridgeConfig[] memory);
+-
+-  /**
+-   * @notice method to get if a sender is approved
+-   * @param sender address that we want to check if approved
+-   * @return boolean indicating if the address has been approved as sender
+-   */
+-  function isSenderApproved(address sender) external view returns (bool);
++    /**
++     * @dev A modifier that defines a protected reinitializer function that can be invoked at most once, and only if the
++     * contract hasn't been initialized to a greater version before. In its scope, `onlyInitializing` functions can be
++     * used to initialize parent contracts.
++     *
++     * `initializer` is equivalent to `reinitializer(1)`, so a reinitializer may be used after the original
++     * initialization step. This is essential to configure modules that are added through upgrades and that require
++     * initialization.
++     *
++     * Note that versions can jump in increments greater than 1; this implies that if multiple reinitializers coexist in
++     * a contract, executing them in the right order is up to the developer or operator.
++     */
++    modifier reinitializer(uint8 version) {
++        require(!_initializing && _initialized < version, "Initializable: contract is already initialized");
++        _initialized = version;
++        _initializing = true;
++        _;
++        _initializing = false;
++        emit Initialized(version);
++    }
+ 
+-  /**
+-   * @notice method to update the optimal bandwidth for communication with a receiver chain
+-   * @param optimalBandwidthByChain array of objects containing the optimal bandwidth for a specified
+-            receiver chain id
+-   */
+-  function updateOptimalBandwidthByChain(
+-    OptimalBandwidthByChain[] memory optimalBandwidthByChain
+-  ) external;
++    /**
++     * @dev Modifier to protect an initialization function so that it can only be invoked by functions with the
++     * {initializer} and {reinitializer} modifiers, directly or indirectly.
++     */
++    modifier onlyInitializing() {
++        require(_initializing, "Initializable: contract is not initializing");
++        _;
++    }
+ 
+-  /**
+-   * @notice method to get the optimal bandwidth for communication with the receiver chain
+-   * @param chainId id of the receiver chain to get the optimal bandwidth from
+-   * @return optimal bandwidth of the receiver chain
+-   */
+-  function getOptimalBandwidthByChain(uint256 chainId) external view returns (uint256);
++    /**
++     * @dev Locks the contract, preventing any future reinitialization. This cannot be part of an initializer call.
++     * Calling this in the constructor of a contract will prevent that contract from being initialized or reinitialized
++     * to any version. It is recommended to use this to lock implementation contracts that are designed to be called
++     * through proxies.
++     */
++    function _disableInitializers() internal virtual {
++        require(!_initializing, "Initializable: contract is initializing");
++        if (_initialized < type(uint8).max) {
++            _initialized = type(uint8).max;
++            emit Initialized(type(uint8).max);
++        }
++    }
+ }
+ 
 -// lib/aave-delivery-infrastructure/src/contracts/interfaces/ICrossChainReceiver.sol
 +// src/contracts/interfaces/ICrossChainReceiver.sol
  
  /**
   * @title ICrossChainReceiver
-@@ -1660,322 +1883,398 @@ interface ICrossChainForwarder {
+@@ -1660,322 +1805,398 @@ interface ICrossChainForwarder {
   * @notice interface containing the objects, events and methods definitions of the CrossChainReceiver contract
   */
  interface ICrossChainReceiver {
@@ -3374,7 +3203,7 @@ index 376f7ab..4ca4440 100644
   * contract returns false). Tokens that return no value (and instead revert or
   * throw on failure) are also supported, non-reverting calls are assumed to be
   * successful.
-@@ -1983,199 +2282,184 @@ abstract contract OwnableWithGuardian is Ownable, IWithGuardian {
+@@ -1983,199 +2204,184 @@ abstract contract OwnableWithGuardian is Ownable, IWithGuardian {
   * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
   */
  library SafeERC20 {
@@ -3713,7 +3542,7 @@ index 376f7ab..4ca4440 100644
  
  /**
   * @title IBaseAdapter
-@@ -2183,82 +2467,82 @@ abstract contract Rescuable is RescuableBase, IRescuable {
+@@ -2183,82 +2389,82 @@ abstract contract Rescuable is RescuableBase, IRescuable {
   * @notice interface containing the event and method used in all bridge adapters
   */
  interface IBaseAdapter {
@@ -3861,7 +3690,7 @@ index 376f7ab..4ca4440 100644
  
  /**
   * @title ICrossChainController
-@@ -2266,28 +2550,54 @@ interface IBaseAdapter {
+@@ -2266,28 +2472,54 @@ interface IBaseAdapter {
   * @notice interface containing the objects, events and methods definitions of the ICrossChainControllerMainnet contract
   */
  interface ICrossChainController is IBaseCrossChainController {
@@ -3936,7 +3765,7 @@ index 376f7ab..4ca4440 100644
  
  /**
   * @title CrossChainReceiver
-@@ -2298,322 +2608,322 @@ interface ICrossChainController is IBaseCrossChainController {
+@@ -2298,322 +2530,322 @@ interface ICrossChainController is IBaseCrossChainController {
   *      messages by calling updateMessagesValidityTimestamp
   */
  contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
@@ -4558,7 +4387,7 @@ index 376f7ab..4ca4440 100644
  
  /**
   * @title CrossChainForwarder
-@@ -2623,584 +2933,536 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
+@@ -2623,584 +2855,536 @@ contract CrossChainReceiver is OwnableWithGuardian, ICrossChainReceiver {
   * @dev To be able to forward a message, caller needs to be an approved sender.
   */
  contract CrossChainForwarder is OwnableWithGuardian, ICrossChainForwarder {
@@ -5630,7 +5459,7 @@ index 376f7ab..4ca4440 100644
  
  /**
   * @title CrossChainController
-@@ -3208,24 +3470,24 @@ contract BaseCrossChainController is
+@@ -3208,24 +3392,24 @@ contract BaseCrossChainController is
   * @notice CrossChainController contract adopted for usage on the chain where Governance deployed (mainnet in our case)
   */
  contract CrossChainController is ICrossChainController, BaseCrossChainController {
