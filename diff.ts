@@ -45,11 +45,15 @@ async function snapshotCCC({ CHAIN_ID, CROSS_CHAIN_CONTROLLER }, isEmergencyMode
     const sourceCommand = `cast etherscan-source --flatten --chain ${CHAIN_ID} -d ${destination} ${impl} --etherscan-api-key ${CHAIN_ID_API_KEY_MAP[CHAIN_ID]}`;
     execSync(sourceCommand);
   }
-  const codeDiff = `make git-diff before=${destination} after=flattened/CrossChainController${isEmergencyMode ? 'WithEmergencyMode' : ''}.sol out=${CHAIN_ID}.patch`;
-  execSync(codeDiff);
+  // const codeDiff = `make git-diff before=${destination} after=flattened/CrossChainController${isEmergencyMode ? 'WithEmergencyMode' : ''}.sol out=${CHAIN_ID}.patch`;
+  // execSync(codeDiff);
 
-  const command = `mkdir -p reports/${CHAIN_ID} && forge inspect ${destination}:CrossChainController${isEmergencyMode ? 'WithEmergencyMode' : ''} storage > reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}`;
+  const command = `mkdir -p reports/${CHAIN_ID} && forge inspect --json ${destination}:CrossChainController${isEmergencyMode ? 'WithEmergencyMode' : ''} storage > reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}.json`;
   execSync(command);
+
+  execSync(
+    `npx @bgd-labs/aave-cli diff-storage reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}.json  reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}.json -o reports/diffs/${CHAIN_ID}.md`,
+  )
 }
 
 async function diffReference() {
@@ -57,7 +61,7 @@ async function diffReference() {
     `forge flatten src/contracts/CrossChainController.sol -o flattened/CrossChainController.sol && forge fmt flattened/CrossChainController.sol`,
   );
   execSync(
-    `forge inspect flattened/CrossChainController.sol:CrossChainController storage > reports/storage_new`,
+    `forge inspect --json flattened/CrossChainController.sol:CrossChainController storage > reports/storage_new.json`,
   );
 }
 
@@ -66,7 +70,7 @@ async function diffReferenceEmergencyMode() {
     `forge flatten src/contracts/CrossChainControllerWithEmergencyMode.sol -o flattened/CrossChainControllerWithEmergencyMode.sol && forge fmt flattened/CrossChainControllerWithEmergencyMode.sol`,
   );
   execSync(
-    `forge inspect flattened/CrossChainControllerWithEmergencyMode.sol:CrossChainControllerWithEmergencyMode storage > reports/emergency_storage_new`,
+    `forge inspect --json flattened/CrossChainControllerWithEmergencyMode.sol:CrossChainControllerWithEmergencyMode storage > reports/emergency_storage_new.json`,
   );
 }
 
