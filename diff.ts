@@ -52,7 +52,7 @@ async function snapshotCCC({ CHAIN_ID, CROSS_CHAIN_CONTROLLER }, isEmergencyMode
   execSync(command);
 
   execSync(
-    `npx @bgd-labs/aave-cli diff-storage reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}.json  reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}.json -o diffs/storage/${CHAIN_ID}.md`,
+    `npx @bgd-labs/aave-cli diff-storage reports/${CHAIN_ID}/${isEmergencyMode ? 'emergency_storage' : 'storage'}_${CROSS_CHAIN_CONTROLLER}.json  reports/${isEmergencyMode ? 'emergency_storage_new' : 'storage_new'}.json -o diffs/storage/${CHAIN_ID}.md`,
   )
 }
 
