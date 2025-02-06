@@ -137,6 +137,8 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
       return ChainIds.BNB;
     } else if (nativeChainId == uint64(1346049177634351622)) {
       return ChainIds.CELO;
+    } else if (nativeChainId == uint64(1673871237479749969)) {
+      return ChainIds.SONIC;
     }
     return nativeChainId;
   }
@@ -155,6 +157,8 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
       return uint64(11344663589394136015);
     } else if (infraChainId == ChainIds.CELO) {
       return uint64(1346049177634351622);
+    } else if (infraChainId == ChainIds.SONIC) {
+      return uint64(1673871237479749969);
     }
     return infraChainId;
   }
