@@ -11,7 +11,6 @@ import {TransparentProxyFactory} from 'solidity-utils/contracts/transparent-prox
 import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
-import {ProxyAdmin} from 'openzeppelin-contracts/contracts/proxy/transparent/ProxyAdmin.sol';
 import {IRescuable} from 'solidity-utils/contracts/utils/interfaces/IRescuable.sol';
 
 abstract contract BaseCrossChainControllerTest is Test {
