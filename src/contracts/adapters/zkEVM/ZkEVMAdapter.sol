@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
+import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 import {IPolygonZkEVMBridge} from './interfaces/IPolygonZkEVMBridge.sol';
 import {IBridgeMessageReceiver} from './interfaces/IBridgeMessageReceiver.sol';
 import {IBaseAdapter, BaseAdapter} from '../BaseAdapter.sol';

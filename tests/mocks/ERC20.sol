@@ -3,9 +3,9 @@
 
 pragma solidity ^0.8.0;
 
-import {IERC20} from 'solidity-utils/contracts/oz-common/interfaces/IERC20.sol';
-import {IERC20Metadata} from 'solidity-utils/contracts/oz-common/interfaces/IERC20Metadata.sol';
-import {Context} from 'solidity-utils/contracts/oz-common/Context.sol';
+import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
+import {IERC20Metadata} from 'openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol';
+import {Context} from 'openzeppelin-contracts/contracts/utils/Context.sol';
 
 /**
  * @dev Implementation of the {IERC20} interface.

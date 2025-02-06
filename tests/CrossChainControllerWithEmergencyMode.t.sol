@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 import './BaseCrossChainController.t.sol';
 import {ICLEmergencyOracle} from '../src/contracts/emergency/interfaces/ICLEmergencyOracle.sol';
 import {CrossChainControllerWithEmergencyMode, ICrossChainControllerWithEmergencyMode} from '../src/contracts/CrossChainControllerWithEmergencyMode.sol';
+import {IWithGuardian} from '../src/contracts/old-oz/interfaces/IWithGuardian.sol';
+import {Ownable} from 'openzeppelin-contracts/contracts/access/Ownable.sol';
 
 contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTest {
   address public constant CL_EMERGENCY_ORACLE = address(12345);
@@ -74,7 +76,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
     vm.expectRevert(bytes(Errors.INVALID_EMERGENCY_ORACLE));
     proxyFactory.createDeterministic(
       crossChainControllerImpl,
-      ProxyAdmin(proxyAdmin),
+      OWNER,
       abi.encodeWithSelector(
         ICrossChainControllerWithEmergencyMode.initialize.selector,
         OWNER,
@@ -371,7 +373,7 @@ contract CrossChainControllerWithEmergencyModeTest is BaseCrossChainControllerTe
   function testUpdateCLEmergencyOracleWhenNotOwner() public {
     address newChainlinkEmergencyOracle = address(101);
 
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
     ICrossChainControllerWithEmergencyMode(address(crossChainController)).updateCLEmergencyOracle(
       newChainlinkEmergencyOracle
     );

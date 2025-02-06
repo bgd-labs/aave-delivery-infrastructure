@@ -43,3 +43,10 @@ endef
 define deploy_fn
  $(foreach network,$(2),$(call deploy_single_fn,$(1),$(network),$(3)))
 endef
+
+
+# Utilities
+download :; cast etherscan-source --chain ${chain} -d src/etherscan/${chain}_${address} ${address}
+git-diff :
+	@mkdir -p diffs
+	@printf '%s\n' "$$(git diff --no-index --diff-algorithm=patience --ignore-space-at-eol ${before} ${after})" > diffs/${out}

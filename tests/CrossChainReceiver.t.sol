@@ -2,14 +2,16 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
-import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {Ownable} from 'openzeppelin-contracts/contracts/access/Ownable.sol';
+import {OwnableWithGuardian} from '../src/contracts/old-oz/OwnableWithGuardian.sol';
+import {IWithGuardian} from '../src/contracts/old-oz/interfaces/IWithGuardian.sol';
 
 import {CrossChainReceiver, ICrossChainReceiver} from '../src/contracts/CrossChainReceiver.sol';
 import {IBaseReceiverPortal} from '../src/contracts/interfaces/IBaseReceiverPortal.sol';
 import {Errors} from '../src/contracts/libs/Errors.sol';
 import {BaseTest} from './BaseTest.sol';
 import {Transaction, Envelope} from '../src/contracts/libs/EncodingUtils.sol';
+import {Ownable} from 'openzeppelin-contracts/contracts/access/Ownable.sol';
 
 contract CrossChainReceiverTest is BaseTest {
   address public constant GUARDIAN = address(65536 + 12);
@@ -235,7 +237,7 @@ contract CrossChainReceiverTest is BaseTest {
       memory newRequiredConfirmations = new ICrossChainReceiver.ConfirmationInput[](1);
     newRequiredConfirmations[0] = confirmation;
 
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
     crossChainReceiver.updateConfirmations(newRequiredConfirmations);
   }
 
@@ -295,7 +297,7 @@ contract CrossChainReceiverTest is BaseTest {
       chainIds: chainIds
     });
 
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
     crossChainReceiver.allowReceiverBridgeAdapters(bridgeAdaptersToAllow);
 
     assertEq(crossChainReceiver.isReceiverBridgeAdapterAllowed(newBridgeAdapter, 1), false);
@@ -363,7 +365,7 @@ contract CrossChainReceiverTest is BaseTest {
     disallowBridges[0].chainIds[0] = 1;
     disallowBridges[0].chainIds[1] = 137;
 
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
     crossChainReceiver.disallowReceiverBridgeAdapters(disallowBridges);
 
     assertEq(crossChainReceiver.isReceiverBridgeAdapterAllowed(BRIDGE_ADAPTER, 1), true);
@@ -801,7 +803,7 @@ contract CrossChainReceiverTest is BaseTest {
       validityTimestamp: timestamp
     });
 
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
     crossChainReceiver.updateMessagesValidityTimestamp(newValidityTimestamps);
 
     assertEq(crossChainReceiver.getConfigurationByChain(1).validityTimestamp, uint120(0));

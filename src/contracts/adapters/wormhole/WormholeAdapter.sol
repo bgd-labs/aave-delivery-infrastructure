@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
+import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 import {IWormholeReceiver} from './interfaces/IWormholeReceiver.sol';
 import {IWormholeRelayer} from './interfaces/IWormholeRelayer.sol';
 import {IWormholeAdapter} from './IWormholeAdapter.sol';

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.8;
 
-import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
-import {Address} from 'solidity-utils/contracts/oz-common/Address.sol';
+import {OwnableWithGuardian} from './old-oz/OwnableWithGuardian.sol';
+import {Address} from './old-oz/Address.sol';
 
 import {ICrossChainForwarder} from './interfaces/ICrossChainForwarder.sol';
 import {IBaseAdapter} from './adapters/IBaseAdapter.sol';

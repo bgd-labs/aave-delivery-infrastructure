@@ -13,7 +13,7 @@ evm_version = 'shanghai'
 
 fs_permissions = [{ access = "read-write", path = "./"}]
 
-solc = "0.8.20"
+solc = "0.8.22"
 
 [profile.default.zksync]
 fallback_oz = true

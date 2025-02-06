@@ -2,9 +2,10 @@
 pragma solidity ^0.8.0;
 
 import 'forge-std/Test.sol';
-import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
-import {OwnableWithGuardian} from 'solidity-utils/contracts/access-control/OwnableWithGuardian.sol';
+import {Ownable} from 'openzeppelin-contracts/contracts/access/Ownable.sol';
+import {OwnableWithGuardian} from '../src/contracts/old-oz/OwnableWithGuardian.sol';
 import {ILayerZeroEndpointV2} from '../src/contracts/adapters/layerZero/interfaces/ILayerZeroEndpointV2.sol';
+import {IWithGuardian} from '../src/contracts/old-oz/interfaces/IWithGuardian.sol';
 
 import {CrossChainForwarder, ICrossChainForwarder} from '../src/contracts/CrossChainForwarder.sol';
 import {IBaseAdapter} from '../src/contracts/adapters/IBaseAdapter.sol';
@@ -57,10 +58,10 @@ contract CrossChainForwarderTest is BaseTest {
       sendersToApprove,
       new ICrossChainForwarder.OptimalBandwidthByChain[](0)
     );
-
+    
     Ownable(address(crossChainForwarder)).transferOwnership(OWNER);
     OwnableWithGuardian(address(crossChainForwarder)).updateGuardian(GUARDIAN);
-
+    
     // lz bridge adapter configuration
     LayerZeroAdapter.TrustedRemotesConfig[]
       memory originConfigs = new LayerZeroAdapter.TrustedRemotesConfig[](1);
@@ -141,7 +142,8 @@ contract CrossChainForwarderTest is BaseTest {
     optimalBandwidthByChain[0].chainId = chainId;
     optimalBandwidthByChain[0].optimalBandwidth = optimalBandwidth;
 
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
+    
     crossChainForwarder.updateOptimalBandwidthByChain(optimalBandwidthByChain);
   }
 
@@ -179,8 +181,8 @@ contract CrossChainForwarderTest is BaseTest {
     address[] memory newSenders = new address[](1);
     address newSender = address(101);
     newSenders[0] = newSender;
-
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
+    
     crossChainForwarder.approveSenders(newSenders);
   }
 
@@ -199,8 +201,8 @@ contract CrossChainForwarderTest is BaseTest {
   function testRemoveSendersWhenNotOwner() public {
     address[] memory newSenders = new address[](1);
     newSenders[0] = SENDER;
-
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
+    
     crossChainForwarder.removeSenders(newSenders);
 
     assertEq(crossChainForwarder.isSenderApproved(SENDER), true);
@@ -211,8 +213,8 @@ contract CrossChainForwarderTest is BaseTest {
       memory newBridgeAdaptersToEnable = new ICrossChainForwarder.ForwarderBridgeAdapterConfigInput[](
         0
       );
-
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
+    
     crossChainForwarder.enableBridgeAdapters(newBridgeAdaptersToEnable);
   }
 
@@ -429,8 +431,8 @@ contract CrossChainForwarderTest is BaseTest {
   function testDisallowBridgeAdaptersWhenNotOwner() public {
     ICrossChainForwarder.BridgeAdapterToDisable[]
       memory bridgeAdaptersToDisable = new ICrossChainForwarder.BridgeAdapterToDisable[](0);
-
-    vm.expectRevert(bytes('Ownable: caller is not the owner'));
+    vm.expectRevert(bytes(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(this))));
+    
     crossChainForwarder.disableBridgeAdapters(bridgeAdaptersToDisable);
   }
 

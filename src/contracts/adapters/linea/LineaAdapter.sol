@@ -6,7 +6,7 @@ import {BaseAdapter} from '../BaseAdapter.sol';
 import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {Errors} from '../../libs/Errors.sol';
 import {ILineaAdapter, IBaseAdapter} from './ILineaAdapter.sol';
-import {SafeCast} from 'solidity-utils/contracts/oz-common/SafeCast.sol';
+import {SafeCast} from 'openzeppelin-contracts/contracts/utils/math/SafeCast.sol';
 
 /**
  * @title LineaAdapter
