@@ -29,7 +29,6 @@ abstract contract BaseCrossChainControllerTest is Test {
   bytes32 public constant CROSS_CHAIN_CONTROLLER_SALT = keccak256('cross chain controller salt');
 
   IERC20 public testToken;
-  address public proxyAdmin;
 
   event ERC20Rescued(
     address indexed caller,
@@ -117,9 +116,6 @@ abstract contract BaseCrossChainControllerTest is Test {
         CROSS_CHAIN_CONTROLLER_SALT
       )
     );
-
-    // deploy admin if not deployed before
-    proxyAdmin = proxyFactory.getProxyAdmin(address(crossChainController));
   }
 
   function testInitializeWhenAdaptersLessThanConfirmations() public {
