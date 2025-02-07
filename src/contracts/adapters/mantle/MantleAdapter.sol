@@ -12,6 +12,7 @@ import {IMantleAdapter} from './IMantleAdapter.sol';
         is called via delegate call
  * @dev note that this adapter can only be used for the communication path ETHEREUM -> MANTLE
  * @dev note that this adapter inherits from Optimism adapter and overrides only supported chain
+ * @dev note that max total gas limit is 1M
  */
 contract MantleAdapter is OpAdapter, IMantleAdapter {
   /**
