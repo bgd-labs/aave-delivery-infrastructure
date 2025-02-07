@@ -129,6 +129,8 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
       return ChainIds.GNOSIS;
     } else if (nativeChainId == 30125) {
       return ChainIds.CELO;
+    } else if (nativeChainId == 30332) {
+      return ChainIds.SONIC;
     } else {
       return 0;
     }
@@ -160,6 +162,8 @@ contract LayerZeroAdapter is BaseAdapter, ILayerZeroAdapter, ILayerZeroReceiver 
       return 30145;
     } else if (infraChainId == ChainIds.CELO) {
       return 30125;
+    } else if (infraChainId == ChainIds.SONIC) {
+      return 30332;
     } else {
       return uint16(0);
     }
