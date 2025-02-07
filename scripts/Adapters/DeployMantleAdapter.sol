@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
-import {MantleAdapter} from '../../src/contracts/adapters/mantle/MantleAdapter.sol';
+import {MantleAdapter, IMantleAdapter} from '../../src/contracts/adapters/mantle/MantleAdapter.sol';
 import './BaseAdapterScript.sol';
 import {MantleAdapterTestnet} from '../contract_extensions/MantleAdapter.sol';
 
@@ -20,10 +20,12 @@ library MantleAdapterDeploymentHelper {
       abi.encodePacked(
         creationCode,
         abi.encode(
-          mantleArgs.baseArgs.crossChainController,
-          mantleArgs.ovm,
-          mantleArgs.baseArgs.providerGasLimit,
-          mantleArgs.baseArgs.trustedRemotes
+          IMantleAdapter.MantleParams({
+            crossChainController: mantleArgs.baseArgs.crossChainController,
+            ovmCrossDomainMessenger: mantleArgs.ovm,
+            providerGasLimit: mantleArgs.baseArgs.providerGasLimit,
+            trustedRemotes: mantleArgs.baseArgs.trustedRemotes
+          })
         )
       );
   }
