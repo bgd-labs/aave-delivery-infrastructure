@@ -19,7 +19,7 @@ contract CrossChainController is ICrossChainController, BaseCrossChainController
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     address[] memory sendersToApprove,
     OptimalBandwidthByChain[] memory optimalBandwidthByChain
-  ) external virtual initializer {
+  ) external initializer {
     _baseInitialize(
       owner,
       guardian,
