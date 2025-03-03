@@ -28,7 +28,7 @@ contract CrossChainControllerWithEmergencyMode is
     ForwarderBridgeAdapterConfigInput[] memory forwarderBridgeAdaptersToEnable,
     address[] memory sendersToApprove,
     OptimalBandwidthByChain[] memory optimalBandwidthByChain
-  ) external initializer {
+  ) external virtual initializer {
     _updateCLEmergencyOracle(clEmergencyOracle);
     _baseInitialize(
       owner,
