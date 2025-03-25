@@ -7,6 +7,19 @@ import {ChainIds} from 'solidity-utils/contracts/utils/ChainHelpers.sol';
 import {OpAdapter, IOpAdapter} from '../optimism/OpAdapter.sol';
 
 /**
+ * @param crossChainController address of the cross chain controller that will use this bridge adapter
+ * @param ovmCrossDomainMessenger ink entry point address
+ * @param providerGasLimit base gas limit used by the bridge adapter
+ * @param trustedRemotes list of remote configurations to set as trusted
+ */
+struct InkAdapterArgs {
+  address crossChainController;
+  address ovmCrossDomainMessenger;
+  uint256 providerGasLimit;
+  IBaseAdapter.TrustedRemotesConfig[] trustedRemotes;
+}
+
+/**
  * @title InkAdapter
  * @author BGD Labs
  * @notice Ink bridge adapter. Used to send and receive messages cross chain between Ethereum and Ink
@@ -17,23 +30,17 @@ import {OpAdapter, IOpAdapter} from '../optimism/OpAdapter.sol';
  */
 contract InkAdapter is OpAdapter {
   /**
-   * @param crossChainController address of the cross chain controller that will use this bridge adapter
-   * @param ovmCrossDomainMessenger ink entry point address
-   * @param providerGasLimit base gas limit used by the bridge adapter
-   * @param trustedRemotes list of remote configurations to set as trusted
+   * @param args InkAdapterArgs necessary to initialize the adapter
    */
   constructor(
-    address crossChainController,
-    address ovmCrossDomainMessenger,
-    uint256 providerGasLimit,
-    TrustedRemotesConfig[] memory trustedRemotes
+    InkAdapterArgs memory args
   )
     OpAdapter(
-      crossChainController,
-      ovmCrossDomainMessenger,
-      providerGasLimit,
+      args.crossChainController,
+      args.ovmCrossDomainMessenger,
+      args.providerGasLimit,
       'Ink native adapter',
-      trustedRemotes
+      args.trustedRemotes
     )
   {}
 
