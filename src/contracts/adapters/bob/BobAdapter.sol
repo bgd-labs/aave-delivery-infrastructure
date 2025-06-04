@@ -8,7 +8,7 @@ import {OpAdapter, IOpAdapter} from '../optimism/OpAdapter.sol';
 
 /**
  * @param crossChainController address of the cross chain controller that will use this bridge adapter
- * @param ovmCrossDomainMessenger ink entry point address
+ * @param ovmCrossDomainMessenger bob entry point address
  * @param providerGasLimit base gas limit used by the bridge adapter
  * @param trustedRemotes list of remote configurations to set as trusted
  */
