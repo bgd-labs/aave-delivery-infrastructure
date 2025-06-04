@@ -26,6 +26,7 @@ contract EmergencyConsumerTest is Test, EmergencyConsumer {
     assertEq(getChainlinkEmergencyOracle(), CL_EMERGENCY_ORACLE);
   }
 
+  /// forge-config: default.allow_internal_expect_revert = true
   function testUpdateCLEmergencyOracleInternalWhenAddress0() public {
     vm.expectRevert(bytes(Errors.INVALID_EMERGENCY_ORACLE));
     _updateCLEmergencyOracle(address(0));
