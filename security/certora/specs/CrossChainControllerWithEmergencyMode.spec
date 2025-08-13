@@ -6,6 +6,10 @@ methods{
   // declared in ICLEmergencyOracle.sol
 //  function _.latestRoundData() external returns (uint80,int256,uint256,uint256,uint80) => NONDET;
   function _.latestRoundData() external => NONDET;
+
+  // The following should be change to a DISPATCHER. Naftali is working to allow delegatecall to be dispatched.
+  function _.forwardMessage(address receiver,uint256 executionGasLimit,uint256 destinationChainId,bytes message)
+    external => NONDET;
 }
 
 definition is_invalidating_function(method f) returns bool =
