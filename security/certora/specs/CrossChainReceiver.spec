@@ -803,11 +803,11 @@ rule disallowReceiverBridgeAdapters_cannot_allow_witness_consequent
 // Internal property 11: If there are allowedBridges configured, requiredConfirmation must be configured to a positive value
 rule requiredConfirmation_is_positive_after_updateConfirmations(uint256 chainId)
 {
-      env e;
-      ICrossChainReceiver.ConfirmationInput[] newConfirmations;
-      updateConfirmations(e, newConfirmations);
-      // assuming that newConfirmations is not empty!
-      assert newConfirmations[0].chainId == chainId => getRequiredConfirmation(chainId) > 0;
+  env e;
+  ICrossChainReceiver.ConfirmationInput[] newConfirmations;
+  updateConfirmations(e, newConfirmations);
+  // assuming that newConfirmations is not empty!
+  assert (newConfirmations.length >0 && newConfirmations[0].chainId == chainId) => getRequiredConfirmation(chainId) > 0;
 }
 
 // Internal property #13:
@@ -970,20 +970,19 @@ rule only_single_bridge_adapter_removed
 
 }
 
-rule checkUpdateMessagesValidityTimestamp{
-    
-    env e;
-    ICrossChainReceiver.ValidityTimestampInput[] newValidityTimestamp;
-    
-    updateMessagesValidityTimestamp(e, newValidityTimestamp);
-    
-    uint256 chainId;
-    uint120 validityTimestamp = getValidityTimestamp(chainId);
-
-    bool no_duplicate_chainId = newValidityTimestamp[0].chainId != newValidityTimestamp[1].chainId && newValidityTimestamp.length <= 2;
-
-    assert newValidityTimestamp[0].chainId == chainId && no_duplicate_chainId => newValidityTimestamp[0].validityTimestamp == validityTimestamp;
-    assert newValidityTimestamp[1].chainId == chainId && no_duplicate_chainId => newValidityTimestamp[1].validityTimestamp == validityTimestamp;
+rule checkUpdateMessagesValidityTimestamp {
+  env e;
+  ICrossChainReceiver.ValidityTimestampInput[] newValidityTimestamp;
+  
+  updateMessagesValidityTimestamp(e, newValidityTimestamp);
+  
+  uint256 chainId;
+  uint120 validityTimestamp = getValidityTimestamp(chainId);
+  
+  bool no_duplicate_chainId = newValidityTimestamp[0].chainId != newValidityTimestamp[1].chainId && newValidityTimestamp.length == 2;
+  
+  assert newValidityTimestamp[0].chainId == chainId && no_duplicate_chainId => newValidityTimestamp[0].validityTimestamp == validityTimestamp;
+  assert newValidityTimestamp[1].chainId == chainId && no_duplicate_chainId => newValidityTimestamp[1].validityTimestamp == validityTimestamp;
 }
 
 

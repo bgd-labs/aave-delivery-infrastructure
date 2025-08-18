@@ -1,0 +1,60 @@
+name: certora
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    if:
+      github.event.pull_request.head.repo.full_name == github.repository || (github.event_name == 'push' &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
+    permissions:
+      contents: read
+      statuses: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Munged
+        run: |
+          cd security/certora
+          touch applyHarness.patch
+          make munged
+
+      - uses: Certora/certora-run-action@v2
+        with:
+          cli-version: 7.31.2
+          configurations: |-
+            security/certora/confs/verifyCrossChainForwarder-envelopRetry.conf
+            security/certora/confs/verifyCrossChainForwarder-invariants.conf
+            security/certora/confs/verifyCrossChainForwarder-newEnvelope.conf
+            security/certora/confs/verifyCrossChainForwarder-sanity.conf
+            security/certora/confs/verifyCrossChainForwarder-simpleRules.conf
+            security/certora/confs/verifyCrossChainForwarder-encode-decode-correct.conf --rule encode_decode_well_formed_TX
+            security/certora/confs/verifyCrossChainForwarder-shuffle.conf
+            security/certora/confs/verifyCrossChainReceiver.conf
+            security/certora/confs/verifyCrossChainControllerWithEmergency.conf
+          solc-versions: 0.8.20
+          comment-fail-only: false
+          solc-remove-version-prefix: "0."
+          job-name: "Certora Prover Run"
+          certora-key: ${{ secrets.CERTORAKEY }}
+          install-java: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
