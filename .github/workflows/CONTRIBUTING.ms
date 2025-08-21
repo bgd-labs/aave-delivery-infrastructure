@@ -57,7 +57,7 @@ curl -L https://foundry.paradigm.xyz | bash
 
 ### Installing dependencies
 
-For generating the changelog, linting and testing, we rely on some additional node pckages. You can install them by running:
+For generating the changelog, linting and testing, we rely on some additional node packages. You can install them by running:
 
 ```bash
 npm install
