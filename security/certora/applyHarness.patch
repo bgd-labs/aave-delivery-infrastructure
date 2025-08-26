@@ -1,14 +1,14 @@
 diff -ruN .gitignore .gitignore
 --- .gitignore	1970-01-01 02:00:00.000000000 +0200
-+++ .gitignore	2023-09-14 14:23:45.279003572 +0300
++++ .gitignore	2025-08-05 18:13:11.368089637 +0300
 @@ -0,0 +1,2 @@
 +*
 +!.gitignore
 \ No newline at end of file
 diff -ruN src/contracts/CrossChainForwarder.sol src/contracts/CrossChainForwarder.sol
---- src/contracts/CrossChainForwarder.sol	2023-09-14 23:39:12.458049170 +0300
-+++ src/contracts/CrossChainForwarder.sol	2023-09-14 23:23:52.854487614 +0300
-@@ -278,36 +278,36 @@
+--- src/contracts/CrossChainForwarder.sol	2025-08-13 14:51:48.742535847 +0300
++++ src/contracts/CrossChainForwarder.sol	2025-08-05 18:13:11.368089637 +0300
+@@ -335,36 +335,36 @@
      uint256 destinationChainId,
      uint256 gasLimit,
      ChainIdBridgeConfig[] memory bridgeAdapters
@@ -67,7 +67,7 @@ diff -ruN src/contracts/CrossChainForwarder.sol src/contracts/CrossChainForwarde
      }
  
      return (isForwardedAtLeastOnce);
-@@ -361,11 +361,11 @@
+@@ -418,11 +418,11 @@
  
        if (!configFound) {
          // preparing fees stream
