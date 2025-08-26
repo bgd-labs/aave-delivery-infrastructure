@@ -121,7 +121,7 @@ All the information about setup of the project and deployments can be found [HER
 
 ## License
 
-Copyright © 2023, Aave DAO, represented by its governance smart contracts.
+Copyright © 2025, Aave DAO, represented by its governance smart contracts.
 
 Created by [BGD Labs](https://bgdlabs.com/).
 
