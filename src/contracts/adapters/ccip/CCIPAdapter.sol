@@ -163,4 +163,3 @@ contract CCIPAdapter is ICCIPAdapter, BaseAdapter, IAny2EVMMessageReceiver, IERC
     return infraChainId;
   }
 }
-
